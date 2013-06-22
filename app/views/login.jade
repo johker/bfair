@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	link(rel='stylesheet', href='css/login.css')
+	script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js')
+	div.container
+		form.form-signin(method='post')     
+			h3.form-signin-heading Please log in
+			input.input-block-level(type="text", placeholder="username", name="username")
+			input.input-block-level(type="password", placeholder="password", name="password")
+			label #{message}
+			button.btn.btn-primary(type="submit") Submit
+script(src="js/jquery.js")
+script(src="js/bootstrap.min.js") 

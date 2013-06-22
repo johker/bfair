@@ -1,0 +1,15 @@
+extends layout
+block content
+	link(rel='stylesheet', href='css/overview.css')
+	include navbar
+	.container
+		.page-header
+				h2 Terminal
+			p.lead
+			script
+				$(".form-horizontal").click(function(e) {
+						e.preventDefault();
+						$.post('/overview', $(this).serialize(), function(data){
+							//do something here with json data returned from server.
+						});
+					});

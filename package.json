@@ -1,0 +1,37 @@
+{
+    "name": "bfair"
+  , "author": "Johannes Kern <jokeraussaase@gmail.com>"
+  , "description": "Node based data collection and execution"
+  , "version": "0.0.2"
+  , "repository": {
+		"type": "git",
+		"url": "git://github.com/johker/bfair.git"
+	  }
+  , "private": true
+  , "dependencies": {
+      "express": ">= 3.0.0"
+    , "stylus": ">= 0.0.1"
+    , "jade": ">= 0.0.1"
+    , "express.io": "*"
+    , "passport": "*"
+    , "passport-local": "*"   
+    , "connect-flash" : "*"   
+    , "mongoose" : "*"
+    , "yaml-config": "*"
+    , "underscore": "latest"
+    , "connect-mongo": "latest"
+    , "crypto": "*"
+    , "winston": "*" 
+    , "winston-mongodb": "*"
+    , "mongodb": "*"
+    , "express-validator": "*"
+    , "stream": "*"
+    , "async": "*"
+    , "csv": "*"
+    , "betfair-sports-api": "*"
+    , "underscore": "*"
+    , "should": "*"	
+    , "nodemailer": "*"
+    , "betfair": "*"
+  }
+}

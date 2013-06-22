@@ -1,0 +1,120 @@
+extends layout
+
+block content	
+	include navbar
+	link(rel='stylesheet', href='css/bootstrap-datetimepicker.min.css')
+	script(src='js/bootstrap-datetimepicker.min.js')
+	link(rel='text/javascript', href='js/bootstrap-datetimepicker.min.js')
+	script(src="js/utils.js")
+	.container
+		.page-header
+				h2 Data
+			p.lead 
+				include messages
+				form#eventform.form-horizontal(action='/export', method='post')
+					.control-group				
+						label.control-label(for='eventId') Event Type ID
+						.controls
+							input#eventId(type='text', id='eventId', name="eventId", value="#{eventId}")
+					.control-group
+						label.control-label(for='startDate') Start Date
+						.controls
+							#datetimepicker.input-append
+								input#startDate(data-format="MM/dd/yyyy HH:mm:ss PP", id="startDate", type="text", name="startDate", value="#{startDate}", readonly)
+								span.add-on
+									i(data-time-icon="icon-time", data-date-icon="icon-calendar")
+						script(type="text/javascript")
+							$('#datetimepicker').datetimepicker({
+								format: 'dd/MM/yyyy hh:mm:ss',
+								language: 'en'
+							});
+						.control-group				
+						label.control-label(for='endDate') End Date
+						.controls
+							#datetimepicker2.input-append
+								input#endDate(data-format="MM/dd/yyyy HH:mm:ss PP", id="endDate", type="text", name="endDate", value="#{endDate}", readonly)
+								span.add-on
+									i(data-time-icon="icon-time", data-date-icon="icon-calendar")
+						script(type="text/javascript")
+							$('#datetimepicker2').datetimepicker({
+								format: 'dd/MM/yyyy hh:mm:ss',
+								language: 'en'
+							});
+					.control-group				
+						.controls
+							button.btn#clear-form Clear
+					.control-group				
+						label.control-label(for='exportbtn') Logs
+						.controls
+							button#export.btn.btn-primary(type="button") Export
+					.control-group				
+						label.control-label(for='exportbtn') 
+						.controls
+							button#delete.btn.btn-danger(type="button") Delete
+					script
+						$("#clear-form").click(function(e) {
+							e.preventDefault();
+							setValues('','','');
+						});
+						$('#export').click(function(e){
+							validate(event.target.id);
+						});
+						$('#delete').click(function(e){
+							validate(event.target.id);
+						});
+						$("#close-alerts").click(function(e) {
+							e.preventDefault();
+							$('#erritems li').remove();
+							$('#errmsg').hide();						
+						});
+						function validate(target) {
+						$.ajax({
+							url: '/validate',
+							type: 'POST',
+							cache: false,
+							data: {eventId: $('#eventId').val(), startDate: $('#startDate').val(), endDate: $('#endDate').val(), operation: target},
+							success: function(data){
+								resetMessages();
+								$('#confmsg').hide();
+								if(data.errorTitle == undefined) {
+									setValues(data.eventId, data.startDate, data.endDate);
+									$('#errmsg').hide();									
+									if(data.operation == 'export') {										
+										$('#eventform').submit();
+									}
+									else if(data.operation == 'delete') {
+										deleteLogs();
+									} 									
+								}
+								else {
+									setErrorMessages(data.errorTitle, data.errors);
+									$('#errmsg').show();								
+								}																
+							}
+							, error: function(jqXHR, textStatus, err){
+								alert(err);
+								}
+						})
+						}
+						function setValues(eid, sd, ed) {
+							$("#eventId").val(eid);
+							$("#startDate").val(sd);
+							$("#endDate").val(ed);	
+						}
+						function deleteLogs() {
+							$.ajax({
+							url: '/delete',
+							type: 'POST',
+							cache: false,
+							data: {eventId: $('#eventId').val(), startDate: $('#startDate').val(), endDate: $('#endDate').val()},
+							success: function(data){
+								resetMessages();
+								setValues(data.eventId, data.startDate, data.endDate);
+								setConfirmationMessages(data.msgTitle, data.msgContent);
+								$('#confmsg').show();														
+							}
+							, error: function(jqXHR, textStatus, err){
+								alert(err);
+								}
+							})
+						}

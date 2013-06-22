@@ -1,0 +1,63 @@
+extends layout
+
+block content
+	script(src="/socket.io/socket.io.js")
+	script(src='js/jquery-ui-1.10.2.custom.min.js')
+	script(src='js/utils.js')	
+	include navbar
+	.container
+		.page-header
+				h2 Logged Markets			
+			p.lead
+				include messages
+				.row
+					.span6
+						form#exportform.form-inline(method='post', action='/history')
+							a#back.btn.btn-primary.btn-mini(href='/markets') Back
+							button#export.btn.btn-primary.btn-mini(type='button') Export
+				#exportmarket
+					table#idtable.table.table-bordered
+						thead
+							tr
+								th Event ID 
+								th Description
+								th Passivation Time
+								th Logs
+						tbody
+						script
+							io = io.connect();
+							io.emit('historyready');
+							io.on('newpmarket',function(data){								
+								$('#idtable tbody').append('<tr id="'+ data.marketId +'" class="trmarket">'
+									+ '<td class="mid">' + data.marketId + '</td>'
+									+ '<td class="des">' + data.description + '</td>'
+									+ '<td class="ts">' + data.timestamp + '</td>'
+									+ '<td class="exp"></td>'
+									+ '</tr>');
+								$('#' + data.marketId + ' td.exp').append('<input type="radio" name="optionsRadios" id="radio'+ data.marketId + '" value="' + data.marketId + '">');	
+							});
+							$('#back').click(function(e) {
+								console.log('back');
+							})
+							$('#export').click(function(e){
+								resetMessages();
+								var mid = $('input[name=optionsRadios]:checked', '#exportmarket').val();
+								if(mid == undefined) {
+									setErrorMessages('Export failed', ['No item selected.']);
+									$('#errmsg').show();
+								} else {
+									$('#errmsg').hide();
+									var xhr = $.ajax({
+										type: 'POST',
+										cache: false,
+										data: {marketId: mid},
+										success: function(data){
+											$('#exportform').submit();																
+										}, 
+										error: function(jqXHR, textStatus, err){
+											console.error(err);
+										}
+									});	
+								}													
+								
+							});

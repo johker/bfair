@@ -1,0 +1,15 @@
+.chart rect {
+	stroke: white;
+	fill: steelblue;
+}
+
+
+.chart .rectlay {
+	stroke: white;
+	fill: #269;
+}
+
+.chart .rectback {
+	stroke: white;
+	fill: #200;
+}

@@ -1,0 +1,127 @@
+extends layout
+block content
+	script(src="/socket.io/socket.io.js")
+	script(src='js/jquery-ui-1.10.2.custom.min.js')
+	script(src='js/d3.v3.min.js')
+	link(rel='stylesheet', href='css/detail.css')
+	script(src='js/utils.js')
+	include navbar
+	.container
+		.page-header
+				h2 Market Detail
+			p.lead
+				form.form-inline
+					.mid ID:
+					.curr Currency: 
+					.ibd In Play Delay:  
+				.row
+					.span6
+						.alert.alert-info
+							strong Player 0
+							.sid0 Selection ID: 
+								strong
+							.lpm0 Last Price Matched: 
+								strong
+							.tm0 Total Matched: 
+								strong
+						table#pl0book.table.table-bordered
+							thead
+								tr
+									th Back 
+									th Price
+									th Lay	
+							tbody
+								tr#ob1
+									td#back 
+									td#price &nbsp;
+									td#lay
+								tr#ob2
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob3
+									td#back
+									td#price &nbsp; 
+									td#lay
+								tr#ob4
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob5
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob6
+									td#back
+									td#price &nbsp;
+									td#lay
+					.span6
+						.alert.alert-info
+							strong Player 1
+							.sid1 Selection ID: 
+								strong
+							.lpm1 Last Price Matched: 
+								strong
+							.tm1 Total Matched: 
+								strong
+						table#pl1book.table.table-bordered
+							thead
+								tr
+									th Back
+									th Price
+									th Lay	
+							tbody
+								tr#ob1
+									td#back 
+									td#price &nbsp;
+									td#lay
+								tr#ob2
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob3
+									td#back
+									td#price &nbsp; 
+									td#lay
+								tr#ob4
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob5
+									td#back
+									td#price &nbsp;
+									td#lay
+								tr#ob6
+									td#back
+									td#price &nbsp;
+									td#lay
+				.row
+					.span6
+						form(method='post', action='/markets')
+							button.btn.btn-primary.btn-mini(type='submit') Back
+					script
+						io = io.connect();
+						io.on('tick_#{id}',function(data){
+							$('.mid').text('ID: ' + data.marketId);
+							$('.curr').text('Currency: ' + data.currency);
+							$('.ibd').text('In Play Delay: ' + data.inPlayDelay);
+							assign(data);
+						});		
+						function assign(data) {
+							for ( var playerIndex = 0; playerIndex < data.runners.length; ++playerIndex) {
+								var runner = data.runners[playerIndex];
+								$('.sid' + playerIndex + ' strong').text(runner.selectionId);
+								$('.lpm' + playerIndex + ' strong').text(runner.lastPriceMatched);
+								$('.tm' + playerIndex + ' strong').text(runner.totalMatched);								
+								for ( var cnt = 0; cnt < runner.backPrices.length; ++cnt) {
+									var item = runner.backPrices[cnt];
+									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+4) + ' td#back', item.amount);									
+									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+4) + ' td#price', item.price);									
+								}
+								for ( var cnt = 0; cnt < runner.layPrices.length; ++cnt) {
+									var item = runner.layPrices[cnt];
+									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+1) + ' td#lay', item.amount);
+									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+1) + ' td#price', item.price);            
+								}
+							}
+						}

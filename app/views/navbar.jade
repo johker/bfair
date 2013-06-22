@@ -1,0 +1,17 @@
+.navbar.navbar-inverse.navbar-fixed-top
+		.navbar-inner
+			.container
+				button.btn.btn-navbar.collapsed(type="button", data-toggle="collapse", data-target=".nav-collapse")
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.brand(href="#") Be Fair
+				.nav-collapse.collapse
+					ul.nav
+						li.active
+							a(href='/markets') Markets
+						li.active
+							a(href="/account") Account
+					form.navbar-form.pull-right(action="\logout")
+						input.span2(type="text", value="#{username}", readonly)
+						button.btn(type="submit") Log Out
