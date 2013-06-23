@@ -15,6 +15,10 @@ var env = process.env.NODE_ENV || 'development'
 
 process.env['NODE_ENV'] = 'test';
 
+// this is another test
+
+
+
 // Bootstrap logging (global)
 
 apiLogger = winston.getApiLogger();
