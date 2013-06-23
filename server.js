@@ -15,14 +15,11 @@ var env = process.env.NODE_ENV || 'development'
 
 process.env['NODE_ENV'] = 'test';
 
-
-
 // Bootstrap logging (global)
 
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 
-// hjljblk
 
 // Bootstrap db connection
 sysLogger.notice('<server> DB config: ' + config.db);
