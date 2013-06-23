@@ -22,7 +22,6 @@ process.env['NODE_ENV'] = 'test';
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 
-// change
 
 // Bootstrap db connection
 sysLogger.notice('<server> DB config: ' + config.db);
