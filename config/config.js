@@ -21,7 +21,7 @@ module.exports = {
       	 	prices: 'prices',    // Logged prices of selected market IDs
       	 	prefix: 'mid'
       	 },
-      	level: 'notice'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'info'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       api: {
       	marketName: 'Wettquoten',

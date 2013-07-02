@@ -2,27 +2,34 @@
  * Dependencies
  */
 var root = '../../'
+	, env = process.env.NODE_ENV || 'development'
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, servicedir = root + 'app/models/services/'	
-	, sessionmodel = require(servicedir + 'sessionloader')
+	, config = require(root + 'config/config')[env]
 	, strutils = require(root + 'util/stringutil')
 	, listutils = require(root + 'util/listutil')	
-	, session = require(servicedir + 'sessionloader').getSession()
-	, betfair = require('betfair-sports-api')
+	, betfair = require('betfair')
     , MarketObserver = require(servicedir + 'marketobserver')
     , marketObserver = new MarketObserver()
-    , marketrequest = require(servicedir + 'markets/requestactivemarkets')
+    , marketrequest = require(servicedir + 'markets/marketrequests')
     , PriceObserver = require(servicedir + 'priceobserver')
     , priceObserver = new PriceObserver()
     , pricerequest = require(servicedir + 'prices/requestmarketprices')
     , MarketPing = require(servicedir + 'markets/pingmarkets')
 	, PricePing = require(servicedir + 'prices/pingprices')
 	, priceping = new PricePing ({session: session, request: pricerequest.getMarketPrices})
-	, marketping = new MarketPing ({session: session, eventType: '2', request: marketrequest.getAllActiveMartkets})
+	, marketping = new MarketPing ({session: session, eventType: '2'})
 	, history = require(root + 'app/models/db/history')
 	, selectedMarketId
 	, logs = require(servicedir + 'prices/logfactory')
+	, session = require(servicedir + 'session')
 
+
+session.Singelton.getInstance().login(function(err, res){
+ 	sysLogger.info('<apicontroller> Logged in to Betfair');
+ });
+ 
+ 
 /**
 * Update active markets list
 */
@@ -66,14 +73,6 @@ marketObserver.on('stopLogging', function(market) {
 marketping.start();
 priceping.start();
  
-exports.login = function(login, password, callback) {
-	sessionmodel.login(session, login, password, callback);
- }
- 
-exports.logout = function(callback) {
-	sessionmodel.login(session, callback);
- }
- 
 exports.getmarketObserver = function() {
 	return ;
 }
@@ -84,11 +83,12 @@ exports.getmarketObserver = function() {
 * as this is the initial list. 
 * TODO: Declare new event with accumulated information
 */
-app.io.route('marketsready', function(req) {	
+app.io.route('marketsready', function(req) {
+	sysLogger.info('<apicontroller> event: marketsready');	
 	var markets = marketObserver.getList();
 	for(var i=0; i < markets.length; i++) {
 		markets[i]['activationTime'] = undefined;
-		app.io.broadcast('newamarket', markets[i]);		
+		app.io.broadcast('addmarket', markets[i]);		
 	 }	
 	app.io.broadcast('updatecounters', {active: marketObserver.getSize(), logged: marketObserver.getLogCount()});			
 })

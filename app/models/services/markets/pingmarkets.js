@@ -8,9 +8,9 @@ var env = process.env.NODE_ENV || 'development'
 	, util = require('util')
 	, servicedir = root + 'app/models/services/'
  	, config = require(root + 'config/config')[env]
-	, marketwatch = require(servicedir + 'markets/requestactivemarkets')
 	, pricemock = require(root + 'test/mock/pricefactory')
 	, marketmock = require(root + 'test/mock/marketfactory')
+	, marketrequest = require(servicedir + 'markets/marketrequests')
 	, utils = require(root + 'util/stringutil')
 	, events = require('events');
 
@@ -22,7 +22,6 @@ var Ping = function Ping (opts) {
     this.timeout = opts.timeout || config.api.timeout; 
     this.handle = null;
     this.session = opts.session;
-    this.request = opts.request;
 };
 
 util.inherits(Ping, EventEmitter);
@@ -46,20 +45,17 @@ Ping.prototype.stop = function() {
 
 Ping.prototype.ping = function(){
 	var self = this;
-	currentTime = Date.now(); 
-	try {
-        if(env == 'test') {           	       	
-           	marketmock.getMarkets(function(markets, err) {
-           		self.emit('ping', markets);
-         	});          	       		         		
-		} else {
-           	self.request(self.session, self.eventType , function(markets, err) {
-	        	self.emit('ping', markets);
-	        });
-        }           
-     } catch (err) {
-       sysLogger.error('<pingmarkets> <ping> ' + err);
-     }
+	currentTime = Date.now(); 	
+    if(env == 'test') {           	       	
+      	marketmock.getMarkets(function(markets, err) {
+       		self.emit('ping', markets);
+       	});          	       		         		
+	} else {
+     	marketrequest.listMarkets({ "filter": {"eventTypeIds" : [2], "turnsInPlay" : true}}, function(err, res) {
+     		self.emit('ping', res);
+	   });
+    }           
+   
 }
 
 

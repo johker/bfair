@@ -3,9 +3,9 @@
  */
 
 var reqnr = 0
-, root = '../'
+, root = '../../'
 , sysLogger = require(root + 'config/winston').getSysLogger()
-, utils = require('../util/listutil') 
+, utils = require(root + 'util/listutil') 
 
 
 

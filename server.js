@@ -13,7 +13,7 @@ var env = process.env.NODE_ENV || 'development'
   , auth = require('./config/authorization')
   , mongoose = require('mongoose')
 
-process.env['NODE_ENV'] = 'test';
+process.env['NODE_ENV'] = 'development';
 
 // this is another test
 

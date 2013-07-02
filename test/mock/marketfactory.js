@@ -1,8 +1,8 @@
 
 var reqnr = 0
-, root = '../'
+, root = '../../'
 , sysLogger = require(root + 'config/winston').getSysLogger()
-, utils = require('../util/listutil') 
+, utils = require(root + 'util/listutil') 
 
 var markets = [
     { marketId: '1', eventDate: '1388530800000',  menuPath: '\\Tennis\\ Match 1',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() },

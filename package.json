@@ -30,7 +30,9 @@
     , "csv": "*"
     , "betfair-sports-api": "*"
     , "underscore": "*"
-    , "should": "*"	
+    , "expect.js": "*"
+    , "mocha": "*"
+    , "superagent": "*"
     , "nodemailer": "*"
     , "betfair": "*"
   }

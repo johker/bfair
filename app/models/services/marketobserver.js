@@ -2,15 +2,16 @@
  /** Local version of active markets - STORED BY EVENT DATE ASCENDING */
 var env = process.env.NODE_ENV || 'development'
  , root = '../../../'
+ , servicedir = root + 'app/models/services/'
  , config = require(root + 'config/config')[env]
  , EventEmitter = require('events').EventEmitter
  , util = require('util')
+ , sync = require(servicedir + 'markets/sync') 
  , strutils = require(root + 'util/stringutil')
  , listutils = require(root + 'util/listutil')
- , marketselector = require(root + 'app/models/services/marketselector')
- , listedmarkets = {}
+ , cachedmarkets = {}
  , logCounter
- 
+ , mid = 'marketId'
 
 /**
 * MarketObserver Constructor 
@@ -23,12 +24,13 @@ util.inherits(MarketObserver, EventEmitter);
  
 /**
 * Return locally stored markets list
+* TODO: use undescore
 */
 MarketObserver.prototype.getList = function() {
-	sysLogger.info('<marketObserver> <getList> size = ' + listutils.count(listedmarkets));
+	sysLogger.info('<marketObserver> <getList> size = ' + listutils.count(cachedmarkets));
 	var innerArray = [];
-	for (property in listedmarkets) {
-	    innerArray.push(listedmarkets[property]);
+	for (property in cachedmarkets) {
+	    innerArray.push(cachedmarkets[property]);
 	}
 	return innerArray;
 }
@@ -37,7 +39,7 @@ MarketObserver.prototype.getList = function() {
 * Return locally stored markets list size
 */
 MarketObserver.prototype.getSize = function() {
-	return listutils.count(listedmarkets);
+	return listutils.count(cachedmarkets);
 }
 
 /**
@@ -50,40 +52,24 @@ MarketObserver.prototype.getLogCount = function() {
 /**
 * Emits event with stale market and remove it from the list. 
 */
-MarketObserver.prototype.removeStale = function(id) {
+MarketObserver.prototype.remove = function(id) {
 	var self = this;
-	sysLogger.info('<marketobserver> <removeStale> id = ' + id + ', date: ' + strutils.millisToDate(listedmarkets[id].eventDate));
-	if(listedmarkets[id]['isLogged']) logCounter--;  
- 	app.io.broadcast('stalemarket', listedmarkets[id]);
- 	self.emit('stopLogging', listedmarkets[id]);	
-	delete listedmarkets[id]; 	
+	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + cachedmarkets[id].event.openDate);
+	logCounter--;  
+ 	app.io.broadcast('removemarket', cachedmarkets[id]);
+ 	self.emit('stopLogging', cachedmarkets[id]);	
+	delete cachedmarkets[id]; 	
 }
 
 /**
 * Emits event with new market and adds it to the list.
 */ 
-MarketObserver.prototype.addNew = function(market, id) {
+MarketObserver.prototype.add = function(market, id) {
 	var self = this;
-	listedmarkets[id] = market;
-	sysLogger.info('<marketobserver> <addNew> id = ' + id + ', date: ' + strutils.millisToDate(listedmarkets[id].eventDate)); 
-	listedmarkets[id]['activationTime'] = Date.now();	
-	self.markedForLogging(id);
-	app.io.broadcast('newamarket', listedmarkets[id]);	
-}
-
-/**
-* Checks if market id is of interest, sets logging flag. Emits event
-* to start price logging. 
-*/
-MarketObserver.prototype.markedForLogging = function(id){
-	var self = this;
-	if(marketselector.marketOfInterest(listedmarkets[id])) {
-		listedmarkets[id]['isLogged'] = true;	
-		logCounter++;			
-		self.emit('logPrices', listedmarkets[id]);				
-	} else {
-		listedmarkets[id]['isLogged'] = false;
-	}
+	cachedmarkets[id] = market;
+	sysLogger.debug('<marketobserver> <add> id = ' + id + ', date: ' + market.event.openDate); 
+	cachedmarkets[id]['activationTime'] = Date.now();	
+	app.io.broadcast('addmarket', cachedmarkets[id]);	
 }
 
 /**
@@ -91,57 +77,39 @@ MarketObserver.prototype.markedForLogging = function(id){
 * event for every updated market. 
 */
 MarketObserver.prototype.update = function(market, id) {
-	listedmarkets[id.valueOf()]['lastRefresh'] = market.lastRefresh; 	
-	listedmarkets[id.valueOf()]['totalMatched'] = market.totalMatched;
-	if(listedmarkets[id.valueOf()].totalMatched != market.totalMatched) {
+	/*
+	cachedmarkets[id.valueOf()]['lastRefresh'] = market.lastRefresh; 	
+	cachedmarkets[id.valueOf()]['totalMatched'] = market.totalMatched;
+	if(cachedmarkets[id.valueOf()].totalMatched != market.totalMatched) {
 		sysLogger.info('<marketobserver.update> <id = ' + id + ', totalMatched = ' + market.totalMatched + '>');
 	}
-	app.io.broadcast('updatemarket', listedmarkets[id.valueOf()]);	   
+	*/
+	sysLogger.debug('<marketobserver> <update> id = ' + id); 
+	app.io.broadcast('updatemarket', cachedmarkets[id.valueOf()]);	   
 }
 
 
 /**
 * Synchronize and find the delta of markets by its id
 */ 
-MarketObserver.prototype.synchronize = function(markets) {
+MarketObserver.prototype.synchronize = function(incoming) {
 	var self = this;
-	self.sort(markets);	
-	var mapN = listutils.mapFromArray(markets, 'marketId'); 
-	for (var id in listedmarkets) {
-        if (!mapN.hasOwnProperty(id)) {            
-              self.removeStale(id);
-    	}
-    }
-    for (var id in mapN) {
-        if (!listedmarkets.hasOwnProperty(id)) {
-     		   self.addNew(mapN[id], id);     		   
-        } 
-        else {
-        	self.update(mapN[id], id);
-        }
-    }
-    // update counters
+	sysLogger.debug('<marketobserver> <synchronize>'); 
+	self.sort(incoming);
+	sync.markets(cachedmarkets, incoming, mid, self.add, self.remove, self.update);
     app.io.broadcast('updatecounters', {active: self.getSize(), logged: self.getLogCount()});	
-    if(env == 'development') { 
-    	// self.resultInfo();    	
-    } 
     init = false;
 }
 
-/**
-* Print additional infos for debugging.
-*/
-MarketObserver.prototype.resultInfo = function() {
-	sysLogger.info('<marketobserver> <resultInfo> number: ' + listutils.count(listedmarkets) + ', id: ' + config.api.eventType);
-}
 
 /**
 * Sort incoming markets by eventDate ascending, by marketId
 * ascending for equal eventDates
+* DEPRECATED
 */
 MarketObserver.prototype.sort = function(markets) {
 	markets.sort(function(first, second) {
-     	var dtime = first.eventDate - second.eventDate;
+     	var dtime = first.event.openDate - second.event.openDate;
      	var did = first.marketId - second.marketId;
      	var res = dtime != 0 ? dtime : did
      	return res; 

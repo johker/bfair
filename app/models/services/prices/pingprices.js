@@ -5,7 +5,6 @@ var env = process.env.NODE_ENV || 'development'
 	, util = require('util')
 	, servicedir = root + 'app/models/services/'
  	, config = require(root + 'config/config')[env]
-	, marketwatch = require(servicedir + 'markets/requestactivemarkets')
 	, pricemock = require(root + 'test/mock/pricefactory')
 	, marketmock = require(root + 'test/mock/marketfactory')
 	, strutils = require(root + 'util/stringutil')

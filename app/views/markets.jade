@@ -7,65 +7,62 @@ block content
 	include navbar
 	.container
 		.page-header
-				h2 Market Monitoring
-			p.lead
-				form#viewhistory(method='post', action='/history')
-					.alert.alert-info
-						.actct Active: 
-							strong
-						.logct Logged: 
-							strong
-						.hist Show table of closed markets tagged for logging: 
+			h2 Market Monitoring
+		p.lead
+			form#viewhistory(method='post', action='/history')
+				.alert.alert-info
+					.actct Active: 
+						strong
+					.logct Logged: 
+						strong
+					.hist Show table of closed markets tagged for logging: 
 						button.btn.btn-primary.btn-mini(type='submit') History
-				form#viewdetail(method='post', action='/detail')	
-					table#idtable.table.table-bordered
-						thead
-							tr
-								th Event ID 
-								th Activation Time
-								th Last Refresh
-								th Date
-								th Detail
-								th Total Matched
-								th Prices
-						tbody
-						script
-							io = io.connect();
-							io.emit('marketsready');
-							io.on('newamarket',function(data){
-								var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime) 
-								$('#idtable tbody').append('<tr id="'+ data.marketId +'" class="trmarket">'
-									+ '<td class="mid">' + data.marketId + '</td>'
+			form#viewdetail(method='post', action='/detail')        
+				table#idtable.table.table-bordered
+					thead
+						tr
+							th Market ID 
+							th Type
+							th Activation Time
+							th Date
+							th Detail
+							th Prices
+					tbody
+					script
+						io = io.connect();
+						io.emit('marketsready');
+						io.on('addmarket',function(data){
+							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
+							var mid = data.marketId.substring(2,data.marketId.length);
+							console.log(mid);
+								$('#idtable tbody').append('<tr id="'+ data.marketId.substring(2,data.marketId.length) +'" class="trmarket">'
+									+ '<td class="mid">' + mid + '</td>'									
+									+ '<td class="mn">' + data.marketName + '</td>'
 									+ '<td class="mat">' + activationTime + '</td>'
-									+ '<td class="mlf">' + millisToDate(data.lastRefresh) + '</td>'
-									+ '<td class="med">' + millisToDate(data.eventDate) + '</td>'
-									+ '<td class="mmp">' + getLastPathElement(data.menuPath) + '</td>'						
-									+ '<td class="mtm">' + data.totalMatched + '</td>'
+									+ '<td class="mt">' + data.event.openDate + '</td>'
+									+ '<td class="md">' + data.event.name + '</td>'
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
-								if(data.isLogged) {
-									$('#' + data.marketId + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + data.marketId + '" onClick="reply_click(this.id)" type="submit">Logs</button>');						
-								}				
-							});		
+								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini">Logs</button>');						
+							});
 							io.on('updatecounters', function(data) {
 								$('.actct strong').text(data.active);
 								$('.logct strong').text(data.logged);
 							});
-							io.on('updatemarket',function(data){
-									$('#' + data.marketId + ' td.mlf').text(millisToDate(data.lastRefresh));
-									$('#' + data.marketId + ' td.mlf')
+							io.on('updatemarket',function(data){									
+									$('#' + data.marketId + ' td.mid')
 											.animate( { backgroundColor: "#E6E6E6" }, 750 )
 											.animate( { backgroundColor: "transparent" }, 750 );														
 									setAndHighlight('' + data.marketId + ' td.mtm', data.totalMatched);
 							});		
-							io.on('stalemarket', function(data) {	
+							io.on('removemarket', function(data) {	
 								$('#' + data.marketId)
 											.animate( { backgroundColor: "#E6E6E6" }, 750 )
 											.animate( { backgroundColor: "transparent" }, 750 );
 								setTimeout(function(){
 									$('#' + data.marketId).remove()}, 1000);
-								
+
 							});
 							$("#viewdetail").click(function(e) {
 								io.emit('viewprdetail', {marketId: e.target.id});
-							});							
+							});		
