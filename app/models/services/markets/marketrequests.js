@@ -33,7 +33,7 @@ exports.listEvents = function(filter, cb)  {
 * name filter.
 */
 exports.listMarkets = function(filter, cb) {
-	sysLogger.debug('<marketrequests> <listMarkets> filter: ' + filter);
+	sysLogger.debug('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
 	exports.listEvents(filter, function(err, res) {
 		var resf = eventfilter.byPlayer(res.response.result); 
 		var mids = [];
@@ -57,8 +57,7 @@ exports.listMarkets = function(filter, cb) {
 exports.listMarketCatalogue = function(filter, cb)  {
 	if(!cb) cb = par;  // cb is first parameter    
     session.listMarketCatalogue(filter, function(err,res) {
-    	if(err) console.log(err)
-        sysLogger.debug("<marketrequests> <listMarketCatalogue> err=%s duration=%s", err, res.duration/1000);
+    	if(err) sysLogger.debug("<marketrequests> <listMarketCatalogue> err=%s duration=%s", err, res.duration/1000);
         sysLogger.debug("<marketrequests> <listMarketCatalogue> Request:%s\n", JSON.stringify(res.request, null, 2))
         sysLogger.debug("<marketrequests> <listMarketCatalogue> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);

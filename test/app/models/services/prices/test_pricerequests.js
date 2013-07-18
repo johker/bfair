@@ -15,13 +15,19 @@ sysLogger = winston.getSysLogger()
 // Test modules
 var session = require(servicedir + 'session')
 	, instance = session.Singelton.getInstance()
-	, request = require(servicedir + 'markets/marketrequests')
+	, projection = require(servicedir + 'prices/projection')
+	, request = require(servicedir + 'prices/pricerequests')
+
+
+var filter = { marketIds: 
+   [ '1.110102107' ],
+  priceProjection: { priceData: [ 'EX_BEST_OFFERS' ] } };
 
 	
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
- 	request.listMarkets( { "filter": {"eventTypeIds" : [2], "turnsInPlay" : true}}, function(err, res) {
-		console.log(res); 
+ 	request.listMarketBook(filter, function(err, res) {
+		console.log(res.response.result[0].runners[0].ex.availableToBack ); 
 	});
  });	
 
@@ -36,5 +42,3 @@ async.waterfall([instance.login, filter, request.listMarkets, instance.logout], 
     process.exit(0);	
 });
 */
-
-	

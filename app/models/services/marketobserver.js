@@ -6,7 +6,7 @@ var env = process.env.NODE_ENV || 'development'
  , config = require(root + 'config/config')[env]
  , EventEmitter = require('events').EventEmitter
  , util = require('util')
- , sync = require(servicedir + 'markets/sync') 
+ , sync = require(servicedir + 'markets/synchronize') 
  , strutils = require(root + 'util/stringutil')
  , listutils = require(root + 'util/listutil')
  , cachedmarkets = {}
@@ -69,7 +69,11 @@ MarketObserver.prototype.add = function(market, id) {
 	cachedmarkets[id] = market;
 	sysLogger.debug('<marketobserver> <add> id = ' + id + ', date: ' + market.event.openDate); 
 	cachedmarkets[id]['activationTime'] = Date.now();	
+	logCounter++; 
 	app.io.broadcast('addmarket', cachedmarkets[id]);	
+	self.emit('logPrices', market);
+	logCounter++;                   
+	                              
 }
 
 /**
@@ -77,13 +81,6 @@ MarketObserver.prototype.add = function(market, id) {
 * event for every updated market. 
 */
 MarketObserver.prototype.update = function(market, id) {
-	/*
-	cachedmarkets[id.valueOf()]['lastRefresh'] = market.lastRefresh; 	
-	cachedmarkets[id.valueOf()]['totalMatched'] = market.totalMatched;
-	if(cachedmarkets[id.valueOf()].totalMatched != market.totalMatched) {
-		sysLogger.info('<marketobserver.update> <id = ' + id + ', totalMatched = ' + market.totalMatched + '>');
-	}
-	*/
 	sysLogger.debug('<marketobserver> <update> id = ' + id); 
 	app.io.broadcast('updatemarket', cachedmarkets[id.valueOf()]);	   
 }
@@ -93,10 +90,10 @@ MarketObserver.prototype.update = function(market, id) {
 * Synchronize and find the delta of markets by its id
 */ 
 MarketObserver.prototype.synchronize = function(incoming) {
-	var self = this;
+	var self = this;	
 	sysLogger.debug('<marketobserver> <synchronize>'); 
 	self.sort(incoming);
-	sync.markets(cachedmarkets, incoming, mid, self.add, self.remove, self.update);
+	sync.markets(cachedmarkets, incoming, mid, self);
     app.io.broadcast('updatecounters', {active: self.getSize(), logged: self.getLogCount()});	
     init = false;
 }

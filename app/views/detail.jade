@@ -12,15 +12,15 @@ block content
 			p.lead
 				form.form-inline
 					.mid ID:
-					.curr Currency: 
-					.ibd In Play Delay:  
+					.toa Total Available: 
+					.ip In Play:  
 				.row
 					.span6
 						.alert.alert-info
 							strong Player 0
 							.sid0 Selection ID: 
 								strong
-							.lpm0 Last Price Matched: 
+							.lpt0 Last Price Traded: 
 								strong
 							.tm0 Total Matched: 
 								strong
@@ -60,7 +60,7 @@ block content
 							strong Player 1
 							.sid1 Selection ID: 
 								strong
-							.lpm1 Last Price Matched: 
+							.lpt1 Last Price Traded: 
 								strong
 							.tm1 Total Matched: 
 								strong
@@ -101,27 +101,28 @@ block content
 							button.btn.btn-primary.btn-mini(type='submit') Back
 					script
 						io = io.connect();
-						io.on('tick_#{id}',function(data){
+						io.on('tick_' + #{id},function(data){
 							$('.mid').text('ID: ' + data.marketId);
-							$('.curr').text('Currency: ' + data.currency);
-							$('.ibd').text('In Play Delay: ' + data.inPlayDelay);
+							$('.toa').text('Total Available: ' + data.totalAvailable);
+							$('.ip').text('In Play: ' + data.inplay);
 							assign(data);
-						});		
+						});
 						function assign(data) {
-							for ( var playerIndex = 0; playerIndex < data.runners.length; ++playerIndex) {
-								var runner = data.runners[playerIndex];
-								$('.sid' + playerIndex + ' strong').text(runner.selectionId);
-								$('.lpm' + playerIndex + ' strong').text(runner.lastPriceMatched);
-								$('.tm' + playerIndex + ' strong').text(runner.totalMatched);								
-								for ( var cnt = 0; cnt < runner.backPrices.length; ++cnt) {
-									var item = runner.backPrices[cnt];
-									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+4) + ' td#back', item.amount);									
-									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+4) + ' td#price', item.price);									
+							for ( var pIdx = 0; pIdx < data.runners.length; pIdx++) {
+								var runner = data.runners[pIdx];
+								$('.sid' + pIdx + ' strong').text(runner.selectionId);
+								$('.lpt' + pIdx + ' strong').text(runner.lastPriceTraded);
+								$('.tm' + pIdx + ' strong').text(runner.totalMatched);							
+								var atb = data.runners[pIdx].ex.availableToBack;
+								for(var bIdx = 0; bIdx < atb.length; bIdx++) {
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#back', atb[bIdx].size);									
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#price', atb[bIdx].price);
 								}
-								for ( var cnt = 0; cnt < runner.layPrices.length; ++cnt) {
-									var item = runner.layPrices[cnt];
-									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+1) + ' td#lay', item.amount);
-									setAndHighlight('pl' + playerIndex + 'book tbody tr#ob' + (cnt+1) + ' td#price', item.price);            
+								var atl = data.runners[pIdx].ex.availableToLay;								 
+								for(var lIdx = 0; lIdx < atl.length; lIdx++) {
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (lIdx+1) + ' td#lay', atl[lIdx].size);									
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (lIdx+1) + ' td#price', atl[lIdx].price);
 								}
+								
 							}
-						}
+						}	

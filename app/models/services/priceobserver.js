@@ -25,13 +25,19 @@ util.inherits(PriceObserver, EventEmitter);
  
 
 /**
-* Log price information with a winston logger 
+* Log price information with a winston logger: Expecting array with 
+* price information for multiple markets. 
 */
-PriceObserver.prototype.synchronize = function(prices) {
-	var logobj = generateLogObj(prices)
-	var logger = logfac.getLogInstance(prices.marketId);
-	logger.info('' , logobj);
-	app.io.broadcast('tick_' + prices.marketId, prices);
+PriceObserver.prototype.synchronize = function(book) {
+	// sysLogger.info('<PriceObserver.prototype.synchronize> book length = ' + book.length ); 
+	for(var bidx = 0; bidx < book.length; bidx++) {
+		var logobj = generateLogObj(book[bidx]);
+		var logger = logfac.getLogInstance(book[bidx].marketId);
+		logger.info('' , logobj);
+		var mid = book[bidx].marketId.substring(2,book[bidx].marketId.length);	
+		app.io.broadcast('tick_' + mid, book[bidx]);
+	} 
+	
 } 
 
 /**
@@ -44,22 +50,21 @@ PriceObserver.prototype.passivate = function(market) {
 /**
 * Parses price data and generates database entry
 */
-function generateLogObj(prices) {
+function generateLogObj(book) {
 	var logobj = {}
-	logobj['mid'] = prices.marketId; 
-	for ( var playerIndex = 0; playerIndex < prices.runners.length; ++playerIndex) {
-		var runner = prices.runners[playerIndex];
-		for ( var cnt = 0; cnt < runner.backPrices.length; ++cnt) {
-			var item = runner.backPrices[cnt];
-			var index = '' + playerIndex + cnt;
-			logobj['vb' + index] = item.amount;									
-			logobj['pb' + index] = item.price;									
+	logobj['mid'] = book.marketId; 
+	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {
+		var avaliableToBack = book.runners[pIdx].ex.availableToBack;
+		for(var bIdx = 0; bIdx < avaliableToBack; bIdx++) {
+			var index = '' + pIdx + bIdx;
+			logobj['vb' + index] = avaliableToBack[bIdx].size;								
+			logobj['pb' + index] = avaliableToBack[bIdx].price;		
 		}
-		for ( var cnt = 0; cnt < runner.layPrices.length; ++cnt) {
-			var item = runner.layPrices[cnt];
-			var index = '' + playerIndex + cnt;
-			logobj['vl' + index] = item.amount;									
-			logobj['pl' + index] = item.price;	
+		var availableToLay = book.runners[pIdx].ex.availableToLay;
+		for(var bIdx = 0; bIdx < availableToLay; bIdx++) {
+			var index = '' + pIdx + bIdx;
+			logobj['vl' + index] = availableToLay[bIdx].size;									
+			logobj['pl' + index] = availableToLay[bIdx].price;		
 		}
 	}
 	return logobj;

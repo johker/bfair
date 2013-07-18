@@ -11,13 +11,11 @@ var root = '../../'
 	, betfair = require('betfair')
     , MarketObserver = require(servicedir + 'marketobserver')
     , marketObserver = new MarketObserver()
-    , marketrequest = require(servicedir + 'markets/marketrequests')
     , PriceObserver = require(servicedir + 'priceobserver')
     , priceObserver = new PriceObserver()
-    , pricerequest = require(servicedir + 'prices/requestmarketprices')
     , MarketPing = require(servicedir + 'markets/pingmarkets')
 	, PricePing = require(servicedir + 'prices/pingprices')
-	, priceping = new PricePing ({session: session, request: pricerequest.getMarketPrices})
+	, priceping = new PricePing ({session: session})
 	, marketping = new MarketPing ({session: session, eventType: '2'})
 	, history = require(root + 'app/models/db/history')
 	, selectedMarketId
@@ -51,8 +49,8 @@ priceping.on('ping', function(prices) {
 * Trigger logging for incomming market by adding it to ping list
 */
 marketObserver.on('logPrices',function(market) {
-	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + market.marketId);
-	priceping.addMarket(market);
+	sysLogger.notice('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + market.marketId);
+	priceping.addMarketId(market.marketId);
 });
 
 /**
@@ -73,9 +71,6 @@ marketObserver.on('stopLogging', function(market) {
 marketping.start();
 priceping.start();
  
-exports.getmarketObserver = function() {
-	return ;
-}
 
 /**
 * 

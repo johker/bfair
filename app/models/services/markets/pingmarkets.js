@@ -21,6 +21,7 @@ var Ping = function Ping (opts) {
     this.eventType = opts.eventType || config.api.eventType; 
     this.timeout = opts.timeout || config.api.timeout; 
     this.handle = null;
+    this.filter = opts.filter || {"filter": {"eventTypeIds" : [2], "turnsInPlay" : true}};
     this.session = opts.session;
 };
 
@@ -51,7 +52,7 @@ Ping.prototype.ping = function(){
        		self.emit('ping', markets);
        	});          	       		         		
 	} else {
-     	marketrequest.listMarkets({ "filter": {"eventTypeIds" : [2], "turnsInPlay" : true}}, function(err, res) {
+     	marketrequest.listMarkets(self.filter, function(err, res) {
      		self.emit('ping', res);
 	   });
     }           

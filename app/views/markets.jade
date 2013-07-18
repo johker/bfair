@@ -33,8 +33,7 @@ block content
 						io.emit('marketsready');
 						io.on('addmarket',function(data){
 							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
-							var mid = data.marketId.substring(2,data.marketId.length);
-							console.log(mid);
+							var mid = data.marketId.substring(2,data.marketId.length);							
 								$('#idtable tbody').append('<tr id="'+ data.marketId.substring(2,data.marketId.length) +'" class="trmarket">'
 									+ '<td class="mid">' + mid + '</td>'									
 									+ '<td class="mn">' + data.marketName + '</td>'
@@ -43,25 +42,27 @@ block content
 									+ '<td class="md">' + data.event.name + '</td>'
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
-								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini">Logs</button>');						
+								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');  					
 							});
 							io.on('updatecounters', function(data) {
 								$('.actct strong').text(data.active);
 								$('.logct strong').text(data.logged);
 							});
-							io.on('updatemarket',function(data){									
-									$('#' + data.marketId + ' td.mid')
+							io.on('updatemarket',function(data){	
+									var mid = data.marketId.substring(2,data.marketId.length);	
+									console.log('updatemarket');							
+									$('#' + mid + ' td.mid')
 											.animate( { backgroundColor: "#E6E6E6" }, 750 )
 											.animate( { backgroundColor: "transparent" }, 750 );														
 									setAndHighlight('' + data.marketId + ' td.mtm', data.totalMatched);
 							});		
 							io.on('removemarket', function(data) {	
-								$('#' + data.marketId)
-											.animate( { backgroundColor: "#E6E6E6" }, 750 )
-											.animate( { backgroundColor: "transparent" }, 750 );
+								var mid = data.marketId.substring(2,data.marketId.length);	
+								$('#' + mid)
+									.animate( { backgroundColor: "#E6E6E6" }, 750 )
+									.animate( { backgroundColor: "transparent" }, 750 );
 								setTimeout(function(){
 									$('#' + data.marketId).remove()}, 1000);
-
 							});
 							$("#viewdetail").click(function(e) {
 								io.emit('viewprdetail', {marketId: e.target.id});

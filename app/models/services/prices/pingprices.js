@@ -8,6 +8,7 @@ var env = process.env.NODE_ENV || 'development'
 	, pricemock = require(root + 'test/mock/pricefactory')
 	, marketmock = require(root + 'test/mock/marketfactory')
 	, strutils = require(root + 'util/stringutil')
+	, pricerequest = require(servicedir + 'prices/pricerequests')
 	, listutils = require(root + 'util/listutil')
 	, events = require('events')
 
@@ -18,8 +19,7 @@ var Ping = function Ping (opts) {
     this.timeout = opts.timeout || config.api.timeout; 
     this.handle = null;
     this.session = opts.session;
-    this.request = opts.request;
-    this.markets = [];
+    this.marketIds = [];
 };
 
 util.inherits(Ping, EventEmitter);
@@ -27,7 +27,7 @@ util.inherits(Ping, EventEmitter);
 Ping.prototype.start = function() {
 	var self = this,
     time = Date.now(); 
-    sysLogger.debug('<pingprices> <start> type ID ' + self.eventType + ', date: ' + strutils.getFormatedDate(time));
+    sysLogger.debug('<pingprices> <start> date: ' + strutils.getFormatedDate(time));
  	// create an interval for pings
     self.handle = setInterval(function () {
        self.ping();
@@ -39,9 +39,9 @@ Ping.prototype.stop = function() {
     this.handle = null;
 };
 
-Ping.prototype.addMarket = function(market) {
-	sysLogger.info('<pingPrices> <addMarket> id = ' + market.marketId); 
-	this.markets.push(market);
+Ping.prototype.addMarketId = function(marketId) {
+	sysLogger.info('<pingPrices> <addMarketId> id = ' + marketId); 
+	this.marketIds.push(marketId);
 }
 
 Ping.prototype.removeMarket = function(market) {
@@ -52,21 +52,26 @@ Ping.prototype.ping = function() {
 	var self = this;
 	currentTime = Date.now();
 	try {
-		for(var i in this.markets) {
 		if(env == 'test') {
-			pricemock.getPrices(this.markets[i].marketId, function(prices, err) {
-	           	self.emit('ping', prices);
-	        });
-	       } else {
-           	self.request(this.markets[i].marketId, function(markets, err) {
-	        	self.emit('ping', markets);
-	        });
-        }     
-		}  
+			for(var i in this.marketIds) {
+				pricemock.getPrices(this.marketIds[i], function(prices, err) {
+		           	self.emit('ping', prices);
+		        });
+	        }
+	   } else {
+	   		if(this.marketIds.length > 0) { 	
+		   		var filter = {"marketIds": this.marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
+	           	pricerequest.listMarketBook(filter, function(err, res) {           		
+		        	self.emit('ping', res.response.result);
+		        });
+		    }
+        }     		  
     } catch (err) {
        sysLogger.error('<pingprices> <ping> ' + err);
        sysLogger.error(err.stack);
      }
 }
+
+
 
 module.exports = Ping;

@@ -1,11 +1,9 @@
-
 // This module contains functions shared by multiple tests
 var util = require('util')
 	, env = process.env.NODE_ENV || 'development'
 	, betfair = require('betfair')
 	, root = '../../../'
 	, config = require(root + 'config/config')[env]
-	
 
 
 module.exports.Singelton = (function () {
