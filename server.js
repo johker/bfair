@@ -13,16 +13,22 @@ var env = process.env.NODE_ENV || 'development'
   , auth = require('./config/authorization')
   , mongoose = require('mongoose')
 
-process.env['NODE_ENV'] = 'development';
-
-// this is another test
-
-
+process.env['NODE_ENV'] = 'test';
 
 // Bootstrap logging (global)
 
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
+
+
+if(env == 'test') {
+	process.on('uncaughtException', function(err) {
+	  sysLogger.crit('<server> <uncaught exception>');
+	  console.error(err);
+	});
+}
+
+
 
 
 // Bootstrap db connection
@@ -47,11 +53,11 @@ require('./config/express')(app, config, passport)
 
 // Bootstrap routes
 require('./config/routes')(app, passport, auth)
-
+	
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
 app.listen(port)
-sysLogger.notice('<server> Express app started on port '+ port)
+sysLogger.crit('<server> Express app started on port '+ port)
 
 
 

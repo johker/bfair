@@ -5,12 +5,12 @@ var reqnr = 0
 , utils = require(root + 'util/listutil') 
 
 var markets = [
-    { marketId: '1', eventDate: '1388530800000',  menuPath: '\\Tennis\\ Match 1',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() },
-    { marketId: '2', eventDate: '1388534400000',  menuPath: '\\Tennis\\ Match 2',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() },
-    { marketId: '3', eventDate: '1388534400000',  menuPath: '\\Tennis\\ Match 3',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() },
-    { marketId: '4', eventDate: '1388538000000',  menuPath: '\\Tennis\\ Match 4',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() },
-    { marketId: '5', eventDate: '1388538000000',  menuPath: '\\Tennis\\ Match 5',  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() }
-   ];
+    { marketId: '1.1', marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('1')},
+    { marketId: '1.2', marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('2')},
+    { marketId: '1.3', marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('3')},
+    { marketId: '1.4', marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('4')},
+    { marketId: '1.5', marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('5')},        
+    ];
     
     
 
@@ -36,9 +36,6 @@ exports.getMarkets = function(callback) {
 
 function testUpdate() {
 	for(var i in markets) {
-		tm = parseInt(markets[i].totalMatched, 10);			
-		sysLogger.debug('<marketfactory> <testUpdate> id = ' + markets[i].marketId + ', tm = ' + (tm + (Math.random()*10).toFixed(2)) + ', new tm = ' +  reqnr);
-		markets[i]['totalMatched'] = '' + (tm + (Math.random()*10).toFixed(2));
 	}
 }
 
@@ -48,9 +45,32 @@ function testRemove() {
 }
 
 function testAdd() {
-	var market = { marketId: '' + Math.max(reqnr, utils.count(markets)) , eventDate: '1388530800000',  menuPath: '\\Tennis\\ Match ' +  Math.max(reqnr, utils.count(markets)),  lastRefresh: '1366558706290', totalMatched: '0',  activationTime: Date.now() };
+	var market ={ marketId: '1.' + Math.max(reqnr, utils.count(markets)), marketName: 'Set x Winner',   eventType: { id: '2', name: 'Tennis' }, description: getDescription(), event: getEvent('1.' + Math.max(reqnr, utils.count(markets)))};
 	sysLogger.debug('<marketfactory> <testAdd> id = ' + Math.max(reqnr, utils.count(markets)));
 	markets.push(market); 
+}
+
+function getDescription() {
+	return { persistenceEnabled: true,
+       bspMarket: false,
+       marketTime: '2013-07-25T02:00:00.000Z',
+       suspendTime: '2013-07-25T02:00:00.000Z',
+       bettingType: 'ODDS',
+       turnInPlayEnabled: true,
+       marketType: 'SET_WINNER',
+       marketBaseRate: 5,
+       discountAllowed: true,
+       wallet: 'UK wallet',
+       rules: '<b>Market Information</b><br>For further information please see <a href=http://content.betfair.com/aboutus/content.asp?sWhichKey=Rules%20and%20Regulations#undefined.do style=color:0163ad; text-decoration: underline; target=_blank>Rules & Regs</a>.<br><br> Who will win the stated set in this match? At the start of play all unmatched bets will be cancelled and this market will be turned in-play. This market will not be actively managed therefore it is the responsibility of all users to manage their positions. If the stated set is not completed all bets on this market will be void. <br><b><br>Customers should be aware that:<br><br>\n<li>Transmissions described as â€œliveâ€? by some broadcasters may actually be delayed and that all in-play matches are not necessarily televised.</li><br><li>The extent of any such delay may vary, depending on the set-up through which they are receiving pictures or data.</li><br><br></b>',
+       rulesHasDate: true }
+} 
+
+function getEvent(eid) {
+	return { id: eid,
+       name: 'Test Player 0 v Test Player 1',
+       countryCode: 'US',
+       timezone: 'US/Pacific',
+       openDate: '2014-01-01T01:00:00.000Z' } 
 }
 
 exports.getMockTags = function() {

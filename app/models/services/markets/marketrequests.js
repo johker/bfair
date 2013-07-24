@@ -19,8 +19,8 @@ var env = process.env.NODE_ENV || 'development'
 exports.listEvents = function(filter, cb)  {
 	if(!cb) cb = filter;  // cb is first parameter    
     session.listEvents(filter, function(err,res) {
-    	if(err) sysLogger.error('<marketrequests> listEvents>' + err)
-        sysLogger.debug("<marketrequests> listEvents> err=%s duration=%s", err, res.duration/1000);
+    	if(err) sysLogger.error('<marketrequests> <listEvents>' + err)
+        sysLogger.debug("<marketrequests> <listEvents> err=" + err + " duration=" + res.duration/1000);
         sysLogger.debug("<marketrequests> <listEvents> Request:%s\n", JSON.stringify(res.request, null, 2))
         sysLogger.debug("<marketrequests> <listEvents> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);

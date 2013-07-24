@@ -50,7 +50,7 @@ Ping.prototype.ping = function(){
     if(env == 'test') {           	       	
       	marketmock.getMarkets(function(markets, err) {
        		self.emit('ping', markets);
-       	});          	       		         		
+       	});      		         		
 	} else {
      	marketrequest.listMarkets(self.filter, function(err, res) {
      		self.emit('ping', res);

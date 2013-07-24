@@ -19,7 +19,7 @@ function getLastPathElement(menuPath) {
 }
 $.fn.animateHighlight = function(highlightColor, duration) {
 	var highlightBg = highlightColor || "#FFFF9C";
-	var animateMs = duration || 1500;
+	var animateMs = duration || 900;
 	var originalBg = this.css("backgroundColor");
 	this.stop().css("background-color", highlightBg).animate({backgroundColor: originalBg}, animateMs)
 }; 	
@@ -27,8 +27,8 @@ function setAndHighlight(selector, value) {
 	if($('#' + selector).text().localeCompare(value) != 0) {
 		$('#' + selector).text(value);
 		$('#' + selector)
-			.animate( { backgroundColor: "#E6E6E6" }, 750 )
-			.animate( { backgroundColor: "transparent" }, 750 );
+			.animate( { backgroundColor: "#E6E6E6" }, 500 )
+			.animate( { backgroundColor: "transparent" }, 500 );
 	}
 }
 function setErrorMessages(title, errmsgs) {

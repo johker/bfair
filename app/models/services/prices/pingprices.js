@@ -11,7 +11,7 @@ var env = process.env.NODE_ENV || 'development'
 	, pricerequest = require(servicedir + 'prices/pricerequests')
 	, listutils = require(root + 'util/listutil')
 	, events = require('events')
-
+	, _ = require('underscore')
 /*
 * Ping Constructor 
 */
@@ -44,21 +44,21 @@ Ping.prototype.addMarketId = function(marketId) {
 	this.marketIds.push(marketId);
 }
 
-Ping.prototype.removeMarket = function(market) {
-	listutils.removeByAttr(this.markets, 'marketId', market.marketId);
+Ping.prototype.removeMarketId = function(marketId) {
+	sysLogger.notice('<pingprices> <removeMarketId> ' + this.marketIds)
+	this.marketIds = _.without(this.marketIds, marketId);
+	sysLogger.notice('<pingprices> <removeMarketId> removed ' + marketId + ' new list = ' + this.marketIds);
 }
 
 Ping.prototype.ping = function() {
 	var self = this;
 	currentTime = Date.now();
 	try {
-		if(env == 'test') {
-			for(var i in this.marketIds) {
-				pricemock.getPrices(this.marketIds[i], function(prices, err) {
-		           	self.emit('ping', prices);
-		        });
-	        }
-	   } else {
+		if(env == 'test') {		
+			pricemock.getPrices(this.marketIds, function(res, err) {
+		           	self.emit('ping', res);
+		    });
+	     } else {
 	   		if(this.marketIds.length > 0) { 	
 		   		var filter = {"marketIds": this.marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
 	           	pricerequest.listMarketBook(filter, function(err, res) {           		

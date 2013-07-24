@@ -23,10 +23,9 @@ var activeLogger;
 exports.getLogInstance = function(mid) {
 	var prop = config.logs.collection.prefix + mid;
   	if(_.has(loggers, prop)) {
-  		sysLogger.debug('<logfactory> <getLogInstance> return logger instance: ' + prop );
   		return loggers[prop];
   	}
-  	sysLogger.debug('<logfactory> <getLogInstance> create new logger instance: ' + prop );
+  		sysLogger.debug('<logfactory> <getLogInstance> create new logger instance: ' + prop );
   	var logger = new (winston.Logger)({
 	  	transports: [
 	  		new winston.transports.MongoDB({ db: config.logs.db , collection: prop, level: config.logs.level})
@@ -75,7 +74,7 @@ function closeConnection() {
 * a customized query formatter.
 */ 
 function streamResults(collection, res, callback) {
-	sysLogger.debug('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	sysLogger.crit('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
 	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
 	sysLogger.notice('<logfactory> <streamResults> collection: ' + collection);
 	var Data = db.model('Data', generateSchema(), collection);	
@@ -120,10 +119,10 @@ function generateSchema() {
 /**  
 *Check for DB content. 
 */
-function testQuery() {
+function testQuery(collection) {
 	sysLogger.notice('<logfactory> <testQuery>');	
 	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
-	var Data = db.model('Data', generateSchema(), 'mid2');
+	var Data = db.model('Data', generateSchema(), collection);
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 
 		sysLogger.notice('<logfactory> <streamResults>');	

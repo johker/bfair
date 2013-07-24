@@ -11,10 +11,6 @@ block content
 		p.lead
 			form#viewhistory(method='post', action='/history')
 				.alert.alert-info
-					.actct Active: 
-						strong
-					.logct Logged: 
-						strong
 					.hist Show table of closed markets tagged for logging: 
 						button.btn.btn-primary.btn-mini(type='submit') History
 			form#viewdetail(method='post', action='/detail')        
@@ -43,14 +39,9 @@ block content
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
 								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');  					
-							});
-							io.on('updatecounters', function(data) {
-								$('.actct strong').text(data.active);
-								$('.logct strong').text(data.logged);
-							});
+							});							
 							io.on('updatemarket',function(data){	
 									var mid = data.marketId.substring(2,data.marketId.length);	
-									console.log('updatemarket');							
 									$('#' + mid + ' td.mid')
 											.animate( { backgroundColor: "#E6E6E6" }, 750 )
 											.animate( { backgroundColor: "transparent" }, 750 );														
@@ -59,11 +50,13 @@ block content
 							io.on('removemarket', function(data) {	
 								var mid = data.marketId.substring(2,data.marketId.length);	
 								$('#' + mid)
-									.animate( { backgroundColor: "#E6E6E6" }, 750 )
-									.animate( { backgroundColor: "transparent" }, 750 );
+									.animate( { backgroundColor: "#E6E6E6" }, 500 )
+									.animate( { backgroundColor: "transparent" }, 500);
 								setTimeout(function(){
-									$('#' + data.marketId).remove()}, 1000);
+									$('#' + mid).remove()}, 750);
 							});
 							$("#viewdetail").click(function(e) {
-								io.emit('viewprdetail', {marketId: e.target.id});
+								var id = e.target.id;
+								var players = $('#' + id + ' td.md').text();
+								io.emit('viewprdetail', {marketId: id, detail: players});
 							});		

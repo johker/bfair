@@ -19,7 +19,9 @@ var root = '../../'
 	, marketping = new MarketPing ({session: session, eventType: '2'})
 	, history = require(root + 'app/models/db/history')
 	, selectedMarketId
+	, selectedPlayers = [] 
 	, logs = require(servicedir + 'prices/logfactory')
+	, cleandb = require(root + 'setup/clean')
 	, session = require(servicedir + 'session')
 
 
@@ -49,7 +51,7 @@ priceping.on('ping', function(prices) {
 * Trigger logging for incomming market by adding it to ping list
 */
 marketObserver.on('logPrices',function(market) {
-	sysLogger.notice('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + market.marketId);
+	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + market.marketId);
 	priceping.addMarketId(market.marketId);
 });
 
@@ -58,14 +60,11 @@ marketObserver.on('logPrices',function(market) {
 *  if logging is enabled. 
 */
 marketObserver.on('stopLogging', function(market) {
-	sysLogger.debug('<apicontroller marketObserver.on:stopLogging>  market ID = ' + market.marketId + '>');
-	priceping.removeMarket(market);	
-	priceObserver.passivate(market);
-	if(market['isLogged']) {
-		sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + market.marketId);
-		history.add(market);
-		
-	} 
+	mid = market.marketId;
+	priceping.removeMarketId(mid);	
+	priceObserver.passivate(mid);
+	sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + mid);
+	history.add(market);	// TODO: UNCOMMENT !!!
 });
 
 marketping.start();
@@ -85,7 +84,7 @@ app.io.route('marketsready', function(req) {
 		markets[i]['activationTime'] = undefined;
 		app.io.broadcast('addmarket', markets[i]);		
 	 }	
-	app.io.broadcast('updatecounters', {active: marketObserver.getSize(), logged: marketObserver.getLogCount()});			
+	//app.io.broadcast('updatecounters', {active: marketObserver.getSize()});			
 })
 
 
@@ -102,15 +101,25 @@ app.io.route('historyready', function(req) {
 })
 
 exports.markets = function(req, res) {		
+	sysLogger.warning('render markets'); 
 	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
 };    
 
-app.io.route('viewprdetail', function(data) {
-	selectedMarketId = data.data.marketId;
+/**
+* Market view sets values. Routing is done by method 'pricedetail'
+*/
+app.io.route('viewprdetail', function(m) {
+	try {
+		selectedPlayers = m.data.detail.split(' v ');
+		selectedMarketId = m.data.marketId;
+	} catch (err) {
+		sysLogger.crit('<apicontroller> <app.io.route:viewprdetail> Parsing parameters failed, error: ' + err);
+	}
+	
 });
 
 exports.pricedetail = function(req, res) {	
-	res.render('detail', { title: bundle.title.overview, username: req.user.username, id: selectedMarketId});
+	res.render('detail', { title: bundle.title.overview, username: req.user.username, id: selectedMarketId, pl0: selectedPlayers[0], pl1: selectedPlayers[1]});
 }
 
 exports.history = function(req, res) {	
@@ -118,11 +127,24 @@ exports.history = function(req, res) {
 }
 
 exports.exporthistory = function(mid, res) {
-	sysLogger.debug('<apicontroller> <exportHistory>');
+	sysLogger.crit('<apicontroller> <exportHistory>');
 	logs.exportLogInstance(mid, res, function(err) {
 		if (err) return err; 
 	});
 }
+
+exports.removehistory = function(mid) {
+	sysLogger.debug('<apicontroller> <removehistory>');
+	cleandb.removeEntry(mid); 
+	app.io.broadcast('stalepmarket', mid);
+}
+
+exports.removecompletehistory = function() {
+	sysLogger.debug('<apicontroller> <removecompletehistory>');
+	cleandb.removePrices(); 
+	app.io.broadcast('reset');
+}
+
 
 exports.stopPolling = function(callback) {
  	

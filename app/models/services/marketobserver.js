@@ -10,14 +10,12 @@ var env = process.env.NODE_ENV || 'development'
  , strutils = require(root + 'util/stringutil')
  , listutils = require(root + 'util/listutil')
  , cachedmarkets = {}
- , logCounter
  , mid = 'marketId'
 
 /**
 * MarketObserver Constructor 
 */
 var MarketObserver = function MarketObserver () {
-	logCounter = 0
  };
  
 util.inherits(MarketObserver, EventEmitter);
@@ -39,15 +37,9 @@ MarketObserver.prototype.getList = function() {
 * Return locally stored markets list size
 */
 MarketObserver.prototype.getSize = function() {
+	console.log(listutils.count(cachedmarkets));
 	return listutils.count(cachedmarkets);
 }
-
-/**
-* Return number of markets that are marked for price logging 
-*/ 
-MarketObserver.prototype.getLogCount = function() {
-	return logCounter;
-} 
 
 /**
 * Emits event with stale market and remove it from the list. 
@@ -55,8 +47,8 @@ MarketObserver.prototype.getLogCount = function() {
 MarketObserver.prototype.remove = function(id) {
 	var self = this;
 	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + cachedmarkets[id].event.openDate);
-	logCounter--;  
  	app.io.broadcast('removemarket', cachedmarkets[id]);
+ 	cachedmarkets[id]['passivationTime'] = Date.now();
  	self.emit('stopLogging', cachedmarkets[id]);	
 	delete cachedmarkets[id]; 	
 }
@@ -69,10 +61,9 @@ MarketObserver.prototype.add = function(market, id) {
 	cachedmarkets[id] = market;
 	sysLogger.debug('<marketobserver> <add> id = ' + id + ', date: ' + market.event.openDate); 
 	cachedmarkets[id]['activationTime'] = Date.now();	
-	logCounter++; 
 	app.io.broadcast('addmarket', cachedmarkets[id]);	
 	self.emit('logPrices', market);
-	logCounter++;                   
+             
 	                              
 }
 
@@ -91,11 +82,15 @@ MarketObserver.prototype.update = function(market, id) {
 */ 
 MarketObserver.prototype.synchronize = function(incoming) {
 	var self = this;	
+	if(incoming == undefined) {
+		sysLogger.crit('<marketobserver> <synchronize> incoming == undefined'); 
+		return; 
+	}
 	sysLogger.debug('<marketobserver> <synchronize>'); 
 	self.sort(incoming);
 	sync.markets(cachedmarkets, incoming, mid, self);
-    app.io.broadcast('updatecounters', {active: self.getSize(), logged: self.getLogCount()});	
-    init = false;
+    //app.io.broadcast('updatecounters', {logged: self.getSize()});	
+    init = false;	
 }
 
 

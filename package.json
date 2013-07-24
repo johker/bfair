@@ -35,5 +35,6 @@
     , "superagent": "*"
     , "nodemailer": "*"
     , "betfair": "*"
+    , "mongoose-unique-validator": "*"
   }
 }

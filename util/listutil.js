@@ -78,4 +78,3 @@ module.exports.setNestedProp = function (obj, level, val){
         obj.subobject = val;
     }
 }
-

@@ -7,69 +7,87 @@ var env = process.env.NODE_ENV || 'development'
     , mongoose = require('mongoose')
     , utils = require(root + 'util/stringutil')
     , Schema = mongoose.Schema
+    , strutil = require(root + 'util/stringutil')
+    
+    , Db = require('mongodb').Db
+    , MongoClient = require('mongodb').MongoClient
+    , Server = require('mongodb').Server
+    , uniqueValidator = require('mongoose-unique-validator')
+    , HistoryModel
+    
 	, HistorySchema = new Schema({ 
-		marketId: { type: Number, required: true, index: { unique: true }},
+		marketId: { type: Number, required: true, unique: true},
 		description: { type: String, required: false },
-		timestamp: { type: Date, required: true }
-});
+		passivationTime: { type: Date, required: true }
+	});
 
-
+	mongoose.connection.close( function(err) {
+		if(err) { 
+			sysLogger.error('<datalogs> <closeConnection> '+  err);
+			sysLogger.warn('<datalogs> <closeConnection> '+ 'No Mongoose Connection: Nothing to close...');
+		}
+		mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
+			if(err) { return sysLogger.error('<history> <createModel> '+ err); }
+			HistoryModel = mongoose.model('History', HistorySchema, config.logs.collection.prices);
+		});
+	})
+	
 
 /**
 * Add market to history and emit websocket event
 */
-exports.add = function(market) {
-	closeConnection();
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
-		if(err) { return sysLogger.error('<history> <add> '+ err); }
-		var Model = mongoose.model('History', HistorySchema, config.logs.collection.prices);
-		var mitem = new Model({
+exports.add = function(market) {	
+	sysLogger.notice('<history> <add> market ID = ' + market.marketId);
+	var marketdto = {
 			marketId: market.marketId, 
-			description: utils.getLastPathElement(market.menuPath),
-			timestamp: (new Date()).toString()
-		});
-		mitem.save(function (err) {
-			if (err) sysLogger.info('<history> <add> ' + err);
-		});
-	});
-	var prop = config.logs.collection.prefix + market.marketId;
-	app.io.broadcast('historyupdate', market);
+			description: market.event.name + ':' + market.marketName,
+			passivationTime: strutil.millisToDate(market.passivationTime)
+	};
+	var mitem = new HistoryModel(marketdto);
+	mitem.save(function (err) {
+		if(err != null) {
+			sysLogger.warning('<history> <add> ' + err.err);		 	
+		} else {
+			app.io.broadcast('newpmarket', marketdto);
+		}
+	});			
 }
 
 /**
-*
+* Returns history of logged prices
 */
 exports.getList = function(callback) {
-	closeConnection();
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
-		if(err) { return sysLogger.error('<history> <getList> '+ err); }
-		var Model = mongoose.model('History', HistorySchema, config.logs.collection.prices);
-		Model.find({}, function (err, data) {		
-				if(err) { sysLogger.info('<history> <getList> Querying history');} 
-				callback(data); 
-			});
+	HistoryModel.find({}, function (err, data) {	
+		if(err) { sysLogger.info('<history> <getList> Querying history');} 
+		callback(data); 
 	});
 }
 
-
-
-
 /**
-* Clean history.
+* Clean history. This function removes all entries of the 'prices' collection 
+* 
 */
 exports.removeAll = function(callback) {
-	closeConnection();
-	sysLogger.info('<history> <removeAll> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
-		if(err) { sysLogger.error('<history> <removeAll> '+ err); }
-		var Model = mongoose.model('History', HistorySchema, config.logs.collection.prices);
-		Model.find({})		
+	sysLogger.debug('<history> <removeAll> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	HistoryModel.find({})		
 			.remove(function(err, numberRemoved) {
 				sysLogger.info('<history> <removeAll> Removing complete history, number of lines: ' + numberRemoved); 
 				callback(numberRemoved);		
 			});
-		});
-	}
+}
+
+/**
+* Remove docmument with specified name from 'prices' collection 
+* @param {string} mid - market ID to be removed.
+*/
+exports.removeEntry = function(mid, callback) {
+
+	sysLogger.debug('<history> <removeEntry> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	HistoryModel.find({marketId : mid})		
+			.remove(function(err, numberRemoved) {
+				callback(numberRemoved);		
+			});
+}
 
 /**
 * Fix for 'Trying to open unclosed connection' error.

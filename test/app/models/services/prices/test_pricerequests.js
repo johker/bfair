@@ -20,14 +20,15 @@ var session = require(servicedir + 'session')
 
 
 var filter = { marketIds: 
-   [ '1.110102107' ],
-  priceProjection: { priceData: [ 'EX_BEST_OFFERS' ] } };
+   [ '1.110165036', '1.110165037'],
+  priceProjection: { priceData: [ 'EX_ALL_OFFERS' ] } };
 
 	
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
  	request.listMarketBook(filter, function(err, res) {
-		console.log(res.response.result[0].runners[0].ex.availableToBack ); 
+ 		console.log(res.response.result[0].runners[0].ex); 
+		//console.log(res.response.result[0].runners[0].ex.availableToBack ); 
 	});
  });	
 

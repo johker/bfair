@@ -76,18 +76,28 @@ app.post('/markets', function(req, res) {
 	}	
 }); 
 
-var mid;
+var selectedId; // has to be set via ajax request
 
 app.post('/history', function(req, res) {
 	sysLogger.notice('<routes> <post:history> Market ID : ' +  req.body.marketId);
-	try {
-		if(!_.isUndefined(mid)) {
-			sysLogger.notice('<routes> <post:history> Assert Market ID not undefined: ' + mid);			
-			apictrl.exporthistory(mid, res);
-			mid = undefined;			
+	sysLogger.info('<routes> <post:history> Operation : ' +  req.body.operation);
+	try {	
+		if(!_.isUndefined(selectedId)) { // ajax request to set id was successful
+			if(req.body.operation == 'export') {
+				apictrl.exporthistory(selectedId, res);
+				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' + selectedId);			
+			}
+			selectedId = undefined;			
 		} else {
-			mid = req.body.marketId;
-			apictrl.history(req, res);			
+			selectedId = req.body.marketId;
+			if(req.body.operation == 'delete') {
+				sysLogger.notice('<routes> <post:history> Deleting History for selected ID : ' + selectedId);
+				apictrl.removehistory( '1.' + selectedId);	
+			} else if(req.body.operation == 'deleteall') {
+				sysLogger.notice('<routes> <post:history> Deleting complete History');
+				apictrl.removecompletehistory();	
+			}	
+			apictrl.history(req, res);					
 		}
 	} catch (ex) {
 		sysLogger.error('<routes> <post:history> ' +  ex);	

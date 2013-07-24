@@ -15,6 +15,8 @@ block content
 						form#exportform.form-inline(method='post', action='/history')
 							a#back.btn.btn-primary.btn-mini(href='/markets') Back
 							button#export.btn.btn-primary.btn-mini(type='button') Export
+							button#delete.btn.btn-danger.btn-mini(type='button') Delete
+							button#deleteall.btn.btn-danger.btn-mini(type='button') Delete All
 				#exportmarket
 					table#idtable.table.table-bordered
 						thead
@@ -27,14 +29,33 @@ block content
 						script
 							io = io.connect();
 							io.emit('historyready');
-							io.on('newpmarket',function(data){								
-								$('#idtable tbody').append('<tr id="'+ data.marketId +'" class="trmarket">'
-									+ '<td class="mid">' + data.marketId + '</td>'
+							io.on('newpmarket',function(data){		
+								console.log(data);
+								var mid = ('' + data.marketId).substring(2,data.marketId.length);		
+								var passivationTime = typeof data.passivationTime === 'undefined' ? 'Undefined' : '' + data.passivationTime;			
+								$('#idtable tbody').append('<tr id="'+ mid +'" class="trmarket">'
+									+ '<td class="mid">' + mid + '</td>'
 									+ '<td class="des">' + data.description + '</td>'
-									+ '<td class="ts">' + data.timestamp + '</td>'
+									+ '<td class="ts">' + passivationTime + '</td>'
 									+ '<td class="exp"></td>'
 									+ '</tr>');
-								$('#' + data.marketId + ' td.exp').append('<input type="radio" name="optionsRadios" id="radio'+ data.marketId + '" value="' + data.marketId + '">');	
+								$('#' + mid + ' td.exp').append('<input type="radio" name="optionsRadios" id="radio'+ mid + '" value="' + mid + '">');	
+							});
+							io.on('stalepmarket',function(data){		
+								console.log('stale market, data = ' + data);		
+								var mid = ('' + data).substring(2,data.length);					
+								$('#' + mid)
+									.animate( { backgroundColor: "#E6E6E6" }, 500 )
+									.animate( { backgroundColor: "transparent" }, 500 );
+								setTimeout(function(){
+									$('#' + mid).remove()}, 750);
+							});
+							io.on('reset',function(data){				
+								$('#idtable tbody')
+									.animate( { backgroundColor: "#E6E6E6" }, 500 )
+									.animate( { backgroundColor: "transparent" }, 500 );
+								setTimeout(function(){
+									$("#idtable").find("tr:gt(0)").remove();}, 750);
 							});
 							$('#back').click(function(e) {
 								console.log('back');
@@ -50,7 +71,7 @@ block content
 									var xhr = $.ajax({
 										type: 'POST',
 										cache: false,
-										data: {marketId: mid},
+										data: {marketId: mid, operation: 'export'},
 										success: function(data){
 											$('#exportform').submit();																
 										}, 
@@ -59,5 +80,43 @@ block content
 										}
 									});	
 								}													
+								
+							});
+							$('#delete').click(function(e){
+								resetMessages();
+								var mid = $('input[name=optionsRadios]:checked', '#exportmarket').val();
+								if(mid == undefined) {
+									setErrorMessages('Export failed', ['No item selected.']);
+									$('#errmsg').show();
+								} else {
+									$('#errmsg').hide();
+									var xhr = $.ajax({
+										type: 'POST',
+										cache: false,
+										data: {marketId: mid, operation: 'delete'},
+										success: function(data){
+											console.log('Success');															
+										}, 
+										error: function(jqXHR, textStatus, err){
+											console.error(err);
+										}
+									});	
+								}													
+								
+							});
+							$('#deleteall').click(function(e){
+								console.log('deleteAll');
+								$('#errmsg').hide();
+									var xhr = $.ajax({
+										type: 'POST',
+										cache: false,
+										data: {operation: 'deleteall'},
+										success: function(data){
+											console.log('Success');															
+										}, 
+										error: function(jqXHR, textStatus, err){
+											console.error(err);
+										}
+								});														
 								
 							});

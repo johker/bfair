@@ -3,9 +3,9 @@ module.exports = {
       root: require('path').normalize(__dirname + '/..'),
       filetype: '.csv',
       betfair: {
-      	applicationkey: 'CTQjpSLoJtFMjLnt', 
-      	user: 'nagarjuna23', 
-      	password: '66cdd273', 
+      	applicationkey: '2ku5TzXl34zUU1Qz', 
+      	user: 'nhughes90', 
+      	password: 'Stefano87', 
       	eventTypeId: '2'  		
       },      
       app: {
@@ -18,14 +18,14 @@ module.exports = {
       	port: '27017',
       	db: 'be-fair-logs',
       	collection: {      	  
-      	 	prices: 'prices',    // Logged prices of selected market IDs
+      	 	prices: 'prices',    // Logged prices of selected market IDs, DEPRECATED
       	 	prefix: 'mid'
       	 },
-      	level: 'info'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'notice'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 10000,
+      	timeout: 1000,
       	eventType: '2'     
       },
       mail: {
@@ -57,11 +57,11 @@ module.exports = {
       	 	prices: 'prices',    // Logged prices of selected market IDs
       	 	prefix: 'mid'
       	 },
-      	level: 'error'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'notice'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 5000,
+      	timeout: 2000,
       	eventType: '2'     
       }   	
     }

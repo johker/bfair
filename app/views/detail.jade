@@ -17,7 +17,8 @@ block content
 				.row
 					.span6
 						.alert.alert-info
-							strong Player 0
+							.hpl0 
+								strong Player 0
 							.sid0 Selection ID: 
 								strong
 							.lpt0 Last Price Traded: 
@@ -57,7 +58,8 @@ block content
 									td#lay
 					.span6
 						.alert.alert-info
-							strong Player 1
+							.hpl1 
+								strong Player 1
 							.sid1 Selection ID: 
 								strong
 							.lpt1 Last Price Traded: 
@@ -105,11 +107,13 @@ block content
 							$('.mid').text('ID: ' + data.marketId);
 							$('.toa').text('Total Available: ' + data.totalAvailable);
 							$('.ip').text('In Play: ' + data.inplay);
+							$('.hpl0 strong').text('#{pl0}'); 
+							$('.hpl1 strong').text('#{pl1}'); 
 							assign(data);
 						});
 						function assign(data) {
-							for ( var pIdx = 0; pIdx < data.runners.length; pIdx++) {
-								var runner = data.runners[pIdx];
+							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
+								var runner = data.runners[pIdx];								
 								$('.sid' + pIdx + ' strong').text(runner.selectionId);
 								$('.lpt' + pIdx + ' strong').text(runner.lastPriceTraded);
 								$('.tm' + pIdx + ' strong').text(runner.totalMatched);							
@@ -117,11 +121,11 @@ block content
 								for(var bIdx = 0; bIdx < atb.length; bIdx++) {
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#back', atb[bIdx].size);									
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#price', atb[bIdx].price);
-								}
-								var atl = data.runners[pIdx].ex.availableToLay;								 
-								for(var lIdx = 0; lIdx < atl.length; lIdx++) {
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (lIdx+1) + ' td#lay', atl[lIdx].size);									
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (lIdx+1) + ' td#price', atl[lIdx].price);
+								}					
+								var atl = data.runners[pIdx].ex.availableToLay;									
+								for(var lIdx = atl.length -1; lIdx >= 0; lIdx--) {
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#lay', atl[lIdx].size);									
+									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#price', atl[lIdx].price);
 								}
 								
 							}

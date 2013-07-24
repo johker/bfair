@@ -43,8 +43,8 @@ PriceObserver.prototype.synchronize = function(book) {
 /**
 * Remove winston logger from factory
 */
-PriceObserver.prototype.passivate = function(market) {
-	logfac.removeLogInstance(market.marketId);		
+PriceObserver.prototype.passivate = function(marketId) {
+	logfac.removeLogInstance(marketId);		
 }
 
 /**
