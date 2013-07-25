@@ -50,7 +50,7 @@ exports.removeLogInstance = function(mid) {
 */
 exports.exportLogInstance = function(mid, res, callback) {
 	var collection = config.logs.collection.prefix + mid;
- 	sysLogger.debug('<logfactory> <exportLogInstance> collection: ' + collection);
+ 	sysLogger.notice('<logfactory> <exportLogInstance> collection: ' + collection);
  	closeConnection();
  	streamResults(collection, res, callback);
 }

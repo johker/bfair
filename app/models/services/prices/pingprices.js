@@ -45,9 +45,9 @@ Ping.prototype.addMarketId = function(marketId) {
 }
 
 Ping.prototype.removeMarketId = function(marketId) {
-	sysLogger.notice('<pingprices> <removeMarketId> ' + this.marketIds)
+	sysLogger.debug('<pingprices> <removeMarketId> ' + this.marketIds)
 	this.marketIds = _.without(this.marketIds, marketId);
-	sysLogger.notice('<pingprices> <removeMarketId> removed ' + marketId + ' new list = ' + this.marketIds);
+	sysLogger.debug('<pingprices> <removeMarketId> removed ' + marketId + ' new list = ' + this.marketIds);
 }
 
 Ping.prototype.ping = function() {

@@ -37,7 +37,7 @@ var env = process.env.NODE_ENV || 'development'
 * Add market to history and emit websocket event
 */
 exports.add = function(market) {	
-	sysLogger.notice('<history> <add> market ID = ' + market.marketId);
+	sysLogger.info('<history> <add> market ID = ' + market.marketId);
 	var marketdto = {
 			marketId: market.marketId, 
 			description: market.event.name + ':' + market.marketName,
@@ -81,7 +81,6 @@ exports.removeAll = function(callback) {
 * @param {string} mid - market ID to be removed.
 */
 exports.removeEntry = function(mid, callback) {
-
 	sysLogger.debug('<history> <removeEntry> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
 	HistoryModel.find({marketId : mid})		
 			.remove(function(err, numberRemoved) {

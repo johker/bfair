@@ -1,6 +1,7 @@
 /**
  * Format websocket data
  */
+
 function millisToDate(millis) {
 	var n = +millis;
 	var d = new Date(n);

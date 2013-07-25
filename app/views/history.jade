@@ -13,10 +13,10 @@ block content
 				.row
 					.span6
 						form#exportform.form-inline(method='post', action='/history')
-							a#back.btn.btn-primary.btn-mini(href='/markets') Back
-							button#export.btn.btn-primary.btn-mini(type='button') Export
+							a#back.btn.btn-primary.btn-mini(href='/markets') Back							
 							button#delete.btn.btn-danger.btn-mini(type='button') Delete
 							button#deleteall.btn.btn-danger.btn-mini(type='button') Delete All
+							button#export.btn.btn-primary.btn-mini(type='button') Export
 				#exportmarket
 					table#idtable.table.table-bordered
 						thead
@@ -30,25 +30,24 @@ block content
 							io = io.connect();
 							io.emit('historyready');
 							io.on('newpmarket',function(data){		
-								console.log(data);
 								var mid = ('' + data.marketId).substring(2,data.marketId.length);		
 								var passivationTime = typeof data.passivationTime === 'undefined' ? 'Undefined' : '' + data.passivationTime;			
-								$('#idtable tbody').append('<tr id="'+ mid +'" class="trmarket">'
+								$('#idtable tbody').append('<tr id="tr'+ mid +'" class="trmarket">'
 									+ '<td class="mid">' + mid + '</td>'
 									+ '<td class="des">' + data.description + '</td>'
 									+ '<td class="ts">' + passivationTime + '</td>'
 									+ '<td class="exp"></td>'
 									+ '</tr>');
-								$('#' + mid + ' td.exp').append('<input type="radio" name="optionsRadios" id="radio'+ mid + '" value="' + mid + '">');	
-							});
+								$('#tr' + mid + ' td.exp').append('<input type="radio" name="optionsRadios" class="EntitiesRadio" id="'+ mid + '" onClick="reply_click(this.id)" value="' + mid + '">');
+								});
 							io.on('stalepmarket',function(data){		
 								console.log('stale market, data = ' + data);		
 								var mid = ('' + data).substring(2,data.length);					
-								$('#' + mid)
+								$('#tr' + mid)
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )
 									.animate( { backgroundColor: "transparent" }, 500 );
 								setTimeout(function(){
-									$('#' + mid).remove()}, 750);
+									$('#tr' + mid).remove()}, 750);
 							});
 							io.on('reset',function(data){				
 								$('#idtable tbody')
@@ -58,7 +57,7 @@ block content
 									$("#idtable").find("tr:gt(0)").remove();}, 750);
 							});
 							$('#back').click(function(e) {
-								console.log('back');
+								reset();
 							})
 							$('#export').click(function(e){
 								resetMessages();
@@ -67,18 +66,8 @@ block content
 									setErrorMessages('Export failed', ['No item selected.']);
 									$('#errmsg').show();
 								} else {
-									$('#errmsg').hide();
-									var xhr = $.ajax({
-										type: 'POST',
-										cache: false,
-										data: {marketId: mid, operation: 'export'},
-										success: function(data){
-											$('#exportform').submit();																
-										}, 
-										error: function(jqXHR, textStatus, err){
-											console.error(err);
-										}
-									});	
+									io.emit('export');
+									$('#exportform').submit();																	
 								}													
 								
 							});
@@ -119,4 +108,31 @@ block content
 										}
 								});														
 								
-							});
+							});	
+							function reply_click(mid) {
+								$('#errmsg').hide();
+									var xhr = $.ajax({
+										type: 'POST',
+										cache: false,
+										data: {marketId: mid, operation: 'setExportId'},
+										success: function(data){
+											console.log('Success');															
+										}, 
+										error: function(jqXHR, textStatus, err){
+											console.error(err);
+										}
+								});		
+							}	
+							function reset() {
+								var xhr = $.ajax({
+										type: 'POST',
+										cache: false,
+										data: {operation: 'resetExportId'},
+										success: function(data){
+											console.log('resetExportId Success');															
+										}, 
+										error: function(jqXHR, textStatus, err){
+											console.error(err);
+										}
+								});		
+							}						

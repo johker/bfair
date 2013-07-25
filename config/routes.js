@@ -77,32 +77,48 @@ app.post('/markets', function(req, res) {
 }); 
 
 var selectedId; // has to be set via ajax request
+var doexport; // Export flag for history submits
+app.io.route('export', function(req) {	
+	console.log('doexport = true');
+	doexport = true; 
+})
 
 app.post('/history', function(req, res) {
 	sysLogger.notice('<routes> <post:history> Market ID : ' +  req.body.marketId);
-	sysLogger.info('<routes> <post:history> Operation : ' +  req.body.operation);
+	sysLogger.notice('<routes> <post:history> Operation : ' +  req.body.operation);
+	sysLogger.notice('<routes> <post:history> selectedId : ' +  selectedId);
 	try {	
-		if(!_.isUndefined(selectedId)) { // ajax request to set id was successful
-			if(req.body.operation == 'export') {
-				apictrl.exporthistory(selectedId, res);
-				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' + selectedId);			
-			}
-			selectedId = undefined;			
-		} else {
+		if(req.body.operation == 'delete') {
+			sysLogger.notice('<routes> <post:history> Deleting History for selected ID : ' + selectedId);
+			apictrl.removehistory( '1.' + req.body.marketId);	
+		} else if(req.body.operation == 'deleteall') {
+			sysLogger.notice('<routes> <post:history> Deleting complete History');
+			apictrl.removecompletehistory();	
+		} else if(req.body.operation == 'setExportId') {
+			sysLogger.notice('<routes> <post:history> Setting export ID : ' + req.body.marketId);
 			selectedId = req.body.marketId;
-			if(req.body.operation == 'delete') {
-				sysLogger.notice('<routes> <post:history> Deleting History for selected ID : ' + selectedId);
-				apictrl.removehistory( '1.' + selectedId);	
-			} else if(req.body.operation == 'deleteall') {
-				sysLogger.notice('<routes> <post:history> Deleting complete History');
-				apictrl.removecompletehistory();	
-			}	
-			apictrl.history(req, res);					
-		}
+		} else if(req.body.operation == 'resetExportId') {
+			sysLogger.notice('<routes> <post:history> Resetting export ID');
+			selectedId = undefined;
+		} else {
+			// 'Regular' POST rquests
+			// AJAX rquest doesnt work with streaming
+			if(doexport) { // distingiush between export and navigation to history page
+				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' + selectedId);			
+				apictrl.exporthistory(selectedId, res);	
+				doexport = false;
+			} else {
+				apictrl.history(req, res);
+			}
+		}			
+		
 	} catch (ex) {
 		sysLogger.error('<routes> <post:history> ' +  ex);	
 	}	
 
 }); 
+
+
+
 
 }
