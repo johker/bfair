@@ -84,21 +84,21 @@ app.io.route('export', function(req) {
 })
 
 app.post('/history', function(req, res) {
-	sysLogger.notice('<routes> <post:history> Market ID : ' +  req.body.marketId);
-	sysLogger.notice('<routes> <post:history> Operation : ' +  req.body.operation);
-	sysLogger.notice('<routes> <post:history> selectedId : ' +  selectedId);
+	sysLogger.debug('<routes> <post:history> Market ID : ' +  req.body.marketId);
+	sysLogger.debug('<routes> <post:history> Operation : ' +  req.body.operation);
+	sysLogger.debug('<routes> <post:history> selectedId : ' +  selectedId);
 	try {	
 		if(req.body.operation == 'delete') {
-			sysLogger.notice('<routes> <post:history> Deleting History for selected ID : ' + selectedId);
+			sysLogger.debug('<routes> <post:history> Deleting History for selected ID : ' + selectedId);
 			apictrl.removehistory( '1.' + req.body.marketId);	
 		} else if(req.body.operation == 'deleteall') {
-			sysLogger.notice('<routes> <post:history> Deleting complete History');
+			sysLogger.debug('<routes> <post:history> Deleting complete History');
 			apictrl.removecompletehistory();	
 		} else if(req.body.operation == 'setExportId') {
-			sysLogger.notice('<routes> <post:history> Setting export ID : ' + req.body.marketId);
+			sysLogger.debug('<routes> <post:history> Setting export ID : ' + req.body.marketId);
 			selectedId = req.body.marketId;
 		} else if(req.body.operation == 'resetExportId') {
-			sysLogger.notice('<routes> <post:history> Resetting export ID');
+			sysLogger.debug('<routes> <post:history> Resetting export ID');
 			selectedId = undefined;
 		} else {
 			// 'Regular' POST rquests

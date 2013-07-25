@@ -26,6 +26,7 @@ exports.removePassiveList = function() {
 * @param {string} db - database name
 */
 exports.removePrices = function(prefix, dbname) {
+	sysLogger.notice('<clean> <removeprices>'); 
 	var str = prefix || config.logs.db + '.mid';	
 	var db = dbname || config.logs.db; 
 	sysLogger.debug('<clean> <removePrices> Prefix = ' + str);

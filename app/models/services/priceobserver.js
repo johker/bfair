@@ -53,15 +53,16 @@ PriceObserver.prototype.passivate = function(marketId) {
 function generateLogObj(book) {
 	var logobj = {}
 	logobj['mid'] = book.marketId; 
+	logobj['timestamp'] = new Date();
 	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {
-		var avaliableToBack = book.runners[pIdx].ex.availableToBack;
-		for(var bIdx = 0; bIdx < avaliableToBack; bIdx++) {
+		var avaliableToBack = book.runners[pIdx].ex.availableToBack;		
+		for(var bIdx = 0; bIdx < avaliableToBack.length; bIdx++) {
 			var index = '' + pIdx + bIdx;
 			logobj['vb' + index] = avaliableToBack[bIdx].size;								
 			logobj['pb' + index] = avaliableToBack[bIdx].price;		
 		}
 		var availableToLay = book.runners[pIdx].ex.availableToLay;
-		for(var bIdx = 0; bIdx < availableToLay; bIdx++) {
+		for(var bIdx = 0; bIdx < availableToLay.length; bIdx++) {
 			var index = '' + pIdx + bIdx;
 			logobj['vl' + index] = availableToLay[bIdx].size;									
 			logobj['pl' + index] = availableToLay[bIdx].price;		

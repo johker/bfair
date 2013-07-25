@@ -25,7 +25,7 @@ exports.getLogInstance = function(mid) {
   	if(_.has(loggers, prop)) {
   		return loggers[prop];
   	}
-  		sysLogger.debug('<logfactory> <getLogInstance> create new logger instance: ' + prop );
+  		sysLogger.notice('<logfactory> <getLogInstance> create new logger instance: ' + prop );
   	var logger = new (winston.Logger)({
 	  	transports: [
 	  		new winston.transports.MongoDB({ db: config.logs.db , collection: prop, level: config.logs.level})
