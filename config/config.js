@@ -61,7 +61,7 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 2000,
+      	timeout: 5000,
       	eventType: '2'     
       }   	
     }

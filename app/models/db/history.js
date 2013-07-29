@@ -16,8 +16,8 @@ var env = process.env.NODE_ENV || 'development'
     , HistoryModel
     
 	, HistorySchema = new Schema({ 
-		marketId: { type: Number, required: true, unique: true},
 		description: { type: String, required: false },
+		marketId: { type: Number, required: true, unique: true},
 		passivationTime: { type: Date, required: true }
 	});
 
@@ -56,12 +56,14 @@ exports.add = function(market) {
 /**
 * Returns history of logged prices
 */
-exports.getList = function(callback) {
+exports.getList = function(callback) {  
 	HistoryModel.find({}, function (err, data) {	
 		if(err) { sysLogger.info('<history> <getList> Querying history');} 
 		callback(data); 
 	});
 }
+
+
 
 /**
 * Clean history. This function removes all entries of the 'prices' collection 
@@ -70,10 +72,10 @@ exports.getList = function(callback) {
 exports.removeAll = function(callback) {
 	sysLogger.debug('<history> <removeAll> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
 	HistoryModel.find({})		
-			.remove(function(err, numberRemoved) {
-				sysLogger.info('<history> <removeAll> Removing complete history, number of lines: ' + numberRemoved); 
-				callback(numberRemoved);		
-			});
+		.remove(function(err, numberRemoved) {
+			sysLogger.info('<history> <removeAll> Removed complete history, number of lines: ' + numberRemoved); 
+			callback(err, numberRemoved);		
+		});
 }
 
 /**
@@ -84,7 +86,7 @@ exports.removeEntry = function(mid, callback) {
 	sysLogger.debug('<history> <removeEntry> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
 	HistoryModel.find({marketId : mid})		
 			.remove(function(err, numberRemoved) {
-				callback(numberRemoved);		
+				callback(err, numberRemoved);		
 			});
 }
 
@@ -99,3 +101,4 @@ function closeConnection() {
 		}
 	});
 }
+

@@ -60,7 +60,7 @@ function generateResult (mid) {
 
  
 exports.getPrices = function(marketIds, callback) {
-	sysLogger.info('<pricefactory> <getPrices>');
+	sysLogger.debug('<pricefactory> <getPrices>');
 	var results = []
 	for(var i = 0; i< marketIds.length; i++) {
 		results.push(generateResult(marketIds[i])); 

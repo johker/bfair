@@ -20,19 +20,21 @@ var activeLogger;
 * after the market id as transport. If not exisitng a new logger 
 * is generated. 
 */
-exports.getLogInstance = function(mid) {
+exports.getLogInstance = function(mid, callback) {
 	var prop = config.logs.collection.prefix + mid;
   	if(_.has(loggers, prop)) {
-  		return loggers[prop];
-  	}
+  		callback(loggers[prop]);
+  	} else {
   		sysLogger.notice('<logfactory> <getLogInstance> create new logger instance: ' + prop );
-  	var logger = new (winston.Logger)({
-	  	transports: [
-	  		new winston.transports.MongoDB({ db: config.logs.db , collection: prop, level: config.logs.level})
-	  		]
-	  	});  
-	loggers[prop] = logger;
-  	return logger;
+	  	var logger = new (winston.Logger)({
+		  	transports: [
+		  		new winston.transports.MongoDB({ db: config.logs.db , collection: prop, level: config.logs.level})
+		  		]
+		  	});  
+		loggers[prop] = logger;
+	  	callback(logger);
+  	}
+  	
  }	 
 
 /**
@@ -92,6 +94,9 @@ function streamResults(collection, res, callback) {
 * Returns a formatted query stream. 
 */
 function buildQueryStream(Model, format) {
+	Model.find({}, function(err, result){
+		console.log(result);
+	}); 
 	return Model.find({}).stream().pipe(format);	
 }
 
@@ -100,7 +105,7 @@ function buildQueryStream(Model, format) {
 */
 function generateSchema() {
 	var schobj = {};
-	for(var i = 0; i < 3; i++) {
+	for(var i = 0; i < 2; i++) {
 		for(var j = 0; j < 3; j++) {
 			var index = '' + i + j;
 			schobj['vb' + index] = String;

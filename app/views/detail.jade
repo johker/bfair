@@ -104,6 +104,7 @@ block content
 					script
 						io = io.connect();
 						io.on('tick_' + #{id},function(data){
+							console.log('tick');
 							$('.mid').text('ID: ' + data.marketId);
 							$('.toa').text('Total Available: ' + data.totalAvailable);
 							$('.ip').text('In Play: ' + data.inplay);

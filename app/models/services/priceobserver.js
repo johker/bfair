@@ -11,6 +11,7 @@ var env = process.env.NODE_ENV || 'development'
  , listutils = require(root + 'util/listutil')
  , logfac = require(root + 'app/models/services/prices/logfactory')
  , marketHistory = []
+ , async = require('async')
  
  
 
@@ -28,17 +29,27 @@ util.inherits(PriceObserver, EventEmitter);
 * Log price information with a winston logger: Expecting array with 
 * price information for multiple markets. 
 */
-PriceObserver.prototype.synchronize = function(book) {
-	// sysLogger.info('<PriceObserver.prototype.synchronize> book length = ' + book.length ); 
-	for(var bidx = 0; bidx < book.length; bidx++) {
-		var logobj = generateLogObj(book[bidx]);
-		var logger = logfac.getLogInstance(book[bidx].marketId);
-		logger.info('' , logobj);
-		var mid = book[bidx].marketId.substring(2,book[bidx].marketId.length);	
-		app.io.broadcast('tick_' + mid, book[bidx]);
-	} 
-	
+PriceObserver.prototype.synchronize = function(books) {
+	async.forEach(books, log, function(err) {
+		if (err) return next(err);
+       	sysLogger.notice('<PriceObserver.prototype.synchronize> Synchronized book of length = ' + books.length );
+	});
 } 
+
+/**
+* Log price information with a winston logger.
+*/
+function log(book, callback) {
+	var logobj = generateLogObj(book);
+	logfac.getLogInstance(book.marketId, function(logger) {
+		if(logger == null) callback(new Error('Could not initialize logger')); 
+		logger.info('' , logobj);
+		var mid = book.marketId.substring(2,book.marketId.length);	
+		app.io.broadcast('tick_' + mid, book);
+		callback();
+	});
+}
+
 
 /**
 * Remove winston logger from factory
@@ -52,8 +63,8 @@ PriceObserver.prototype.passivate = function(marketId) {
 */
 function generateLogObj(book) {
 	var logobj = {}
-	logobj['mid'] = book.marketId; 
 	logobj['timestamp'] = new Date();
+	logobj['message'] = ''; 
 	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {
 		var avaliableToBack = book.runners[pIdx].ex.availableToBack;		
 		for(var bIdx = 0; bIdx < avaliableToBack.length; bIdx++) {
@@ -68,6 +79,7 @@ function generateLogObj(book) {
 			logobj['pl' + index] = availableToLay[bIdx].price;		
 		}
 	}
+	//console.log(logobj); 
 	return logobj;
 }
 

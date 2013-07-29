@@ -4,6 +4,7 @@ var env = process.env.NODE_ENV || 'development'
  	, config = require(root + 'config/config')[env]
 	, history = require(root + 'app/models/db/history')
 	, dbutil = require(root + 'util/mongoutil')
+	, async = require('async')
 
  sysLogger = require(root + 'config/winston').getSysLogger()
 	
@@ -27,21 +28,43 @@ exports.removePassiveList = function() {
 */
 exports.removePrices = function(prefix, dbname) {
 	sysLogger.notice('<clean> <removeprices>'); 
-	var str = prefix || config.logs.db + '.mid';	
-	var db = dbname || config.logs.db; 
-	sysLogger.debug('<clean> <removePrices> Prefix = ' + str);
-	sysLogger.debug('<clean> <removePrices> DB name = ' + db);
-	dbutil.listCollections(db, function(err, collections) {
-		for(var idx = 0; idx < collections.length; idx++) {
-			if(collections[idx].name.substring(0, str.length)== str) {
-				dbutil.removeCollection(collections[idx].name.replace(db + '.', '')); 
-			}	
-		}
+	async.waterfall([removeFromDB, removeFromList], function(err,res) {
+	    sysLogger.notice('<clean> <removePrices> Success!');
+	    	
 	});
-	history.removeAll(function(err, numberRemoved) {
-		sysLogger.notice('<clean> <removeAll> ' + numberRemoved + ' entry successfully removed.');
-	}); 
+	 
 }
+
+/**
+* Removes all collections contained in the history table. 
+*/
+function removeFromDB(callback){
+	history.getList(function(data) {
+		async.forEach(data, removeItem, function(err) {	
+			sysLogger.debug('<clean> <removeFromDB> Success!');
+		});		
+	}); 
+	callback();
+}
+
+/**
+* Removes single collection from DB 
+*/
+function removeItem(data, callback) {
+	dbutil.removeCollection('mid' + data.marketId, callback); 
+}
+
+
+/**
+* Removes items from prices collection
+*/
+function removeFromList(callback) {
+	history.removeAll(function(err, numberRemoved) {
+		sysLogger.debug('<clean> <removeFromList> ' + numberRemoved + ' entry successfully removed.');
+		callback();
+	});
+}
+
 
 /** 
 * Deletes single entry from history by removing 
@@ -65,4 +88,3 @@ exports.removeEntry =  function(mid) {
 exports.removeIncomplete = function(callback) {
 
 }
-
