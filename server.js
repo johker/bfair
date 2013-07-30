@@ -3,7 +3,7 @@ var express = require('express.io')
   	, passport = require('passport')
   	, winston = require('./config/winston')
   	// socket.io setup 
-
+	, notifier = require('./app/models/services/notifier')
 
 
 
@@ -13,7 +13,7 @@ var env = process.env.NODE_ENV || 'development'
   , auth = require('./config/authorization')
   , mongoose = require('mongoose')
 
-process.env['NODE_ENV'] = 'test';
+process.env['NODE_ENV'] = 'development';
 
 // Bootstrap logging (global)
 
@@ -21,9 +21,10 @@ apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 
 
-if(env == 'test') {
+if(env == 'development') {
 	process.on('uncaughtException', function(err) {
 	  sysLogger.crit('<server> <uncaught exception>');
+	  notifier.sendMail('Bfair App Crash',  err.message); 
 	  console.error(err);
 	});
 }

@@ -29,7 +29,7 @@ function closeConnection() {
 
 
  
-function sendMail() {	
+exports.sendMail = function(title, message) {	
 	sysLogger.info('<notfier> <setData>');
 	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/be-fair-authentication', function(err, db) {
 		if(err) { sysLogger.error('<notifier> <getQuery> '+ err); }
@@ -47,8 +47,8 @@ function sendMail() {
 				 transport : transport, //pass your transport
 			     sender : config.mail.sender,
 			     to : config.mail.to,
-			     subject : "Befair Notification",
-			     html: '<p> Hello World </p>'
+			     subject : title,
+			     html: '<p>' + message + '</p>'
 			}
 			//On sending mail
 			nodemailer.sendMail(mailoptions, function(error, response){
@@ -63,9 +63,6 @@ function sendMail() {
 		});
 	});
 }
-
-
-
 
 
 

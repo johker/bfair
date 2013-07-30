@@ -41,51 +41,12 @@ ArrayFormatter.prototype.write = function (doc) {
 }
 
 
-/*
-ArrayFormatter.prototype.write = function (doc) {
-
-	var line = ('' + doc)
-			.replace(/{/g,'')
-			.replace(/}/g,'')
-			.replace(/mid/g,'\n mid')
-			.trim();
-  if (! this._hasWritten) {
-    this._hasWritten = true; 
-    // open an object literal / array string along with the doc
-    this.emit('data', '{ "results": [' + line );
- 
-  } else {
-    this.emit('data', ',' + line);
-  }
- 
-  return true;
-}
-
-*/
 
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
 
 
-
-/*
-var index = 0;
-var buffer = ''; 
- 
-ArrayFormatter.prototype.write = function (doc) {
-	var line = ('' + doc)
-		.replace(/{/g,'')
-		.replace(/},/g,';')
-		.replace(/}/g,'')
-		.trim();
-	index++;	
-	if(index % 2 == 0) this.emit('data', line + buffer);
-		else buffer = '' + line; 
-	return true;
-}
-
-*/
  
 ArrayFormatter.prototype.end =
 ArrayFormatter.prototype.destroy = function () {
