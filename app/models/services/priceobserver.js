@@ -32,7 +32,7 @@ util.inherits(PriceObserver, EventEmitter);
 PriceObserver.prototype.synchronize = function(books) {
 	async.forEach(books, log, function(err) {
 		if (err) return next(err);
-       	sysLogger.notice('<PriceObserver.prototype.synchronize> Synchronized book of length = ' + books.length );
+       	sysLogger.debug('<PriceObserver.prototype.synchronize> Synchronized book of length = ' + books.length );
 	});
 } 
 

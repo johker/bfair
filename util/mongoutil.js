@@ -34,11 +34,11 @@ exports.removeCollection = function(collection,  callback) {
 	        	console.error(err);
 	 		}
 	        assert.equal(null, err);	
-	        callback();
 	          //Verify that the collection is gone
 	          db.collectionNames(collection, function(err, names) {
 	            assert.equal(0, names.length);			
 	            db.close();
+	            if(callback !== undefined) callback();
 	      });
 	    });
 	  });

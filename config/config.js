@@ -2,6 +2,14 @@ module.exports = {
     development: {
       root: require('path').normalize(__dirname + '/..'),
       filetype: '.csv',
+      mail: {
+      	collection: 'ses',
+      	host: 'localhost',
+      	port: '27017',
+      	db: 'be-fair-authentication',
+      	sender : 'befairsystem@gmail.com',
+      	to : 'johannes.kern@zoho.com'    
+      },
       betfair: {
       	applicationkey: '2ku5TzXl34zUU1Qz', 
       	user: 'nhughes90', 
@@ -25,17 +33,21 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 10000,
+      	timeout: 1000,
       	eventType: '2'     
-      },
-      mail: {
-      	sender : 'befairsystem@gmail.com',
-      	to : 'johannes.kern@zoho.com'      	
       }
     }
   , test: {
 	  root: require('path').normalize(__dirname + '/..'),
       filetype: '.csv',
+      mail: {
+      	collection: 'ses',
+      	host: 'localhost',
+      	port: '27017',
+      	db: 'be-fair-authentication', 
+      	sender : 'befairsystem@gmail.com',
+      	to : 'johannes.kern@zoho.com'    
+      },
       values: {
       	eventTypeId: '2'
       },

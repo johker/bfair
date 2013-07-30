@@ -13,7 +13,7 @@ var env = process.env.NODE_ENV || 'development'
   , auth = require('./config/authorization')
   , mongoose = require('mongoose')
 
-process.env['NODE_ENV'] = 'development';
+process.env['NODE_ENV'] = 'test';
 
 // Bootstrap logging (global)
 
@@ -24,8 +24,8 @@ sysLogger = winston.getSysLogger();
 if(env == 'development') {
 	process.on('uncaughtException', function(err) {
 	  sysLogger.crit('<server> <uncaught exception>');
-	  notifier.sendMail('Bfair App Crash',  err.message); 
-	  console.error(err);
+	  // notifier.sendMail('Bfair App Crash',  err.message); 
+	  console.error(err.stack);
 	});
 }
 

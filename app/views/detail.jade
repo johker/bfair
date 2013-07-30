@@ -99,12 +99,38 @@ block content
 									td#lay
 				.row
 					.span6
-						form(method='post', action='/markets')
+						form#backform(method='post', action='/markets')
 							button.btn.btn-primary.btn-mini(type='submit') Back
+				.row
+					.span12
+						form#orderform 	
+							fieldset
+								legend Orders
+									include messages
+								.form-group
+									label(for="runnerselect") Selection ID
+									select#idselect(name="accountId") 
+								.form-group
+									label(for="sizeselect") Size
+									input#sizeselect(type="text", placeholder="Size")
+								.form-group
+									label(for="priceselect") Price
+									input#priceselect(type="text", placeholder="Price")
+								.form-group
+									label(for="sideselect") Side
+									select#sideselect  
+										option(value="BACK") BACK
+										option(value="LAY") LAY
+								.form-group
+									label(for="typeselect") Order Type
+									select#typeselect
+										option(value="LIMIT") LIMIT
+										option(value="LIMIT_ON_CLOSE") LIMIT_ON_CLOSE
+										option(value="MARKET_ON_CLOSE") MARKET_ON_CLOSE
+							button#execute.btn.btn-primary.btn-mini(type='button') Execute
 					script
 						io = io.connect();
 						io.on('tick_' + #{id},function(data){
-							console.log('tick');
 							$('.mid').text('ID: ' + data.marketId);
 							$('.toa').text('Total Available: ' + data.totalAvailable);
 							$('.ip').text('In Play: ' + data.inplay);
@@ -115,6 +141,9 @@ block content
 						function assign(data) {
 							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
 								var runner = data.runners[pIdx];								
+								if($('#idselect option').size() < 2) {
+									$('#idselect').append(new Option(runner.selectionId,runner.selectionId));
+								}
 								$('.sid' + pIdx + ' strong').text(runner.selectionId);
 								$('.lpt' + pIdx + ' strong').text(runner.lastPriceTraded);
 								$('.tm' + pIdx + ' strong').text(runner.totalMatched);							
@@ -131,3 +160,25 @@ block content
 								
 							}
 						}	
+						$('#execute').click(function(e) {
+								validate(e.target.id);
+						});
+						function validate(target) {
+							$.ajax({
+							url: '/validateorder',
+							type: 'POST',
+							cache: false,
+							data: {
+								price: $('#priceselect').val(), 
+								size: $('#sizeselect').val(),
+								sid: $('#runnerselect').val(),
+								operation: target
+							},
+							success: function(data){
+								alert('Success'); 											
+							}
+							, error: function(jqXHR, textStatus, err){
+								alert(err);
+								}
+							})
+						}

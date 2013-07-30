@@ -44,9 +44,8 @@ app.post('/account',
 app.post('/overview',function(req, res) {	});
 
 app.post('/validate', function(req, res) {
-	var id = 23; 
-	var description = 'Random description';
-	app.io.broadcast('evupdate', {evid: id, evdes: description}); 	
+	sysLogger.notice('<routes> <post:validate> ' )
+	console.log(req.body); 
 	dctrl.validateEntries(req,res, function(values, err) {
 		if (err) sysLogger.error('<routes> <validateEntries:callback> ' +err);
 		sysLogger.info('<routes> <validateEntries:callback> Entries not validated');
@@ -118,6 +117,20 @@ app.post('/history', function(req, res) {
 
 }); 
 
+
+app.post('/validateorder', function(req, res) {
+	console.log(req.body); 
+	/*
+	app.io.broadcast('evupdate', {evid: id, evdes: description}); 	
+	dctrl.validateEntries(req,res, function(values, err) {
+		if (err) sysLogger.error('<routes> <validateEntries:callback> ' +err);
+		sysLogger.info('<routes> <validateEntries:callback> Entries not validated');
+		res.writeHead(200, {'Content-Type': 'application/json'});
+		res.write(JSON.stringify(values));
+    	res.end(); 
+	});
+	*/
+});
 
 
 

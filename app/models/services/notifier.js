@@ -13,7 +13,21 @@ var nodemailer = require("nodemailer")
 	, acckey
 	, seckey
 	, transport
-	
+
+
+function connect(callback) {
+	sysLogger.debug('<notifier> <connect>');
+	mongoose.connection.close( function(err) {
+		if(err) {sysLogger.error('<notifier> <closeConnection> '+  err);	}
+		mongoose.connect('mongodb://' + config.mail.host + ':' + config.mail.port + '/' + config.mail.db, function(err, db) {
+			if(err) { return sysLogger.error('<notifier> <connect> '+ err); }
+			NotifierModel = mongoose.model('SES', AwsAccessSchema, config.mail.collection);	
+			sysLogger.notice('<notifier> <connect> NotifierModel initialized');
+			callback(NotifierModel); 
+		});
+	})		
+}
+
 
 
 /**
@@ -31,9 +45,7 @@ function closeConnection() {
  
 exports.sendMail = function(title, message) {	
 	sysLogger.info('<notfier> <setData>');
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/be-fair-authentication', function(err, db) {
-		if(err) { sysLogger.error('<notifier> <getQuery> '+ err); }
-		var Model = mongoose.model('SES', AwsAccessSchema, 'ses');	
+	connect(function(Model) {
 		Model.findOne({}, function (err, data) {		
 			if(err) { sysLogger.error('<notifier> <getTransport> <Model.find>');}
 			acckey = data.accesskey;
@@ -44,11 +56,11 @@ exports.sendMail = function(title, message) {
 				AWSSecretKey: seckey
 			});
 			var mailoptions = {
-				 transport : transport, //pass your transport
-			     sender : config.mail.sender,
-			     to : config.mail.to,
-			     subject : title,
-			     html: '<p>' + message + '</p>'
+				transport : transport, //pass your transport
+		     	sender : config.mail.sender,
+		     	to : config.mail.to,
+		     	subject : title,
+		     	html: '<p>' + message + '</p>'
 			}
 			//On sending mail
 			nodemailer.sendMail(mailoptions, function(error, response){
@@ -63,6 +75,10 @@ exports.sendMail = function(title, message) {
 		});
 	});
 }
+
+// Test
+//console.log('mongodb://' + config.mail.host + ':' + config.mail.port + '/' + config.mail.db); 
+//exports.sendMail('Test title', 'Test message'); 
 
 
 

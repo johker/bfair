@@ -73,10 +73,10 @@ function removeFromList(callback) {
 */
 exports.removeEntry =  function(mid) {
 	sysLogger.debug('<clearpassive> <removeEntry> mid = ' + mid);
-	dbutil.removeCollection('mid' + mid);
-	history.removeEntry(mid, function(err, numberRemoved) {
-		sysLogger.debug('<clearpassive> <removeEntry> ' + numberRemoved + ' entry successfully removed.');
-	}); 
-	
+	dbutil.removeCollection('mid' + mid, function(err){
+		history.removeEntry(mid, function(err, numberRemoved) {
+			sysLogger.debug('<clearpassive> <removeEntry> ' + numberRemoved + ' entry successfully removed.');
+		}); 	
+	});	
 }
 
