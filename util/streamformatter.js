@@ -33,7 +33,7 @@ ArrayFormatter.prototype.write = function (doc) {
     this._hasWritten = true;
  	this.emit('data', x); 
   } else {
-  	var y = x.replace('mid', '\n mid');
+  	var y = x.replace('timestamp', '\n timestamp');
     this.emit('data', ',' + y);
   }
  

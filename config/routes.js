@@ -79,7 +79,7 @@ app.post('/markets', function(req, res) {
 var selectedId; // has to be set via ajax request
 var doexport; // Export flag for history submits
 app.io.route('export', function(req) {	
-	console.log('doexport = true');
+	sysLogger.info('<routes> doexport = true');
 	doexport = true; 
 })
 
@@ -104,8 +104,8 @@ app.post('/history', function(req, res) {
 			// 'Regular' POST rquests
 			// AJAX rquest doesnt work with streaming
 			if(doexport) { // distingiush between export and navigation to history page
-				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' + selectedId);			
-				apictrl.exporthistory(selectedId, res);	
+				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' +  '1.' + selectedId);			
+				apictrl.exporthistory( '1.' + selectedId, res);	
 				doexport = false;
 			} else {
 				apictrl.history(req, res);

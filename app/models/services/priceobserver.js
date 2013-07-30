@@ -62,7 +62,7 @@ PriceObserver.prototype.passivate = function(marketId) {
 * Parses price data and generates database entry
 */
 function generateLogObj(book) {
-	var logobj = {}
+	var logobj = {};	
 	logobj['timestamp'] = new Date();
 	logobj['message'] = ''; 
 	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {

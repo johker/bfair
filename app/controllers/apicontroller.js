@@ -127,10 +127,11 @@ exports.history = function(req, res) {
 }
 
 exports.exporthistory = function(mid, res) {
-	sysLogger.crit('<apicontroller> <exportHistory>');
+	sysLogger.crit('<apicontroller> <exportHistory> mid = ' +  mid);
 	logs.exportLogInstance(mid, res, function(err) {
 		if (err) return err; 
 	});
+	
 }
 
 exports.removehistory = function(mid) {

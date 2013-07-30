@@ -12,6 +12,11 @@ var env = process.env.NODE_ENV || 'development'
 	, mongoose = require('mongoose')
 	, loggers = {}    // stores loggers with its collection as key
 
+	, LogSchema = generateSchema();
+
+
+
+
 require('winston-mongodb').MongoDB;
 var activeLogger;
  
@@ -93,11 +98,8 @@ function streamResults(collection, res, callback) {
 /**
 * Returns a formatted query stream. 
 */
-function buildQueryStream(Model, format) {
-	Model.find({}, function(err, result){
-		console.log(result);
-	}); 
-	return Model.find({}).stream().pipe(format);	
+function buildQueryStream(Data, format) {
+	return Data.find({}).stream().pipe(format);	
 }
 
 /**
@@ -124,14 +126,19 @@ function generateSchema() {
 /**  
 *Check for DB content. 
 */
-function testQuery(collection) {
+exports.testQuery = function(collection) {
 	sysLogger.notice('<logfactory> <testQuery>');	
+	closeConnection();
 	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
-	var Data = db.model('Data', generateSchema(), collection);
+	var Data = mongoose.model('Data', LogSchema, collection);
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 
 		sysLogger.notice('<logfactory> <streamResults>');	
 		console.log(data); 
+		db.close(); 
 	});
 }
+
+
+//exports.testQuery('mid1.5'); 
 

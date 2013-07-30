@@ -31,8 +31,7 @@ function removeItem(collection, callback) {
 * collections that havent been passivated yet.
 */
 async.waterfall([removeCollections, clearHistory], function(err,res) {
-	    sysLogger.notice('<clearall> Success!');
-	    	
+	    sysLogger.notice('<clearall> Success!'); 
 	});
 
 
@@ -57,7 +56,6 @@ function clearHistory(callback) {
 	});	
 
 }
-
 
 //removeCollections(function(){sysLogger.info('<clearall> <removeCollections> Success!'); }); 
 
