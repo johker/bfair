@@ -26,19 +26,19 @@ exports.removeCollection = function(collection,  callback) {
 	  assert.equal(null, err);	  
 	  // Execute ping against the server
 	  db.command({ping:1}, function(err, result) {
-	    assert.equal(null, err);
-			// Drop the collection from this world
-	        db.dropCollection(collection, function(err, result) {
-	        	if (err) {
-	        		sysLogger.error('Collection ' + collection + ' could not be removed');
-	        		console.error(err);
-	        	}
-	          assert.equal(null, err);	
-	          // Verify that the collection is gone
+		  assert.equal(null, err);
+		  // Drop the collection from this world
+		  db.dropCollection(collection, function(err, result) {
+	  	  if (err) {
+	       		sysLogger.error('Collection ' + collection + ' could not be removed');
+	        	console.error(err);
+	 		}
+	        assert.equal(null, err);	
+	        callback();
+	          //Verify that the collection is gone
 	          db.collectionNames(collection, function(err, names) {
 	            assert.equal(0, names.length);			
 	            db.close();
-	            callback();
 	      });
 	    });
 	  });
@@ -53,9 +53,10 @@ var c;
 */ 
 exports.listCollections = function(callback, dbname) {
 	var db = dbname || config.logs.db; 
-	var db_connector = new Db(db, new Server(config.logs.host, config.logs.port));
+	var db_connector = new Db(db, new Server(config.logs.host, config.logs.port, {safe:false}));
 	db_connector.open(function(err, db){
 	    db.collectionNames(function(err, collections){
+	    	db.close();
 	    	callback(err, collections);
 	    });
 	});

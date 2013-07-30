@@ -21,16 +21,22 @@ var env = process.env.NODE_ENV || 'development'
 		passivationTime: { type: Date, required: true }
 	});
 
-	mongoose.connection.close( function(err) {
+	function init() {
+		sysLogger.debug('<history> <init>');
+		mongoose.connection.close( function(err) {
 		if(err) { 
-			sysLogger.error('<datalogs> <closeConnection> '+  err);
-			sysLogger.warn('<datalogs> <closeConnection> '+ 'No Mongoose Connection: Nothing to close...');
+			sysLogger.error('<history> <closeConnection> '+  err);
+			sysLogger.warning('<history> <closeConnection> '+ 'No Mongoose Connection: Nothing to close...');
 		}
 		mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
 			if(err) { return sysLogger.error('<history> <createModel> '+ err); }
 			HistoryModel = mongoose.model('History', HistorySchema, config.logs.collection.prices);
+			sysLogger.warning('<history> <init> HistoryModel initialized');
 		});
-	})
+		})		
+	}
+
+	init();
 	
 
 /**
@@ -71,6 +77,7 @@ exports.getList = function(callback) {
 */
 exports.removeAll = function(callback) {
 	sysLogger.debug('<history> <removeAll> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	if(HistoryModel == undefined) init();
 	HistoryModel.find({})		
 		.remove(function(err, numberRemoved) {
 			sysLogger.info('<history> <removeAll> Removed complete history, number of lines: ' + numberRemoved); 
