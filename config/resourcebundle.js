@@ -13,9 +13,15 @@ module.exports = {
       validation: {
        	errtitle: "Your request contains errors:"
        	, novalidid: "Invalid event ID."
-		, novaliddate: "Invalid date."     
+		, novaliddate: "Invalid date."    
+		, novalidprice: "Invalid price."
+		, novalidsize: "Invalid order size." 
 		, novalidtimerange: "Invalid time range: End date is smaller than start date."  	   
       },
+      confirmation: {
+      	  conftitile: "Confirmation"
+      	  , orderex: "Your order has been placed."    
+      }, 
       messages: {
       	logs: {
       		title: "Operation executed successfully."

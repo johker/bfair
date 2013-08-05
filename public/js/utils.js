@@ -32,6 +32,9 @@ function setAndHighlight(selector, value) {
 			.animate( { backgroundColor: "transparent" }, 500 );
 	}
 }
+
+/** Error and confirmation message handling */
+
 function setErrorMessages(title, errmsgs) {
 	$("#errtitle").append('<strong>' + title + '</strong>');
 	for (var i in errmsgs) {

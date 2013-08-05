@@ -70,6 +70,7 @@ exports.getPrices = function(marketIds, callback) {
 	if(reqnr % 2 == 0) {
 		changePrices();
 	}
+	
 	reqnr++; 
 	callback(results);
 }

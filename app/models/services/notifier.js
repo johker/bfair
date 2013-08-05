@@ -6,6 +6,8 @@ var nodemailer = require("nodemailer")
  	, config = require(root + 'config/config')[env]
  	, winston = require(root + 'config/winston')
  	, sysLogger = winston.getSysLogger()
+ 	, NotifierModel
+ 	
  	, AwsAccessSchema = new Schema({
 	    accesskey: { type: String, required: true, index: { unique: true } },
 	    secretkey: { type: String, required: true }
@@ -21,7 +23,7 @@ function connect(callback) {
 		if(err) {sysLogger.error('<notifier> <closeConnection> '+  err);	}
 		mongoose.connect('mongodb://' + config.mail.host + ':' + config.mail.port + '/' + config.mail.db, function(err, db) {
 			if(err) { return sysLogger.error('<notifier> <connect> '+ err); }
-			NotifierModel = mongoose.model('SES', AwsAccessSchema, config.mail.collection);	
+			NotifierModel = mongoose.model('mySES', AwsAccessSchema, config.mail.collection);	
 			sysLogger.notice('<notifier> <connect> NotifierModel initialized');
 			callback(NotifierModel); 
 		});
@@ -65,9 +67,9 @@ exports.sendMail = function(title, message) {
 			//On sending mail
 			nodemailer.sendMail(mailoptions, function(error, response){
 		    if(error){
-		        console.log(error);
+		        sysLogger.info('<notifier> ' +error);
 		    }else{
-		        console.log("Message sent: " + response.message);
+		        sysLogger.info("<notifier> Message sent: " + response.message);
 		    }		
 		    // if you don't want to use this transport object anymore, uncomment following line
 		    //smtpTransport.close(); // shut down the connection pool, no more messages

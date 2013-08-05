@@ -106,7 +106,7 @@ block content
 						form#orderform 	
 							fieldset
 								legend Orders
-									include messages
+								include messages									
 								.form-group
 									label(for="runnerselect") Selection ID
 									select#idselect(name="accountId") 
@@ -152,8 +152,8 @@ block content
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#back', atb[bIdx].size);									
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#price', atb[bIdx].price);
 								}					
-								var atl = data.runners[pIdx].ex.availableToLay;									
-								for(var lIdx = atl.length -1; lIdx >= 0; lIdx--) {
+								var atl = data.runners[pIdx].ex.availableToLay;	
+								for(var lIdx = 0; lIdx < atl.length; lIdx++) {									
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#lay', atl[lIdx].size);									
 									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#price', atl[lIdx].price);
 								}
@@ -161,7 +161,17 @@ block content
 							}
 						}	
 						$('#execute').click(function(e) {
-								validate(e.target.id);
+							validate(e.target.id);
+						});
+						$("#close-alerts").click(function(e) {
+							e.preventDefault();
+							$('#erritems li').remove();
+							$('#errmsg').hide();						
+						});
+						$("#close-confirmation").click(function(e) {
+							e.preventDefault();
+							$('#confcontent li').remove();
+							$('#confmsg').hide();						
 						});
 						function validate(target) {
 							$.ajax({
@@ -171,14 +181,44 @@ block content
 							data: {
 								price: $('#priceselect').val(), 
 								size: $('#sizeselect').val(),
-								sid: $('#runnerselect').val(),
+								sid: $('#idselect :selected').val(),
+								type: $('#typeselect :selected').val(),
+								side: $('#sideselect :selected').val(),
 								operation: target
 							},
 							success: function(data){
-								alert('Success'); 											
+								resetMessages();								
+								if(data.errorTitle == undefined) { 
+									setConfirmationMessages(data.conftitle, data.confcontent);
+									$('#confmsg').show();
+									$('#errmsg').hide();								
+									
+								} else {
+									setErrorMessages(data.errorTitle, data.errors);
+									$('#confmsg').hide();
+									$('#errmsg').show();
+								}																			
 							}
 							, error: function(jqXHR, textStatus, err){
 								alert(err);
 								}
 							})
+						}
+						function execute() {
+							$.ajax({
+							url: '/executeorder',
+							type: 'POST',
+							cache: false,
+							data: {eventId: $('#eventId').val(), startDate: $('#startDate').val(), endDate: $('#endDate').val()},
+							success: function(data){
+								resetMessages();
+								setValues(data.eventId, data.startDate, data.endDate);
+								setConfirmationMessages(data.msgTitle, data.msgContent);
+								$('#confmsg').show();														
+							}
+							, error: function(jqXHR, textStatus, err){
+								alert(err);
+								}
+							})
+						
 						}

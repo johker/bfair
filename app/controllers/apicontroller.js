@@ -23,7 +23,10 @@ var root = '../../'
 	, logs = require(servicedir + 'prices/logfactory')
 	, cleandb = require(root + 'setup/clean')
 	, session = require(servicedir + 'session')
-
+	, expressValidator = require('express-validator')
+	, bundle = require(root + 'config/resourcebundle')['en']
+	, validationutil = require(root + 'util/validation')  
+	, notifier = require(root + 'app/models/services/notifier')
 
 session.Singelton.getInstance().login(function(err, res){
  	sysLogger.info('<apicontroller> Logged in to Betfair');
@@ -146,6 +149,61 @@ exports.removecompletehistory = function() {
 	app.io.broadcast('reset');
 }
 
+exports.validateorder = function(req, res, callback) {
+	sysLogger.info('<apicontroller> <validateorder> ');
+	req.assert('price', bundle.validation.novalidprice).isNumber();
+	req.assert('size',bundle.validation.novalidsize).isNumber();
+	var errMsgs = validationutil.inspect(req.validationErrors());
+	var values = {};
+	if(errMsgs != null) {
+		values = invalidate(errMsgs); 
+	} else {
+		execute(req);
+		values = confirm();
+	}
+	callback(values);
+}
+
+expressValidator.Validator.prototype.isNumber = function() {
+	if(!validationutil.isNumber(this.str)) {
+		this.error(this.msg || 'Invalid number');
+	}
+	return this;		
+} 
+
+function execute(req) {
+	sysLogger.info('<apicontroller> <execute> order confirmation');
+	var info = 'SID: ' + req.body.sid +  '\nType: ' +  req.body.type
+				+ '\nSide: ' + req.body.side + '\nPrice: ' + req.body.price 
+				+ '\nSize: ' + req.body.size + '\nOperation' + req.body.operation;   
+	notifier.sendMail('Order Execution',  'Parameters: \n' +  info); 
+	
+	
+}
+
+/**
+* Returns 'values' object with existing error messages .
+*/
+function invalidate(errMsgs) {
+	var values = {};
+	values.title = bundle.title.data;
+	values.errorTitle = bundle.validation.errtitle;
+	values.errors = errMsgs;
+	return values;
+}
+
+/**
+* Returns 'values' object with confimration messages
+*/
+function confirm() {
+	var values = {};
+	values.title = bundle.title.data;
+	values.conftitle = bundle.confirmation.title;
+	values.confcontent = [bundle.confirmation.orderex];
+	values.errorTitle = undefined; 
+	values.errors = undefined;
+	return values; 
+}
 
 exports.stopPolling = function(callback) {
  	

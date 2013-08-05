@@ -6,6 +6,7 @@ var root = '../'
   , csv = require('csv')
   , fs = require('fs')
   , _ = require('underscore')
+  , notifier = require(root + 'app/models/services/notifier')
 
   
 module.exports = function (app, passport, auth) {
@@ -117,20 +118,17 @@ app.post('/history', function(req, res) {
 
 }); 
 
-
 app.post('/validateorder', function(req, res) {
 	console.log(req.body); 
-	/*
-	app.io.broadcast('evupdate', {evid: id, evdes: description}); 	
-	dctrl.validateEntries(req,res, function(values, err) {
-		if (err) sysLogger.error('<routes> <validateEntries:callback> ' +err);
-		sysLogger.info('<routes> <validateEntries:callback> Entries not validated');
+	apictrl.validateorder(req,res, function(values, err) {
+		sysLogger.debug('<routes> <validateorder:callback> Entries not validated');
 		res.writeHead(200, {'Content-Type': 'application/json'});
 		res.write(JSON.stringify(values));
-    	res.end(); 
+	    res.end();
 	});
-	*/
+	
 });
+
 
 
 

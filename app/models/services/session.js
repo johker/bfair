@@ -39,9 +39,11 @@ module.exports.Singelton = (function () {
       	var self = this;
       	sysLogger.debug('<session> <getSession> applicationkey = ' + config.betfair.applicationkey);
 		if(self.session) {
+			sysLogger.crit('<session> <getSession> return session instance, emulated = ' + self.session.isMarketUsingBetEmulator('1.110365959'));
 			return self.session; 
 		}
 		else {
+			sysLogger.crit('<session> <getSession> new session instance');
 			self.session = betfair.newSession(config.betfair.applicationkey);
 			return self.session;
 		} 

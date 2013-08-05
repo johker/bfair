@@ -32,10 +32,7 @@ function removeItem(collection, callback) {
 */
 async.waterfall([removeCollections, clearHistory], function(err,res) {
 	    sysLogger.notice('<clearall> Success!'); 
-	});
-
-
-
+});
 
 function removeCollections(callback) {
 	sysLogger.info('<clearall> <removeCollections> ');
@@ -51,7 +48,7 @@ function clearHistory(callback) {
 	sysLogger.info('<clearall> <clearHistory> ');
 	history.removeAll(function(err, numberRemoved) {
 		assert.equal(null, err);	
-		sysLogger.info('<clearDatabase> <fbutil.listCollecti> <history.removeAll>');
+		sysLogger.info('<clearall> <clearHistory> <history.removeAll>');
 		callback();
 	});	
 
