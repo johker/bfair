@@ -36,5 +36,6 @@
     , "nodemailer": "*"
     , "betfair": "*"
     , "mongoose-unique-validator": "*"
+    , "bunyan": "*"
   }
 }

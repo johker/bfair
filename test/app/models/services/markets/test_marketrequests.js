@@ -21,7 +21,7 @@ var session = require(servicedir + 'session')
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
  	request.listMarkets( { "filter": {"eventTypeIds" : [2], "turnsInPlay" : true}}, function(err, res) {
-		console.log(res); 
+		//console.log(res); 
 	});
  });	
 

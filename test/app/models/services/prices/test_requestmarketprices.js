@@ -13,7 +13,9 @@ sysLogger = winston.getSysLogger(); // Invoke global logger
 	
 	
 // Create session to Betfair
-var session = common.session = betfair.newSession(config.betfair.applicationkey);
+var session = common.session = betfair.newSession();
+
+session.setApplicationKeys(config.betfair.applicationkey)
 common.loginName = config.betfair.user;
 common.password = config.betfair.password;
 

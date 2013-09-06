@@ -37,7 +37,7 @@ MarketObserver.prototype.getList = function() {
 * Return locally stored markets list size
 */
 MarketObserver.prototype.getSize = function() {
-	console.log(listutils.count(cachedmarkets));
+	//console.log(listutils.count(cachedmarkets));
 	return listutils.count(cachedmarkets);
 }
 
@@ -87,7 +87,6 @@ MarketObserver.prototype.synchronize = function(incoming) {
 		return; 
 	}
 	sysLogger.debug('<marketobserver> <synchronize>'); 
-	self.sort(incoming);
 	sync.markets(cachedmarkets, incoming, mid, self);
     //app.io.broadcast('updatecounters', {logged: self.getSize()});	
     init = false;	
@@ -97,11 +96,11 @@ MarketObserver.prototype.synchronize = function(incoming) {
 /**
 * Sort incoming markets by eventDate ascending, by marketId
 * ascending for equal eventDates
-* DEPRECATED
+* DEPRECATED : done by sort parameter
 */
 MarketObserver.prototype.sort = function(markets) {
 	markets.sort(function(first, second) {
-     	var dtime = first.event.openDate - second.event.openDate;
+     	var dtime = first.description.openDate - second.event.openDate;
      	var did = first.marketId - second.marketId;
      	var res = dtime != 0 ? dtime : did
      	return res; 

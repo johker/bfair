@@ -12,6 +12,7 @@ var env = process.env.NODE_ENV || 'development'
  , logfac = require(root + 'app/models/services/prices/logfactory')
  , marketHistory = []
  , async = require('async')
+ , lastLogged = {}     // used to check for changes 
  
  
 
@@ -43,7 +44,15 @@ function log(book, callback) {
 	var logobj = generateLogObj(book);
 	logfac.getLogInstance(book.marketId, function(logger) {
 		if(logger == null) callback(new Error('Could not initialize logger')); 
-		logger.info('' , logobj);
+		var s1 = JSON.stringify(lastLogged[book.marketId]);	
+		s1 = s1 != undefined ? s1.substring(s1.indexOf("message"), s1.length) : 'undefined';
+		var s2 = JSON.stringify(logobj);
+		s2 = s2 != undefined ? s2.substring(s2.indexOf("message"), s2.length) : 'undefined';
+		if(s1 != s2) { 
+			sysLogger.notice('Price update for id = ' + book.marketId); 
+			lastLogged[book.marketId] = logobj; 
+			logger.info('' , logobj);
+		} 
 		var mid = book.marketId.substring(2,book.marketId.length);	
 		app.io.broadcast('tick_' + mid, book);
 		callback();
@@ -63,7 +72,7 @@ PriceObserver.prototype.passivate = function(marketId) {
 */
 function generateLogObj(book) {
 	var logobj = {};	
-	logobj['timestamp'] = new Date();
+	logobj['timestamp'] = (new Date()).getTime();
 	logobj['message'] = ''; 
 	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {
 		var avaliableToBack = book.runners[pIdx].ex.availableToBack;		

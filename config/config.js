@@ -12,6 +12,7 @@ module.exports = {
       },
       betfair: {
       	applicationkey: '2ku5TzXl34zUU1Qz', 
+      	delayedapplicationkey: 'ubs5643lFSkMGKrb',
       	user: 'nhughes90', 
       	password: 'Stefano87', 
       	eventTypeId: '2'  		
@@ -29,12 +30,13 @@ module.exports = {
       	 	prices: 'prices',    // Logged prices of selected market IDs, DEPRECATED
       	 	prefix: 'mid'
       	 },
-      	level: 'info'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'warning'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 1000,
-      	eventType: '2'     
+      	timeout: 5000,
+      	eventType: '2',
+      	maxResults: '100'     
       }
     }
   , test: {

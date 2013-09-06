@@ -27,7 +27,7 @@ var filter = { marketIds:
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
  	request.listMarketBook(filter, function(err, res) {
- 		console.log(res.response.result[0].runners[0].ex); 
+ 		console.log(res.response.result[0].runners[0]); 
 		//console.log(res.response.result[0].runners[0].ex.availableToBack ); 
 	});
  });	

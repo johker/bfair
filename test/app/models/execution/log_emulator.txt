@@ -1,0 +1,11 @@
+{"name":"emulator","hostname":"imitator","pid":7644,"level":30,"msg":"Emulator: Enable emulator for market:1.110818808","time":"2013-09-04T15:54:47.686Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":10744,"level":30,"msg":"Emulator: Enable emulator for market:1.110818808","time":"2013-09-04T15:56:00.027Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":9872,"level":30,"msg":"Emulator: Enable emulator for market:1.110818808","time":"2013-09-04T16:00:37.848Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":6472,"level":30,"msg":"Emulator: Enable emulator for market:1.110818808","time":"2013-09-04T16:11:50.941Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":2116,"level":30,"msg":"Emulator: Enable emulator for market:1.110818808","time":"2013-09-04T16:12:50.895Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":9768,"level":30,"msg":"Emulator: Enable emulator for market:1.110828456","time":"2013-09-04T18:16:52.221Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":9904,"level":30,"msg":"Emulator: Enable emulator for market:1.110828456","time":"2013-09-04T18:19:19.267Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":10500,"level":30,"msg":"Emulator: Enable emulator for market:1.110828456","time":"2013-09-04T18:19:49.367Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":10276,"level":30,"msg":"Emulator: Enable emulator for market:1.110828456","time":"2013-09-04T18:20:33.089Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":2508,"level":30,"msg":"Emulator: Enable emulator for market:1.110834791","time":"2013-09-05T07:54:40.638Z","v":0}
+{"name":"emulator","hostname":"imitator","pid":1500,"level":30,"msg":"Emulator: Enable emulator for market:1.110834791","time":"2013-09-05T08:04:39.306Z","v":0}

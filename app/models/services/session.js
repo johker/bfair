@@ -13,12 +13,11 @@ module.exports.Singelton = (function () {
     return {
       login: function (callback) {
       	var self = this;
-        sysLogger.debug('<session> <login> Logging in to Betfair');
     	self.getSession().login(self.username, self.password, function(err, res) {
 	     if (err) {
-            sysLogger.error('<session> <login> Login error', err);
+           	sysLogger.error('<session> <login> Login error: ' + JSON.stringify(err));
         } else {
-             sysLogger.notice('<session> <login> Login OK, %s secs', res.duration()/1000);
+            sysLogger.notice('<session> <login> Login OK');
         }
 		callback(err, res); 
 		});
@@ -39,12 +38,13 @@ module.exports.Singelton = (function () {
       	var self = this;
       	sysLogger.debug('<session> <getSession> applicationkey = ' + config.betfair.applicationkey);
 		if(self.session) {
-			sysLogger.crit('<session> <getSession> return session instance, emulated = ' + self.session.isMarketUsingBetEmulator('1.110365959'));
+			sysLogger.debug('<session> <getSession> return session instance, emulated = ' + self.session.isMarketUsingBetEmulator('1.110365959'));
 			return self.session; 
 		}
 		else {
 			sysLogger.crit('<session> <getSession> new session instance');
-			self.session = betfair.newSession(config.betfair.applicationkey);
+			self.session = betfair.newSession();
+			self.session.setApplicationKeys({active: config.betfair.applicationkey, delayed: config.betfair.delayedapplicationkey})
 			return self.session;
 		} 
       },

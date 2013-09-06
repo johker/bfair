@@ -104,7 +104,6 @@ app.io.route('historyready', function(req) {
 })
 
 exports.markets = function(req, res) {		
-	sysLogger.warning('render markets'); 
 	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
 };    
 

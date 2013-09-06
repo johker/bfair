@@ -116,7 +116,7 @@ function generateSchema() {
 			schobj['pl' + index] = String;
 		}
 	}
-	schobj['timestamp'] = Date
+	schobj['timestamp'] = Number
 	schobj['level'] = String
 	schobj['message'] = String
 	return new mongoose.Schema(schobj); 
@@ -134,7 +134,7 @@ exports.testQuery = function(collection) {
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 
 		sysLogger.notice('<logfactory> <streamResults>');	
-		console.log(data); 
+		//console.log(data); 
 		db.close(); 
 	});
 }

@@ -224,7 +224,7 @@ function testQuery() {
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 
 		console.log('<datalogs> <testQuery>');	
-		console.log(data); 
+		//console.log(data); 
 	});
 }
 

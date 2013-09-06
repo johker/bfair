@@ -19,8 +19,7 @@ var env = process.env.NODE_ENV || 'development'
 exports.listEvents = function(filter, cb)  {
 	if(!cb) cb = filter;  // cb is first parameter    
     session.listEvents(filter, function(err,res) {
-    	if(err) sysLogger.error('<marketrequests> <listEvents>' + err)
-        sysLogger.debug("<marketrequests> <listEvents> err=" + err + " duration=" + res.duration/1000);
+    	if(err) sysLogger.error('<marketrequests> <listEvents>' + JSON.stringify(err))
         sysLogger.debug("<marketrequests> <listEvents> Request:%s\n", JSON.stringify(res.request, null, 2))
         sysLogger.debug("<marketrequests> <listEvents> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);
@@ -33,14 +32,14 @@ exports.listEvents = function(filter, cb)  {
 * name filter.
 */
 exports.listMarkets = function(filter, cb) {
-	sysLogger.debug('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
+	sysLogger.notice('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
 	exports.listEvents(filter, function(err, res) {
 		var resf = eventfilter.byPlayer(res.response.result); 
 		var mids = [];
 		for(var i in resf) {
 			mids.push(resf[i].event.id);	
-		} 
-		exports.listMarketCatalogue({"filter":{"eventIds": mids, "marketTypeCodes": marketfilter.getTypes()}}, function(err, res) {
+		}
+		exports.listMarketCatalogue({"filter":{"eventIds":mids},"maxResults":"10","sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
 			 cb(err,res.response.result);
 		});
 		
@@ -56,8 +55,9 @@ exports.listMarkets = function(filter, cb) {
 */
 exports.listMarketCatalogue = function(filter, cb)  {
 	if(!cb) cb = par;  // cb is first parameter    
+	//console.log(filter);
     session.listMarketCatalogue(filter, function(err,res) {
-    	if(err) sysLogger.debug("<marketrequests> <listMarketCatalogue> err=%s duration=%s", err, res.duration/1000);
+       	if(err) sysLogger.notice("<marketrequests> <listMarketCatalogue> " + JSON.stringify(err));
         sysLogger.debug("<marketrequests> <listMarketCatalogue> Request:%s\n", JSON.stringify(res.request, null, 2))
         sysLogger.debug("<marketrequests> <listMarketCatalogue> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);

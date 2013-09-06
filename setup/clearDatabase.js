@@ -31,7 +31,7 @@ function removeItem(collection, callback) {
 */
 async.waterfall([removeCollections, clearHistory], function(err,res) {
 	    sysLogger.notice('<claerDatabase> Success!');
-	    process.exit(0);;
+	    process.exit(0);
 	    	
 	});
 
@@ -40,7 +40,7 @@ function removeCollections(callback) {
 	sysLogger.info('<clearDatabase> <removeCollections> ');
 	dbutil.listCollections(function(err, collections) {
 		async.forEach(collections, removeItem, function(err) {
-		assert.equal(null, err);	
+			assert.equal(null, err);	
 			
 	});
 	callback();
