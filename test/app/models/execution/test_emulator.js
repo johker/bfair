@@ -21,8 +21,8 @@ var orders = require(executiondir + 'execution/orders')
 	, request = require(servicedir + 'prices/pricerequests')
 	, session =  require(servicedir + 'session').Singelton.getInstance().getSession();
 
-var mid = "1.110850760";
-var sid = "3633030"
+var mid = "1.108009351";
+var sid = "1178876"
 
 
 
@@ -34,8 +34,8 @@ var params =  {"marketId":mid, "instructions": betInstructions}
 var filter = { marketIds: [ mid], priceProjection: { priceData: [ 'EX_ALL_OFFERS' ] } };
 
 // log all Betfair invocations
-// session.startInvocationLog({level: 'info', path: 'log_invocations.txt'});
-// session.startEmulatorLog({level: 'info', path: 'log_emulator.txt'});
+session.startInvocationLog({level: 'info', path: 'log_invocations.txt'});
+session.startEmulatorLog({level: 'info', path: 'log_emulator.txt'});
 
 
 // Optional step to test emulator
@@ -53,10 +53,9 @@ function enableEmulator(data, cb) {
 session.login(config.betfair.user, config.betfair.password, function(err, res) {
 	sysLogger.crit('<test_emulator> <login>');
 	request.listMarketBook(filter, function(err, res) {
-		sysLogger.crit('<test_emulator> <listMarketBook>'); 
+		sysLogger.debug('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2)); 
 		orders.placeOrders(params, function(err, res) {
-			sysLogger.crit('<test_emulator> <placeOrders>');
-			sysLogger.crit(JSON.stringify(res,null,2));
+			sysLogger.crit('<test_emulator> <placeOrders> ' + JSON.stringify(res.response,null,2));
 		});
 	});	
 });

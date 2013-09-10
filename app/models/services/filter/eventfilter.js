@@ -1,6 +1,6 @@
  var keysmpl = ['Mathieu', 'Larsson', 'Beck', 'Djokovic', 'Murray', 'Federer', 'Ferrer', 'Nadal', 'Berdych', 'Tsonga', 'Del Potro', 'Gasquet', 'Wawrinka', 'Haas', 'Cilic', 'Nishikori', 'Tipsarevic', 'Raonic', 'Almagro', 'Simon', 'Kohlschreiber', 'Querrey', 'Monaco']
  var keysfpl = ['Williams', 'Azarenka', 'Sharapova', 'Radwanska', 'Errani', 'Li', 'Kerber', 'Kvitova', 'Wozniacki', 'Kirilenko', 'Vinci', 'Ivanovic', 'Petrova', 'Stosur', 'Bartoli', 'Jankovic', 'Stephens', 'Cibulkova', 'Suarez Navarro', 'Flipkens']
- var maxIndex = 2;
+ var maxIndex = 5;
  	
  var _ = require('underscore'); 	
  	
