@@ -17,7 +17,7 @@ var core = require('./emulator_core');
 var networkDelay = 20; // 20ms, every API call is delayed this time
 var bettingDelay = 100; // 100ms caused by Malta roundtrip
 
-core.betingDelay = bettingDelay;
+core.bettingDelay = bettingDelay;
 
 // http request function emulation
 exports.request = request;
@@ -78,7 +78,6 @@ exports.onListMarketBook = function (result) {
 
 function request(httpOptions, cb) {
     log && log.debug('Emulator: New request for emulator');
-	sysLogger.info('<emulator> <request> '); 
     var req = new EmulatorRequest(httpOptions);
     var res = new EmulatorResponse();
 
@@ -98,7 +97,7 @@ function request(httpOptions, cb) {
 
 function EmulatorRequest(httpOptions) {
     var self = this;
-	sysLogger.info('<emulator> <EmulatorRequest> '); 
+	sysLogger.debug('<emulator> <EmulatorRequest> '); 
     // Stream stuff, EmulatorRequest is writable stream
     // We write json request into it, emulator gets it and process
     self.readable = true;
@@ -118,7 +117,6 @@ EmulatorRequest.prototype.write = function (data) {
 // end
 EmulatorRequest.prototype.end = function () {
     var self = this;
-	sysLogger.info('<emulator> <end> '); 
     // Send response function
     // adds network delay before sending JSON-RPC response
     function sendResponse() {

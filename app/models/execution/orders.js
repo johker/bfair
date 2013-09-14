@@ -4,7 +4,6 @@ var env = process.env.NODE_ENV || 'development'
 	, root = '../../../'
 	, servicedir = root + 'app/models/services/'
  	, config = require(root + 'config/config')[env]
-	, betfair = require('betfair')
 	, session =  require(servicedir + 'session').Singelton.getInstance().getSession();
  
 	

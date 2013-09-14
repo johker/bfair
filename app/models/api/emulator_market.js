@@ -4,6 +4,9 @@
 //
 
 var emulator = require('./emulator.js');
+var exchange = require('./emulator_exchange');
+var ec = require('./emulator_checks');
+
 
 function EmulatorMarket(marketId) {
     var self = this;
@@ -34,19 +37,53 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
 EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
     var self = this;
     var log = emulator.log;
-
     log && log.info("Market: placeOrders");
-
     // prepare error response
-    var result = {
-        customerRef: req.params.customerRef, // optional
+    var result = prepareResult(req, self.marketId);     
+    var instructions = req.params.instructions;
+    prepareReports(instructions, result);    	
+	ec.checkInitialization(self, result, cb);	
+	ec.checkInstructions(self, instructions, res, result, cb); 
+	// ec.checkMarketStatus(self, res, result, cb);
+	ec.checkNumberOfBets(self, req, res, cb)
+	ec.checkBackLayCombination(self, instructions, cb);
+		
+    var dup = ec.isDuplicate(self, req);	
+	// check input bets list
+	var error;
+	for ( var i = 0; i < instructions.length; ++i) {
+		var desc = instructions[i];
+		error = exchange.checkPlaceBetItem(self, desc);
+	    sysLogger.info('<emulator_market> <placeOrders> error = ' + JSON.stringify(error, null, 2));
+		if (error)
+			break;
+	}		
+	
+		
+
+	//self.emulator.sendErrorResponse(req, res, -32602, "DSC-018");
+	
+    cb(null);
+}
+
+/**
+* 
+*/ 
+function prepareResult(req, marketId) {
+	return { 
+		customerRef: req.params.customerRef, // optional
         status: "FAILURE",
         errorCode: "BET_ACTION_ERROR",
-        marketId: self.marketId,
+        marketId: marketId,
         instructionReports: []
     };
-    var instructions = req.params.instructions;
-    for (var i = 0; i < instructions.length; ++i) {
+} 
+
+/**
+*
+*/
+function prepareReports(instructions, result) {
+	for (var i = 0; i < instructions.length; ++i) {
         var inst = instructions[i];
         var rep = {
             status: "FAILURE",
@@ -55,38 +92,6 @@ EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
         };
         result.instructionReports.push(rep);
     }
-    // reply with error if market not yet initialized
-    if (!self.isInitialized) {
-        self.emulator.sendResponse(res, result);
-        cb(null);
-        return;
-    }
-
-    // check instructions
-    for (var i = 0; i < instructions.length; ++i) {
-        var inst = instructions[i];
-        // check order
-        if (!inst.orderType || inst.orderType !== 'LIMIT') {
-            self.emulator.sendErrorResponse(res, -32602, "DSC-018");
-            cb(null);
-            return;
-        }
-        // check selectionId
-        var selId = inst.selectionId;
-        var player = self.players[selId];
-        if (!player) {
-            result.status = "INVALID_RUNNER";
-            self.emulator.sendResponse(res, result);
-            cb(null);
-            return;
-        }
-    }
-
-    // is duplicate
-    var dup = isDuplicate(self, req);
-
-    self.emulator.sendErrorResponse(req, res, -32602, "DSC-018");
-    cb(null);
 }
 
 // Process replaceOrders API call
@@ -155,20 +160,12 @@ EmulatorMarket.prototype.cancelOrders = function (req, res, cb) {
     }
 
     // is duplicate
-    var dup = isDuplicate(self, req);
+    var dup = checks.isDuplicate(self, req);
 
     sendErrorResponse(req, res, -32602, "DSC-018");
     cb(null);
 }
 
-function isDuplicate(self, req) {
-    var ref = req.params.customerRef;
-    if (!ref)
-        return false;
-    var isDup = self.customerRefs[ref] ? true : false;
-    self.customerRefs[ref] = true;
-    return isDup;
-}
 
 // Emulator is a singleton object
 module.exports = EmulatorMarket;

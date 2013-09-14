@@ -5,7 +5,6 @@ var env = process.env.NODE_ENV || 'development'
 	, root = '../../../../'
 	, servicedir = root + 'app/models/services/'
  	, config = require(root + 'config/config')[env]
-	, betfair = require('betfair')
 	, _ = require('underscore')
 	, eventfilter = require(servicedir + 'filter/eventfilter')
 	, marketfilter = require(servicedir + 'filter/marketfilter') 

@@ -4,7 +4,7 @@ var express = require('express.io')
   	, winston = require('./config/winston')
   	// socket.io setup 
 	, notifier = require('./app/models/services/notifier')
-
+	
 
 
 // Load configurations
@@ -15,12 +15,14 @@ var env = process.env.NODE_ENV || 'development'
 
 process.env['NODE_ENV'] = 'development';
 
-// Bootstrap logging (global)
-
+// Bootstrap globals
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
+betfair = require('./app/models/api'); // Patched version 
+// betfair = require('betfair'); // node module
 
 
+// Error handling
 if(env == 'development') {
 	process.on('uncaughtException', function(err) {
 	  sysLogger.crit('<server> <uncaught exception>');
@@ -28,8 +30,6 @@ if(env == 'development') {
 	  sysLogger.alert(JSON.stringify(err.stack), null, 2);
 	});
 }
-
-
 
 
 // Bootstrap db connection

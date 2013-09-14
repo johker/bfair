@@ -8,7 +8,6 @@ var root = '../../'
 	, config = require(root + 'config/config')[env]
 	, strutils = require(root + 'util/stringutil')
 	, listutils = require(root + 'util/listutil')	
-	, betfair = require('betfair')
     , MarketObserver = require(servicedir + 'marketobserver')
     , marketObserver = new MarketObserver()
     , PriceObserver = require(servicedir + 'priceobserver')

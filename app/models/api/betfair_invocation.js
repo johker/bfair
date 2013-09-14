@@ -17,7 +17,7 @@ var emulator = require('./emulator.js');
 
 // HTTPS persistent connections agent
 // requires to have a pool of parallel persitent connections
-var ForeverAgentSSL = require('../util/forever.js').SSL;
+var ForeverAgentSSL = require('./util/forever.js').SSL;
 var foreverAgentSSL = new ForeverAgentSSL({
     maxSockets: 36,
     minSockets: 16

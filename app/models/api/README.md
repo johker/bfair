@@ -1,0 +1,1 @@
+Local copy of Algotrader betfair library. See Manual for fixes.

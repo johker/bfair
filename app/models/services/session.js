@@ -1,7 +1,6 @@
 // This module contains functions shared by multiple tests
 var util = require('util')
 	, env = process.env.NODE_ENV || 'development'
-	, betfair = require('betfair')
 	, root = '../../../'
 	, config = require(root + 'config/config')[env]
 
@@ -42,7 +41,7 @@ module.exports.Singelton = (function () {
 			return self.session; 
 		}
 		else {
-			sysLogger.crit('<session> <getSession> new session instance');
+			sysLogger.crit('<session> <getSession> New Session Instance, Active App Key = ' + config.betfair.applicationkey);
 			self.session = betfair.newSession();
 			self.session.setApplicationKeys({active: config.betfair.applicationkey, delayed: config.betfair.delayedapplicationkey})
 			return self.session;

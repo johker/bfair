@@ -1,2 +1,2 @@
-{"name":"invocations","hostname":"imitator","pid":6368,"level":30,"method":"listMarketBook","duration":0.334,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-09-10T09:42:08.499Z","v":0}
-{"name":"invocations","hostname":"imitator","pid":6368,"level":30,"method":"placeOrders","duration":0.028,"isSuccess":false,"isEmulated":true,"msg":"placeOrders","time":"2013-09-10T09:42:08.530Z","v":0}
+{"name":"invocations","hostname":"imitator","pid":9924,"level":30,"method":"listMarketBook","duration":0.151,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-09-13T20:55:49.148Z","v":0}
+{"name":"invocations","hostname":"imitator","pid":9924,"level":30,"method":"placeOrders","duration":0.046,"isSuccess":false,"isEmulated":false,"msg":"placeOrders","time":"2013-09-13T20:55:49.200Z","v":0}
