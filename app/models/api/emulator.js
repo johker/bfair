@@ -73,6 +73,7 @@ exports.stopEmulatorLog = function () {
 // emulator returns matched/unmatched bets
 exports.onListMarketBook = function (result) {
     log && log.debug({result: result}, 'Emulator: onListMarketBook');
+    sysLogger.info('<emulator> <onListMarketBook>'); 
     return core.onListMarketBook(result);
 };
 

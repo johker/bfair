@@ -10,6 +10,7 @@ var root = '../../'
 	, listutils = require(root + 'util/listutil')	
     , MarketObserver = require(servicedir + 'marketobserver')
     , marketObserver = new MarketObserver()
+    , marketrequests = require(servicedir + 'markets/marketrequests')
     , PriceObserver = require(servicedir + 'priceobserver')
     , priceObserver = new PriceObserver()
     , MarketPing = require(servicedir + 'markets/pingmarkets')
@@ -17,8 +18,6 @@ var root = '../../'
 	, priceping = new PricePing ({session: session})
 	, marketping = new MarketPing ({session: session, eventType: '2'})
 	, history = require(root + 'app/models/db/history')
-	, selectedMarketId
-	, selectedPlayers = [] 
 	, logs = require(servicedir + 'prices/logfactory')
 	, cleandb = require(root + 'setup/clean')
 	, session = require(servicedir + 'session')
@@ -26,6 +25,11 @@ var root = '../../'
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, validationutil = require(root + 'util/validation')  
 	, notifier = require(root + 'app/models/services/notifier')
+	// Detail Information
+	, selectedMarketId
+	, marketName 
+	, runnerDescription = []
+
 
 session.Singelton.getInstance().login(function(err, res){
  	sysLogger.info('<apicontroller> Logged in to Betfair');
@@ -102,6 +106,15 @@ app.io.route('historyready', function(req) {
 	});	
 })
 
+/**
+* 
+* Broadcast market detail information. 
+*/
+app.io.route('detailpageready', function(req) {	
+	app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});
+
+})
+
 exports.markets = function(req, res) {		
 	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
 };    
@@ -111,8 +124,11 @@ exports.markets = function(req, res) {
 */
 app.io.route('viewprdetail', function(m) {
 	try {
-		selectedPlayers = m.data.detail.split(' v ');
-		selectedMarketId = m.data.marketId;
+		selectedMarketId = m.data.marketId;	
+		marketrequests.listMarketCatalogue({"filter":{"marketIds":['1.' + selectedMarketId]},"maxResults":"10","marketProjection":["RUNNER_DESCRIPTION"]}, function(err, res) {
+			runnerDescription = res.response.result[0].runners;
+			marketName = res.response.result[0].marketName;
+		}); 
 	} catch (err) {
 		sysLogger.crit('<apicontroller> <app.io.route:viewprdetail> Parsing parameters failed, error: ' + err);
 	}
@@ -120,7 +136,7 @@ app.io.route('viewprdetail', function(m) {
 });
 
 exports.pricedetail = function(req, res) {	
-	res.render('detail', { title: bundle.title.overview, username: req.user.username, id: selectedMarketId, pl0: selectedPlayers[0], pl1: selectedPlayers[1]});
+	res.render('detail', { title: bundle.title.overview, username: req.user.username, id: selectedMarketId});			
 }
 
 exports.history = function(req, res) {	

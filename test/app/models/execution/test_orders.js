@@ -26,7 +26,7 @@ var sid = "1178876"
 
 var order1 = {"size":"2","price":"990","persistenceType":"LAPSE"}; 
 var order2 = {"size":"2","price":"980","persistenceType":"LAPSE"}; 
-var betInstructions = [{"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT_ORDER","limitOrder":order1}, {"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT_ORDER","limitOrder":order2}];
+var betInstructions = [{"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT","limitOrder":order1}, {"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT","limitOrder":order2}];
 var params =  {"marketId":mid, "instructions": betInstructions}
 
 
@@ -37,7 +37,7 @@ instance.login(function(err, res){
  		console.log(res); 
 		orders.listCurrentOrders({}, function() {
 			sysLogger.info('<test_orders> <listCurrentOrders>');
-			process.exit(1);			
+		
 		});
 	});
  });	

@@ -161,7 +161,7 @@ BetfairSession.prototype.listTimeRanges = createInvocation("sports", "listTimeRa
 BetfairSession.prototype.listVenues = createInvocation("sports", "listVenues");
 
 // betting
-BetfairSession.prototype.placeOrders = createInvocation("sports", "placeOrders", false);
+BetfairSession.prototype.placeOrders = createInvocation("sports", "placeOrders", true);
 BetfairSession.prototype.replaceOrders = createInvocation("sports", "replaceOrders");
 BetfairSession.prototype.updateOrders = createInvocation("sports", "updateOrders");
 BetfairSession.prototype.cancelOrders = createInvocation("sports", "cancelOrders");

@@ -10,93 +10,28 @@ block content
 		.page-header
 				h2 Market Detail
 			p.lead
-				form.form-inline
-					.mid ID:
-					.toa Total Available: 
-					.ip In Play:  
 				.row
-					.span6
+					.span12
 						.alert.alert-info
-							.hpl0 
-								strong Player 0
-							.sid0 Selection ID: 
+							.mn Name:
 								strong
-							.lpt0 Last Price Traded: 
+							.mid ID:
 								strong
-							.tm0 Total Matched: 
+							.toa Total Available:
 								strong
-						table#pl0book.table.table-bordered
+							.ip In Play:
+								strong							
+				.row
+					.span12
+						table#marketbook.table.table-bordered
 							thead
-								tr
-									th Back 
-									th Price
-									th Lay	
-							tbody
-								tr#ob1
-									td#back 
-									td#price &nbsp;
-									td#lay
-								tr#ob2
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob3
-									td#back
-									td#price &nbsp; 
-									td#lay
-								tr#ob4
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob5
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob6
-									td#back
-									td#price &nbsp;
-									td#lay
-					.span6
-						.alert.alert-info
-							.hpl1 
-								strong Player 1
-							.sid1 Selection ID: 
-								strong
-							.lpt1 Last Price Traded: 
-								strong
-							.tm1 Total Matched: 
-								strong
-						table#pl1book.table.table-bordered
-							thead
-								tr
-									th Back
-									th Price
-									th Lay	
-							tbody
-								tr#ob1
-									td#back 
-									td#price &nbsp;
-									td#lay
-								tr#ob2
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob3
-									td#back
-									td#price &nbsp; 
-									td#lay
-								tr#ob4
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob5
-									td#back
-									td#price &nbsp;
-									td#lay
-								tr#ob6
-									td#back
-									td#price &nbsp;
-									td#lay
+								tr								
+									th Runners
+									th Last Price Traded
+									th Total Matched
+									th(colspan="3") Back
+									th(colspan="3") Lay
+							tbody								
 				.row
 					.span6
 						form#backform(method='post', action='/markets')
@@ -129,35 +64,50 @@ block content
 										option(value="MARKET_ON_CLOSE") MARKET_ON_CLOSE
 							button#execute.btn.btn-primary.btn-mini(type='button') Execute
 					script
-						io = io.connect();
+						io = io.connect();																
 						io.on('tick_' + #{id},function(data){
-							$('.mid').text('ID: ' + data.marketId);
-							$('.toa').text('Total Available: ' + data.totalAvailable);
-							$('.ip').text('In Play: ' + data.inplay);
-							$('.hpl0 strong').text('#{pl0}'); 
-							$('.hpl1 strong').text('#{pl1}'); 
+							$('.mid strong').text(' ' + data.marketId);
+							$('.toa strong').text(' ' + data.totalAvailable);
+							$('.ip strong').text(' ' + data.inplay);							
+							if($('#marketbook tr').length == 1) {
+								createTable(data); 
+								io.emit('detailpageready');
+							} 
 							assign(data);
+						});		
+						io.on('runnerdesc',function(data){
+							$('.mn strong').text(' ' +data.marketName);
+							for(var i = 0; i<data.runnerDescription.length; i++) {
+									setAndHighlightItem('marketbook tbody tr#r' + i + 's td#rdesc', data.runnerDescription[i].runnerName, data.runnerDescription[i].selectionId);			
+								}
 						});
+						function createTable(data) {
+							console.log('createTable'); 
+							for ( var rIdx = 0; rIdx < data.runners.length; ++rIdx) {
+								$('#marketbook tbody').append('<tr id="r' + rIdx + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');								
+							}							
+						}
+						
 						function assign(data) {
 							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
-								var runner = data.runners[pIdx];								
+								var runner = data.runners[pIdx];
 								if($('#idselect option').size() < 2) {
 									$('#idselect').append(new Option(runner.selectionId,runner.selectionId));
 								}
-								$('.sid' + pIdx + ' strong').text(runner.selectionId);
-								$('.lpt' + pIdx + ' strong').text(runner.lastPriceTraded);
-								$('.tm' + pIdx + ' strong').text(runner.totalMatched);							
-								var atb = data.runners[pIdx].ex.availableToBack;
-								for(var bIdx = 0; bIdx < atb.length; bIdx++) {
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#back', atb[bIdx].size);									
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (bIdx+4) + ' td#price', atb[bIdx].price);
-								}					
-								var atl = data.runners[pIdx].ex.availableToLay;	
-								for(var lIdx = 0; lIdx < atl.length; lIdx++) {									
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#lay', atl[lIdx].size);									
-									setAndHighlight('pl' + pIdx + 'book tbody tr#ob' + (atl.length-lIdx) + ' td#price', atl[lIdx].price);
+								setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#rlpt', '', runner.lastPriceTraded);
+								setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#rtm', '', runner.totalMatched);
+								var atb = data.runners[pIdx].ex.availableToBack;								
+								for(var bIdx = 2; bIdx >= 0; bIdx--) {
+									if(atb[bIdx]) {
+										setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#b' + (2-bIdx), atb[bIdx].size, atb[bIdx].price);
+									}									
+								}																					
+								var atl = data.runners[pIdx].ex.availableToLay;									
+								for(var lIdx = 0; lIdx < 3; lIdx++) {									
+									if(atl[lIdx]) {
+										setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#l' + lIdx, atl[lIdx].size, atl[lIdx].price);
+									}	
 								}
-								
 							}
 						}	
 						$('#execute').click(function(e) {

@@ -29,8 +29,9 @@ session.enableBetEmulatorForMarket(mid);
 
 var order1 = {"size":"2","price":"990","persistenceType":"LAPSE"}; 
 var order2 = {"size":"2","price":"980","persistenceType":"LAPSE"}; 
-var betInstructions = [{"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT_ORDER","limitOrder":order1}, {"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT_ORDER","limitOrder":order2}];
-var params =  {"marketId":mid, "instructions": betInstructions}
+var betInstructions = [{"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT","limitOrder":order1}, {"selectionId":sid,"handicap":"0","side":"BACK","orderType":"LIMIT","limitOrder":order2}];
+var params =  {"marketId":mid, "instructions": betInstructions};
+var cancelparams = {"marketId":mid};
 var filter = { marketIds: [ mid], priceProjection: { priceData: [ 'EX_ALL_OFFERS' ] } };
 
 // log all Betfair invocations
@@ -53,19 +54,18 @@ function enableEmulator(data, cb) {
 session.login(config.betfair.user, config.betfair.password, function(err, res) {
 	sysLogger.debug('<test_emulator> <login>');
 	request.listMarketBook(filter, function(err, res) {
-		sysLogger.debug('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2)); 
+		sysLogger.debug('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2));
 		orders.placeOrders(params, function(err, res) {
-			console.log(res);
-			sysLogger.crit('<test_emulator> <placeOrders> ' + JSON.stringify(res.response,null,2));
-			process.exit(1);
+			sysLogger.crit('<test_emulator> <placeOrders> res = ' + JSON.stringify(res,null,2));
+			//console.log(res);				
+			orders.cancelOrders(cancelparams, function(err, res) {
+				sysLogger.crit('<test_emulator> <cancelOrders> res = ' + JSON.stringify(res,null,2));
+			});
 		});
 	});	
 });
 
 
-/*
-
- */
 
  
  

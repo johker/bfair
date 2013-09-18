@@ -18,8 +18,8 @@ var lastBetId = 10000000000;
 function EmulatorBet(markId, selId, type, price, size) {
     var self = this;
 
-    if (type !== 'B' && type !== 'L')
-        throw new Error('Bet type should be B or L');
+    if (type !== 'BACK' && type !== 'LAY')
+        throw new Error('Bet type should be BACK or LAY');
 
     var roundedPrice = betfairPrice.newBetfairPrice(1 * price);
     if (Math.abs(price - roundedPrice) > 0.000001)

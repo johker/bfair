@@ -2,6 +2,10 @@
  * Externalized checks on emulator operations. 
  */ 
   
+var betfairPrice = require('./betfair_price');
+
+var minimumBetSize = 2.0; // GBP
+var maximumBetSize = 10000.0; //? GBP 
  
  /**
  *
@@ -37,9 +41,19 @@
     for (var i = 0; i < instructions.length; ++i) {
         var inst = instructions[i];
         // check order
-        if (!inst.orderType || inst.orderType !== 'LIMIT_ORDER') {
+        if (!inst.orderType || inst.orderType !== 'LIMIT') {
         	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Order Type'); 
             em.emulator.sendErrorResponse(res, -32602, "DSC-018");
+            cb(null);
+            return;
+        }
+        var error; 
+        
+		error = checkPlaceBetItem(em, inst);	  
+		if (error) {
+        	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Bet Item'); 
+            result.status = "INVALID_BET_ITEM";
+            em.emulator.sendResponse(res, result);
             cb(null);
             return;
         }
@@ -56,6 +70,65 @@
     }
  
  } 
+ 
+ /**
+* Check a single bet item from placeBets bets list
+*/
+function checkPlaceBetItem(em, desc) {
+
+    if (!desc.limitOrder ||
+    	( desc.limitOrder.persistenceType !== 'LAPSE' 
+    	&& desc.limitOrder.persistenceType !== 'PERSIST'
+    	&& desc.limitOrder.persistenceType !== 'MARKET_ON_CLOSE')) {
+    	sysLogger.info('<emulator_checks> <checkPlaceBetItem> INVALID_PERSISTENCE');
+        return 'INVALID_PERSISTENCE';
+    }
+
+    if (desc.side !== 'BACK' && desc.side !== 'LAY') {
+    	sysLogger.info('<emulator_checks> <checkPlaceBetItem> INVALID_BET_TYPE');
+        return 'INVALID_BET_TYPE';
+    }
+
+    var price = betfairPrice.newBetfairPrice(desc.price);
+    if (Math.abs(price.size - 1 * desc.price) > 0.0001) {
+    	sysLogger.info('<emulator_checks> <checkPlaceBetItem> INVALID_PRICE');
+        return 'INVALID_PRICE';
+    }
+
+    if (!em.players[desc.selectionId]) {
+    	sysLogger.info('<emulator_checks> <checkPlaceBetItem> SELECTION_REMOVED');
+        return 'SELECTION_REMOVED';
+	}
+
+    if (1 * desc.size < minimumBetSize || 1 * desc.size > maximumBetSize) {
+    	sysLogger.info('<emulator_checks> <checkPlaceBetItem> INVALID_SIZE');
+        return 'INVALID_SIZE';
+	}
+    // no checks failed, then bet is OK
+    return null;
+}
+ 
+/**
+* Check a single bet item from updateBets bets list
+*/
+function checkUpdateBetItem(em, desc) {
+    throw new Error('Not yet implemented');
+}
+
+/**
+* Check a single bet item from cancelBets bets list
+*/
+function checkCancelBetItem (em, desc) {
+    // check betId is mine
+    if (!em.bets[desc.betId]) {
+        // MARKET_IDS_DONT_MATCH - Bet ID does not exist
+        return 'MARKET_IDS_DONT_MATCH';
+    }
+    return null;
+}
+ 
+ 
+ 
  
  exports.checkMarketStatus = function(em, res, result, cb) {
 	 // handle market status, only 'ACTIVE' allows placing bets

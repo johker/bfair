@@ -33,6 +33,18 @@ function setAndHighlight(selector, value) {
 	}
 }
 
+function setAndHighlightItem(selector, value1, value2) {	
+	var newval = value1 + '<br><strong>' +  value2 + '</strong>';
+	var valtocmp = value1 + '' + value2;	
+	var cmp = $('#' + selector).text().localeCompare(valtocmp);
+	if(cmp != 0) {
+		$('#' + selector).html(newval);
+		$('#' + selector)
+			.animate( { backgroundColor: "#E6E6E6" }, 500 )
+			.animate( { backgroundColor: "transparent" }, 500 );
+	}
+}
+
 /** Error and confirmation message handling */
 
 function setErrorMessages(title, errmsgs) {

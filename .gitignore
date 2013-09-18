@@ -1,1 +1,5 @@
 .project	
+.p12
+.key
+initaccounts.js
+inituser.js

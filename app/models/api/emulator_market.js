@@ -7,12 +7,14 @@ var emulator = require('./emulator.js');
 var exchange = require('./emulator_exchange');
 var ec = require('./emulator_checks');
 
+var EmulatorBet = require('./emulator_bet.js');
 
 function EmulatorMarket(marketId) {
     var self = this;
     self.marketId = marketId;
     self.isInitialized = false;
     self.players = {};
+    self.bets = {};
 }
 
 EmulatorMarket.prototype.onListMarketBook = function (rec) {
@@ -24,6 +26,9 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
 
     var p1 = self.bookRecord.runners[0];
     var p2 = self.bookRecord.runners[1];
+    
+    //p1.bestBack
+    
     self.players[p1.selectionId] = p1;
     self.players[p2.selectionId] = p2;
 
@@ -32,6 +37,11 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
     }
     self.isInitialized = true;
 }
+
+
+
+
+
 
 // Process placeOrders API call
 EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
@@ -49,21 +59,30 @@ EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
 	ec.checkBackLayCombination(self, instructions, cb);
 		
     var dup = ec.isDuplicate(self, req);	
-	// check input bets list
-	var error;
+	var betIds = createBets(self, instructions); 
+	// Try to match bets using price matching
+	var bets = betIds.map(function(id) {
+		return self.bets[id];
+	});
+	
+	
+	exchange.matchBetsUsingPrices(self, bets);	
+	cb(null);
+}
+
+
+function createBets(em, instructions) {
+	var betIds = [];
 	for ( var i = 0; i < instructions.length; ++i) {
 		var desc = instructions[i];
-		error = exchange.checkPlaceBetItem(self, desc);
-	    sysLogger.info('<emulator_market> <placeOrders> error = ' + JSON.stringify(error, null, 2));
-		if (error)
-			break;
-	}		
+		var bet = new EmulatorBet(em.marketId, desc.selectionId, 
+					desc.side, desc.limitOrder.price, 
+					desc.limitOrder.size);
+		betIds.push(bet.betId);
+		em.bets[bet.betId] = bet;
+	}
+	return betIds;
 	
-		
-
-	//self.emulator.sendErrorResponse(req, res, -32602, "DSC-018");
-	
-    cb(null);
 }
 
 /**
@@ -93,6 +112,9 @@ function prepareReports(instructions, result) {
         result.instructionReports.push(rep);
     }
 }
+
+
+
 
 // Process replaceOrders API call
 EmulatorMarket.prototype.replaceOrders = function (req, res, cb) {

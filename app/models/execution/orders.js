@@ -22,6 +22,20 @@ exports.placeOrders = function(params, cb){
     });
 }
 
+ /**
+*
+*/
+exports.cancelOrders = function(params, cb){
+	if(!cb) cb = params;  // cb is first parameter   
+    session.cancelOrders(params, function(err,res) {    
+    	if(err) sysLogger.error('<orders> <cancelOrders> code = ' + err.code + ', message = ' + err.message);
+        sysLogger.debug("<orders> <cancelOrders> err=" +  err + " duration= " + res.duration/1000);
+        sysLogger.debug("<orders> <cancelOrders> Request:%s\n", JSON.stringify(res.request, null, 2))
+        sysLogger.debug("<orders> <cancelOrders> Response:%s\n", JSON.stringify(res.response, null, 2));
+        cb(err,res);
+    });
+}
+
 
  /**
 *
