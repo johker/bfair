@@ -18,7 +18,7 @@ var root = '../../../../'
  module.exports.markets = function(cached, incoming, mid, self) {
  	var mapN = utils.mapFromArray(incoming, mid); 
 	for (var id in cached) {
-        if (!mapN.hasOwnProperty(id)) {            
+        if (!mapN.hasOwnProperty(id) ) {            
               self.remove(id);
     	}
     }

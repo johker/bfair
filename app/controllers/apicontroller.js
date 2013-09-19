@@ -8,10 +8,12 @@ var root = '../../'
 	, config = require(root + 'config/config')[env]
 	, strutils = require(root + 'util/stringutil')
 	, listutils = require(root + 'util/listutil')	
-    , MarketObserver = require(servicedir + 'marketobserver')
+	, async = require('asnyc')
+    , MarketObserver = require(servicedir + 'markets/marketobserver')
     , marketObserver = new MarketObserver()
     , marketrequests = require(servicedir + 'markets/marketrequests')
-    , PriceObserver = require(servicedir + 'priceobserver')
+    , checks = require(servicedir + 'checks');
+    , PriceObserver = require(servicedir + 'prices/priceobserver')
     , priceObserver = new PriceObserver()
     , MarketPing = require(servicedir + 'markets/pingmarkets')
 	, PricePing = require(servicedir + 'prices/pingprices')
@@ -66,11 +68,17 @@ marketObserver.on('logPrices',function(market) {
 *  if logging is enabled. 
 */
 marketObserver.on('stopLogging', function(market) {
-	mid = market.marketId;
-	priceping.removeMarketId(mid);	
+	mid = '1.' + market.marketId;
+	priceping.removeMarketId(mid);		
+	async.waterfall([function(cb) {cb(null, mid);}, checks.marketIdLength, checks.marketStatus, checks.marketEventType], function(err,res) {
+	    if(err) {
+	    	sysLogger.error('<marketObserver> <on: stopLogging> ' + err);	  
+	    	return; 
+	    }    
+	});		
 	priceObserver.passivate(mid);
 	sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + mid);
-	history.add(market);	// TODO: UNCOMMENT !!!
+	history.add(market);
 });
 
 marketping.start();
@@ -92,7 +100,6 @@ app.io.route('marketsready', function(req) {
 	 }	
 	//app.io.broadcast('updatecounters', {active: marketObserver.getSize()});			
 })
-
 
 /**
 * 
@@ -118,6 +125,15 @@ app.io.route('detailpageready', function(req) {
 exports.markets = function(req, res) {		
 	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
 };    
+
+
+exports.orders = function(req, res) {		
+	res.render('orders',  { title: bundle.title.overview, username: req.user.username});	
+};   
+
+exports.rules = function(req, res) {		
+	res.render('rules',  { title: bundle.title.overview, username: req.user.username});	
+};   
 
 /**
 * Market view sets values. Routing is done by method 'pricedetail'
@@ -163,6 +179,9 @@ exports.removecompletehistory = function() {
 	app.io.broadcast('reset');
 }
 
+/**
+* DEPRECATED
+*/
 exports.validateorder = function(req, res, callback) {
 	sysLogger.info('<apicontroller> <validateorder> ');
 	req.assert('price', bundle.validation.novalidprice).isNumber();

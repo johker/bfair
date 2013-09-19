@@ -30,13 +30,16 @@ module.exports = {
       	 	prices: 'prices',    // Logged prices of selected market IDs, DEPRECATED
       	 	prefix: 'mid'
       	 },
-      	level: 'info'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'warning'			// debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       api: {
       	marketName: 'Wettquoten',
       	timeout: 5000,
       	eventType: '2',
       	maxResults: '100'     
+      }, 
+      execution: {
+      	tmThreshold: 1000
       }
     }
   , test: {
@@ -76,7 +79,8 @@ module.exports = {
       api: {
       	marketName: 'Wettquoten',
       	timeout: 5000,
-      	eventType: '2'     
+      	eventType: '2',
+      	maxResults: '100'     
       }   	
     }
   , production: {

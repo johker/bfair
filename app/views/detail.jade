@@ -35,34 +35,7 @@ block content
 				.row
 					.span6
 						form#backform(method='post', action='/markets')
-							button.btn.btn-primary.btn-mini(type='submit') Back
-				.row
-					.span12
-						form#orderform 	
-							fieldset
-								legend Orders
-								include messages									
-								.form-group
-									label(for="runnerselect") Selection ID
-									select#idselect(name="accountId") 
-								.form-group
-									label(for="sizeselect") Size
-									input#sizeselect(type="text", placeholder="Size")
-								.form-group
-									label(for="priceselect") Price
-									input#priceselect(type="text", placeholder="Price")
-								.form-group
-									label(for="sideselect") Side
-									select#sideselect  
-										option(value="BACK") BACK
-										option(value="LAY") LAY
-								.form-group
-									label(for="typeselect") Order Type
-									select#typeselect
-										option(value="LIMIT") LIMIT
-										option(value="LIMIT_ON_CLOSE") LIMIT_ON_CLOSE
-										option(value="MARKET_ON_CLOSE") MARKET_ON_CLOSE
-							button#execute.btn.btn-primary.btn-mini(type='button') Execute
+							button.btn.btn-primary.btn-mini(type='submit') Back				
 					script
 						io = io.connect();																
 						io.on('tick_' + #{id},function(data){
@@ -109,66 +82,5 @@ block content
 									}	
 								}
 							}
-						}	
-						$('#execute').click(function(e) {
-							validate(e.target.id);
-						});
-						$("#close-alerts").click(function(e) {
-							e.preventDefault();
-							$('#erritems li').remove();
-							$('#errmsg').hide();						
-						});
-						$("#close-confirmation").click(function(e) {
-							e.preventDefault();
-							$('#confcontent li').remove();
-							$('#confmsg').hide();						
-						});
-						function validate(target) {
-							$.ajax({
-							url: '/validateorder',
-							type: 'POST',
-							cache: false,
-							data: {
-								price: $('#priceselect').val(), 
-								size: $('#sizeselect').val(),
-								sid: $('#idselect :selected').val(),
-								type: $('#typeselect :selected').val(),
-								side: $('#sideselect :selected').val(),
-								operation: target
-							},
-							success: function(data){
-								resetMessages();								
-								if(data.errorTitle == undefined) { 
-									setConfirmationMessages(data.conftitle, data.confcontent);
-									$('#confmsg').show();
-									$('#errmsg').hide();								
-									
-								} else {
-									setErrorMessages(data.errorTitle, data.errors);
-									$('#confmsg').hide();
-									$('#errmsg').show();
-								}																			
-							}
-							, error: function(jqXHR, textStatus, err){
-								alert(err);
-								}
-							})
-						}
-						function execute() {
-							$.ajax({
-							url: '/executeorder',
-							type: 'POST',
-							cache: false,
-							data: {eventId: $('#eventId').val(), startDate: $('#startDate').val(), endDate: $('#endDate').val()},
-							success: function(data){
-								resetMessages();
-								setValues(data.eventId, data.startDate, data.endDate);
-								setConfirmationMessages(data.msgTitle, data.msgContent);
-								$('#confmsg').show();														
-							}
-							, error: function(jqXHR, textStatus, err){
-								alert(err);
-								}
-							})
+						}					
 						
-						}

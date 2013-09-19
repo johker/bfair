@@ -29,6 +29,8 @@ app.get('/users/:userId', uctrl.show)
 // app.get('/data', auth.requiresLogin, dctrl.data);
 app.get('/account', auth.requiresLogin, actrl.account);
 app.get('/markets', auth.requiresLogin, apictrl.markets);
+app.get('/orders', auth.requiresLogin, apictrl.orders);
+app.get('/rules', auth.requiresLogin, apictrl.rules);
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
 	function(req, res) {

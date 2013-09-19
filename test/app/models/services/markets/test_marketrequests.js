@@ -18,11 +18,19 @@ var session = require(servicedir + 'session')
 	, request = require(servicedir + 'markets/marketrequests')
 
 , mid = '1.107453576';
-	
+	/*
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
  	request.listMarketCatalogue( {"filter":{"marketIds":[mid]},"maxResults":"1","marketProjection":["RUNNER_DESCRIPTION"]}, function(err, res) {
 		console.log(res.response.result[0]); 
+	});
+ });	
+*/
+
+instance.login(function(err, res){
+ 	sysLogger.info('<test_marketrequests> Logged in to Betfair');
+ 	request.listMarketBook({"marketIds":[mid]}, function(err, res) {
+		console.log(res.response); 
 	});
  });	
 

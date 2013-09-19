@@ -38,7 +38,7 @@ exports.listMarkets = function(filter, cb) {
 		for(var i in resf) {
 			mids.push(resf[i].event.id);	
 		}
-		exports.listMarketCatalogue({"filter":{"eventIds":mids},"maxResults":"10","sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
+		exports.listMarketCatalogue({"filter":{"eventIds":mids},"maxResults":config.api.maxResults,"sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
 			 cb(err,res.response.result);
 		});
 		
@@ -62,6 +62,22 @@ exports.listMarketCatalogue = function(filter, cb)  {
         cb(err,res);
     });
 }
+
+/**
+* Returns a list of dynamic data about markets. Dynamic data includes prices, the status of the market, 
+* the status of selections, the traded volume, and the status of any orders you have placed in the market.
+*/
+exports.listMarketBook = function(filter, cb)  {
+	if(!cb) cb = par;  // cb is first parameter    
+	//console.log(filter);
+    session.listMarketBook(filter, function(err,res) {
+       	if(err) sysLogger.notice("<marketrequests> <listMarketBook> " + JSON.stringify(err));
+        sysLogger.debug("<marketrequests> <listMarketBook> Request:%s\n", JSON.stringify(res.request, null, 2))
+        sysLogger.debug("<marketrequests> <listMarketBook> Response:%s\n", JSON.stringify(res.response, null, 2));
+        cb(err,res);
+    });
+}
+
 
 /**
 *
