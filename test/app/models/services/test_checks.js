@@ -21,11 +21,11 @@ var session = require(servicedir + 'session')
 	
 	
 	
-
+// Very weird stuff
 instance.login(function(err, res){
 	async.waterfall([function(callback) {callback(null, '1.107453576');}, checks.marketIdLength, checks.marketStatusClosed, checks.marketEventType], function (err, mid) {
-	    console.log(err);  
 	    if(!err) console.log(mid); 
+	  	 else console.log(err);
 	});	
 	
 });

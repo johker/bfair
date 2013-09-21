@@ -19,15 +19,12 @@ process.env['NODE_ENV'] = 'development';
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 betfair = require('./app/models/api'); // Patched version 
-// betfair = require('betfair'); // node module
 
-
-// Error handling
 if(env == 'development') {
 	process.on('uncaughtException', function(err) {
 	  sysLogger.crit('<server> <uncaught exception>');
 	  //notifier.sendMail('Bfair App Crash',  err.message); 
-	  sysLogger.alert(JSON.stringify(err.stack), null, 2);
+	  console.error(err.stack);
 	});
 }
 
@@ -43,7 +40,7 @@ fs.readdirSync(models_path).forEach(function (file) {
 })
 
 // bootstrap passport config	
-require('./config/passport')(passport, config)
+require('./config/passport')(passport, config);
 
 // Making app GLOBALLY accessible
 app = express();

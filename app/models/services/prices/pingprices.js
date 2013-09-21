@@ -12,14 +12,19 @@ var env = process.env.NODE_ENV || 'development'
 	, listutils = require(root + 'util/listutil')
 	, events = require('events')
 	, _ = require('underscore')
+	, throttle = require(servicedir + 'throttle') 
+	, batch = require(servicedir + 'batch')
+	, marketfactory = require(servicedir + 'prices/marketfactory') 
+	
 /*
 * Ping Constructor 
 */
 var Ping = function Ping (opts) {
-    this.timeout = opts.timeout || config.api.timeout; 
+    this.timeout = opts.timeout || config.api.baseto.price; 
     this.handle = null;
     this.session = opts.session;
     this.marketIds = [];
+    this.batchCt = batch.getBatchCt() || 1;
 };
 
 util.inherits(Ping, EventEmitter);
@@ -39,33 +44,41 @@ Ping.prototype.stop = function() {
     this.handle = null;
 };
 
-Ping.prototype.addMarketId = function(marketId) {
-	sysLogger.info('<pingPrices> <addMarketId> id = ' + marketId); 
-	this.marketIds.push(marketId);
+Ping.prototype.addMarketId = function(mid) {	
+	// Generate market object to track number of requests
+	var market = new marketfactory.Market(mid);	
+	batch.addMarket(market);
+	throttle.addMarket(market);
 }
 
-Ping.prototype.removeMarketId = function(marketId) {
-	sysLogger.debug('<pingprices> <removeMarketId> ' + this.marketIds)
-	this.marketIds = _.without(this.marketIds, marketId);
-	sysLogger.debug('<pingprices> <removeMarketId> removed ' + marketId + ' new list = ' + this.marketIds);
+Ping.prototype.removeMarketId = function(mid) {
+	// Generate market object to track number of requests
+	var market = new marketfactory.Market(mid);
+	batch.removeMarket(market);
+	throttle.removeMarket(market);
 }
 
 Ping.prototype.ping = function() {
 	var self = this;
-	currentTime = Date.now();
+	sysLogger.debug('<pingprices> <ping> timeout = ' + self.timeout);
 	try {
 		if(env == 'test') {		
-			pricemock.getPrices(this.marketIds, function(res, err) {
+			pricemock.getPrices(batch.getNextBatch(), function(res, err) {
 		           	self.emit('ping', res);
 		    });
 	     } else {
-	   		if(this.marketIds.length > 0) { 	
-		   		var filter = {"marketIds": this.marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
-	           	pricerequest.listMarketBook(filter, function(err, res) {           		
-		        	self.emit('ping', res.response.result);
-		        });
+	   		if(batch.notEmpty()) { 	
+	   			var marketIds = self.updateCounters(batch.getNextBatch());
+	   			if(marketIds.length > 0) {
+	   				var filter = {"marketIds": marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
+		   				pricerequest.listMarketBook(filter, function(err, res) {   
+		   					self.emit('ping', res.response.result);
+		        	});
+	   			}
 		    }
-        }     		  
+        }
+		// adjust interval 
+		self.updateInterval();
     } catch (err) {
        sysLogger.error('<pingprices> <ping> ' + err);
        sysLogger.error(err.stack);
@@ -73,5 +86,29 @@ Ping.prototype.ping = function() {
 }
 
 
+Ping.prototype.updateInterval = function() {
+	var self = this;
+	if(batch.getBatchCt() != self.batchCt) { 
+			self.batchCt = batch.getBatchCt();
+			clearInterval(self.handle);
+			var newinterval = Math.round(config.api.baseto.price / self.batchCt);
+			sysLogger.crit('<pingprices> <ping> Minimum interval changed to ' + newinterval + 'ms');
+		    self.handle = setInterval(function () {
+		       		self.ping();
+		    	}, newinterval); 		
+	}  
+}
+
+Ping.prototype.updateCounters = function(markets) {
+	var ids = [];
+	for(var i = 0; i < markets.length; i++) {
+		markets[i].isRequested();
+		if(throttle.ready(markets[i])) {
+			markets[i].resetReqCt();
+			ids.push(markets[i].getId());
+		} 
+	}
+	return ids;
+}
 
 module.exports = Ping;

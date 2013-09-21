@@ -14,8 +14,8 @@ exports.listMarketBook = function(params, cb){
     session.listMarketBook(params, function(err,res) {    
     	if(err) sysLogger.error('<pricerequests> <listMarketBook> code = ' + err.code + ', message = ' + err.message);
         //sysLogger.debug("<pricerequests> <listMarketBook> err=" +  err + " duration= " + res.duration/1000);
-        sysLogger.debug("<pricerequests> <listMarketBook> Request:%s\n", JSON.stringify(res.request, null, 2))
-        sysLogger.debug("<pricerequests> <listMarketBook> Response:%s\n", JSON.stringify(res.response, null, 2));
+        //sysLogger.debug("<pricerequests> <listMarketBook> Request:%s\n", JSON.stringify(res.request, null, 2))
+        //sysLogger.debug("<pricerequests> <listMarketBook> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);
     });
 }

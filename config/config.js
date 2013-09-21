@@ -34,7 +34,24 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 5000,
+      	baseto: {
+      		market: 10000, 	// Timeout for market requests
+      		price: 1000    // Basic Timeout price requests
+      	},
+      	throttle: {
+      		fac1: 10,
+      		fac2: 5,
+      		fac3: 2, 
+      		fac4: 1, 
+      		th1: 10,
+      		th2: 100, 
+      		th3: 1000,
+      		th4: 5000
+      	}, 
+      	batch: {
+      		size: 10,
+      		max: 10
+      	},
       	eventType: '2',
       	maxResults: '100'     
       }, 
@@ -78,10 +95,16 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	timeout: 5000,
+      	baseto: {
+      		market: 30000, 
+      		price: 1000
+      	},
       	eventType: '2',
       	maxResults: '100'     
-      }   	
+      },
+      execution: {
+      	tmThreshold: 1000
+      }  	
     }
   , production: {
 

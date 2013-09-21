@@ -8,11 +8,11 @@ var root = '../../'
 	, config = require(root + 'config/config')[env]
 	, strutils = require(root + 'util/stringutil')
 	, listutils = require(root + 'util/listutil')	
-	, async = require('asnyc')
+	, async = require('async')
     , MarketObserver = require(servicedir + 'markets/marketobserver')
     , marketObserver = new MarketObserver()
     , marketrequests = require(servicedir + 'markets/marketrequests')
-    , checks = require(servicedir + 'checks');
+    , checks = require(servicedir + 'checks')
     , PriceObserver = require(servicedir + 'prices/priceobserver')
     , priceObserver = new PriceObserver()
     , MarketPing = require(servicedir + 'markets/pingmarkets')
@@ -50,16 +50,15 @@ marketping.on('ping', function(markets){
 * Update database and emit websocket events for GUI. 
 */   
 priceping.on('ping', function(prices) {
-	sysLogger.debug('<apicontroller> <priceping.on:ping> market ID = ' + prices.marketId);
-	priceObserver.synchronize(prices);	
-	
+	sysLogger.debug('<apicontroller> <priceping.on:ping> market ID = ' + (prices != undefined ? prices.marketId : 'undefined!'));
+	priceObserver.synchronize(prices);
 });
 
 /**
 * Trigger logging for incomming market by adding it to ping list
 */
 marketObserver.on('logPrices',function(market) {
-	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + market.marketId);
+	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + (market != undefined ? market.marketId : 'undefined!'));
 	priceping.addMarketId(market.marketId);
 });
 

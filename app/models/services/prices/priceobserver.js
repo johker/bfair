@@ -99,7 +99,6 @@ function generateLogObj(book) {
 			logobj['pl' + index] = availableToLay[bIdx].price;		
 		}
 	}
-	//console.log(logobj); 
 	return logobj;
 }
 

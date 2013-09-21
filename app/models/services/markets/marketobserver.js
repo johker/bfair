@@ -85,8 +85,7 @@ MarketObserver.prototype.synchronize = function(incoming) {
 	if(incoming == undefined) {
 		sysLogger.debug('<marketobserver> <synchronize> incoming == undefined'); 
 		return; 
-	}
-	console.log(incoming); 
+	}	
 	sync.markets(watchedmarkets, incoming, mid, self);   
     init = false;	
 }

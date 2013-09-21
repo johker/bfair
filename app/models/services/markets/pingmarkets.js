@@ -19,7 +19,7 @@ var env = process.env.NODE_ENV || 'development'
 */
 var Ping = function Ping (opts) {
     this.eventType = opts.eventType || config.api.eventType; 
-    this.timeout = opts.timeout || config.api.timeout; 
+    this.timeout = opts.timeout || config.api.baseto.market; 
     this.handle = null;
     this.filter = opts.filter || {"filter": {"eventTypeIds" : [2], "turnsInPlay" : true}};
     this.session = opts.session;
@@ -46,7 +46,6 @@ Ping.prototype.stop = function() {
 
 Ping.prototype.ping = function(){
 	var self = this;
-	currentTime = Date.now(); 	
     if(env == 'test') {           	       	
       	marketmock.getMarkets(function(markets, err) {
        		self.emit('ping', markets);

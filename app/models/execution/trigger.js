@@ -19,7 +19,7 @@ exports.updateTheoreticalPrice = function(marketId, price) {
 exports.addMarket = function(marketId) {
 	if(activeMarkets.indexOf(marketId) == -1) {
 		activeMarkets.push(marketId);
-		console.log(marketId);
+		sysLogger.info('<trigger> <addMarket> ' + marketId);
 	}
 }
 
