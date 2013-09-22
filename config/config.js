@@ -46,11 +46,14 @@ module.exports = {
       		th1: 10,
       		th2: 100, 
       		th3: 1000,
-      		th4: 5000
+      		thupdt: 10 
       	}, 
       	batch: {
       		size: 10,
       		max: 10
+      	},
+      	trigger: {
+      	
       	},
       	eventType: '2',
       	maxResults: '100'     

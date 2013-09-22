@@ -25,6 +25,7 @@ var Ping = function Ping (opts) {
     this.session = opts.session;
     this.marketIds = [];
     this.batchCt = batch.getBatchCt() || 1;
+    this.reqct = 0; 
 };
 
 util.inherits(Ping, EventEmitter);
@@ -68,10 +69,15 @@ Ping.prototype.ping = function() {
 		    });
 	     } else {
 	   		if(batch.notEmpty()) { 	
-	   			var marketIds = self.updateCounters(batch.getNextBatch());
+	   			var markets = batch.getNextBatch();
+	   			var marketIds = self.updateCounters(markets);
 	   			if(marketIds.length > 0) {
 	   				var filter = {"marketIds": marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
-		   				pricerequest.listMarketBook(filter, function(err, res) {   
+		   				pricerequest.listMarketBook(filter, function(err, res) {
+		   					if((++self.reqct / batch.getBatchCt()) >= config.api.throttle.thupdt == 0) {
+		   						self.reqct = 0;
+		   						self.updateCategories(res.response.result, markets); 
+		   					}  
 		   					self.emit('ping', res.response.result);
 		        	});
 	   			}
@@ -110,5 +116,21 @@ Ping.prototype.updateCounters = function(markets) {
 	}
 	return ids;
 }
+
+
+Ping.prototype.updateCategories = function(books) {
+	var mid, tm, thrclass;  
+	for(var i = 0; i < books.length; i++) {
+		mid = books[i].marketId;
+		tm = books[i].totalMatched;
+		if(tm == 0) {
+			continue;
+		}
+		thrclass = throttle.updateMarket(mid, tm);
+		app.io.broadcast('updateclass', {mid: mid, thrclass: thrclass, tm: tm});	   
+	}
+	throttle.sort();
+}
+
 
 module.exports = Ping;

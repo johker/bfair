@@ -4,32 +4,55 @@
  *  
  */ 
 
- var env = process.env.NODE_ENV || 'development'
+var env = process.env.NODE_ENV || 'development'
 	,  root = '../../../'
 	, config = require(root + 'config/config')[env]
 	, _ = require('underscore')	
-	, cat1 = []
-	, cat2 = []
-	, cat3 = []
-	, cat4 = []
+	, classes = [];
+	
+	
+var C1 = 1
+  , C2 = 2
+  , C3 = 3
+  , C4 = 4
+	
 	
 /** 
 * Start at lowest category 
 */ 	
 exports.addMarket = function(market) {
 	var mid = market.getId();
-	sysLogger.debug('<throttle> <addMarketId> id = ' + mid); 
-	cat1.push(mid);
+	sysLogger.debug('<throttle> <addMarket> ID = ' + mid); 
+	classes.push({id: mid, thrclass: C1}); 
 }
-
 
 exports.removeMarket = function(market) {
 	var mid = market.getId();
-	sysLogger.debug('<throttle> <removeMarketId> ' + mid);
-	_.without(cat1, mid);
-	_.without(cat2, mid); 
-	_.without(cat3, mid); 
-	_.without(cat4, mid);
+	sysLogger.debug('<throttle> <removeMarket> ID = ' + mid);
+	_.without(classes, _.findWhere(classes, {id: mid}));
+	
+}
+
+exports.updateMarket = function(id, value) {
+	var match = _.find(classes, function(item) { return item.id === id});
+	if(!match) {
+		throw new Error('Market ID ' + mid + ' cannot be found in throttle classes.'); 
+	}
+	if(value > config.api.throttle.th1) {
+		match.thrclass = C2;
+	} else if (value > config.api.throttle.th2) {
+		match.thrclass = C3;
+	} else if (value > config.api.throttle.th3) {
+		match.thrclass = C4;
+	}
+	if(id == '1.107453578') {
+		sysLogger.crit('<throttle> <updateMarket> class = ' + match.thrclass + 'value = ' + value); 
+	}
+	return match.thrclass;
+}
+
+exports.sort = function() {
+	this.classes = _.sortBy(classes, function(item){ return  item.thrclass});
 }
 
 exports.ready = function(market) {
@@ -38,19 +61,28 @@ exports.ready = function(market) {
 }
 
 function getThrottleFactor(mid) {
-	if(_.contains(cat1, mid)) {
-		return config.api.throttle.fac1; 
+	var match = _.find(classes, function(item) { return item.id === mid});
+	if(!match) {
+		throw new Error('Market ID ' + mid + ' cannot be found in throttle classes.'); 
 	}
-	if(_.contains(cat2, mid)) {
-		return config.api.throttle.fac2; 
+	var fac = config.api.throttle.fac1; 
+	switch(match.thrclass) {
+		case C1: 
+		fac = config.api.throttle.fac1; 
+		break;
+		case C2: 
+		fac = config.api.throttle.fac2; 
+		break;
+		case C3: 
+		fac = config.api.throttle.fac3; 
+		break;
+		case C4: 		
+		fac = config.api.throttle.fac4; 
+		break;
 	}
-	if(_.contains(cat3, mid)) {
-		return config.api.throttle.fac3; 
-	}
-	if(_.contains(cat4, mid)) {
-		return config.api.throttle.fac4; 
-	}
+	return fac;  	
 }
+
 
 function calcTimeout(reqct) {
 	return reqct * config.api.baseto.price;
