@@ -29,8 +29,7 @@ exports.addMarket = function(market) {
 exports.removeMarket = function(market) {
 	var mid = market.getId();
 	sysLogger.debug('<throttle> <removeMarket> ID = ' + mid);
-	_.without(classes, _.findWhere(classes, {id: mid}));
-	
+	_.without(classes, _.findWhere(classes, {id: mid}));	
 }
 
 exports.updateMarket = function(id, value) {
@@ -38,17 +37,16 @@ exports.updateMarket = function(id, value) {
 	if(!match) {
 		throw new Error('Market ID ' + mid + ' cannot be found in throttle classes.'); 
 	}
-	if(value > config.api.throttle.th1) {
-		match.thrclass = C2;
-	} else if (value > config.api.throttle.th2) {
-		match.thrclass = C3;
-	} else if (value > config.api.throttle.th3) {
-		match.thrclass = C4;
+	if(value > config.api.throttle.th3) {
+		return C4;
+	} 
+	if (value > config.api.throttle.th2) {
+		return C3;
 	}
-	if(id == '1.107453578') {
-		sysLogger.crit('<throttle> <updateMarket> class = ' + match.thrclass + 'value = ' + value); 
+	if (value > config.api.throttle.th1) {
+		return C2;
 	}
-	return match.thrclass;
+	return C1;
 }
 
 exports.sort = function() {

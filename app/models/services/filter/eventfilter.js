@@ -1,31 +1,144 @@
- var keysmpl = ['Mathieu', 'Larsson', 'Beck', 'Djokovic', 'Murray', 'Federer', 'Ferrer', 'Nadal', 'Berdych', 'Tsonga', 'Del Potro', 'Gasquet', 'Wawrinka', 'Haas', 'Cilic', 'Nishikori', 'Tipsarevic', 'Raonic', 'Almagro', 'Simon', 'Kohlschreiber', 'Querrey', 'Monaco']
- var keysfpl = ['Williams', 'Azarenka', 'Sharapova', 'Radwanska', 'Errani', 'Li', 'Kerber', 'Kvitova', 'Wozniacki', 'Kirilenko', 'Vinci', 'Ivanovic', 'Petrova', 'Stosur', 'Bartoli', 'Jankovic', 'Stephens', 'Cibulkova', 'Suarez Navarro', 'Flipkens']
- var maxIndex = 5;
+
+/**
+ * Module Dependencies
+ */
+var env = process.env.NODE_ENV || 'development'
+	, root = '../../../../'
+ 	, config = require(root + 'config/config')[env]
+ 	, _ = require('underscore'); 
  	
- var _ = require('underscore'); 	
- 	
+var keysmpl = ['Lobkov', 'Djokovic', 'Murray', 'Federer', 'Ferrer', 'Nadal', 'Berdych', 'Tsonga', 'Del Potro', 'Gasquet', 'Wawrinka', 'Haas', 'Cilic', 'Nishikori', 'Tipsarevic', 'Raonic', 'Almagro', 'Simon', 'Kohlschreiber', 'Querrey', 'Monaco']
+var keysfpl = ['Williams', 'Azarenka', 'Sharapova', 'Radwanska', 'Errani', 'Li', 'Kerber', 'Kvitova', 'Wozniacki', 'Kirilenko', 'Vinci', 'Ivanovic', 'Petrova', 'Stosur', 'Bartoli', 'Jankovic', 'Stephens', 'Cibulkova', 'Suarez Navarro', 'Flipkens']
+var nkeystennis = ['Specials'];
+var keysteams = ['England', 'FC Arsenal', 'FC Chelsea', 'FC Everton', 'Aston Villa', 'FC Fulham', 'FC Liverpool', 'Manchester City', 'Manchester United', 'Newcastle United', 'Norwich City', 'Queens Park Rangers', 'Reading FC', 'Southampton FC', 'Stoke City', 'AFC Sunderland', 'Swansea City', 'Tottenham Hotspur', 'West Bromwich Albion', 'West Ham United', 'Wigan Athletic'];
+var nkeyssoccer = ['U21', 'U19'];
+var tennis = {'male': keysmpl, 'female': keysfpl, 'negative': nkeystennis};
+var soccer = {'teams': keysteams, 'negative': nkeyssoccer};
+ 
 /**
 * Takes first n entries from male and female player 
 * arrays where n is specified by maxIndex. 
 */ 
-function generateKeys() {
-	return keysmpl.slice(0,maxIndex).concat(keysfpl.slice(0, maxIndex));
+function tennisKeys() {
+	return tennis.male.slice(0,config.api.filter.maxEvIdx.tennis)
+		.concat(tennis.female.slice(0, config.api.filter.maxEvIdx.tennis));
 }
+
+function negativeTennisKeys() {
+	return tennis.negative;
+}
+
+/**
+* Takes first n entries from soccer keys. 
+*/ 
+function soccerKeys() {
+	return soccer.teams.slice(0,config.api.filter.maxEvIdx.soccer)
+}
+
+function negativeSoccerKeys() {
+	return soccer.negative;
+}
+ 	
  	
 /**
 * Removes object attributes without a name containing 
-* a player key word.
+* a key word.
+* HOW TO FILTER BY TABU WORDS?
 */ 
-exports.byPlayer = function(events) {
-	var keys = generateKeys();
+function byKeys(events, keys, nkeys) {
 	return resf = _.filter(events, function(obj) {
 		var ret; 
 		for(var i in keys) {
-			ret = ret || ~obj.event.name.toLowerCase().indexOf(keys[i].toLowerCase()); 
+			ret = ret || ~obj.event.name.toLowerCase().indexOf(keys[i].toLowerCase())
 		}
 		return ret;
 	});
  } 
+ 
+ /**
+* Removes events with a low number of markets. Serves as
+* a measure of importance.. 
+*/ 
+function byMarketCount(events) {
+	return resf = _.filter(events, function(obj) {
+		return obj.marketCount >= config.api.filter.minMarketCt;
+	});
+ } 
+ 
+
+
+
+/**
+* Removes events that do not match the filter 
+* criteria according to its event type. The criterias make assumptions 
+* about the filter. 
+*/
+ exports.getFilteredEventIds = function(events) {
+ 	var mids = [];
+ 	var resf = [];
+ 	
+ 	// Tennis
+ 	if(config.api.eventType == '2') {
+ 		resf = byKeys(events, tennisKeys(), negativeTennisKeys());
+ 		
+ 	// Soccer		
+	} else if(config.api.eventType == '1') {
+		resf = byKeys(events, soccerKeys(), negativeSoccerKeys());
+		
+	// Greyhound Racing		
+	} else if(config.api.eventType == '4339') {
+		resf = events; // no filter
+		
+	// Horse Racing
+	} else if(config.api.eventType == '7') {
+		resf = byMarketCount(events); // Focus on Events with many markets
+		
+	// Default
+	} else {
+		resf = events; // No filter
+	}
+	
+	if(resf.length == 0) {
+		throw new Error("<eventfilter> <getFilteredMarketIds> No Events left after applied filter. ");
+	}
+	
+	for(var i in resf) {
+		mids.push(resf[i].event.id);	
+	}
+
+	return mids;
+ }
+ 
+ 
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
+}
+
+Date.prototype.addMinutes= function(min){
+    this.setMinutes(this.getMinutes()+min);
+    return this;
+}
+
+exports.getEventFilter = function() {
+	var eventFilter = {"filter": {"eventTypeIds" : [config.api.eventType], "turnsInPlay" : config.api.filter.turnsInPlay}};
+	eventFilter.filter['marketStartTime'] = {};
+	var earliestStart = new Date()
+ 							.addHours(-config.api.filter.afterStDateBiasHrs + config.timezoneShiftGMT)
+ 							.addMinutes(-config.api.filter.afterStDateBiasMin)
+	var latestStart = new Date()
+ 							.addHours(config.api.filter.beforeStDateBiasHrs + config.timezoneShiftGMT)
+ 							.addMinutes(config.api.filter.beforeStDateBiasMin)
+	if(config.api.filter.applyAfterStDate && config.api.filter.applyBeforeStDate) {
+ 		eventFilter.filter['marketStartTime'] = {"from": earliestStart,"to": latestStart}
+ 	} else if(config.api.filter.applyAfterStDate) {
+ 		eventFilter.filter['marketStartTime'] = {"from": earliestStart};
+ 	} else if(config.api.filter.applyBeforeStDate) {
+ 		eventFilter.filter['marketStartTime'] = {"to": latestStart};
+ 	}
+ 	
+ 	return eventFilter; 
+}
  
  
  

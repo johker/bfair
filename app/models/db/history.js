@@ -45,8 +45,8 @@ exports.add = function(market) {
 	sysLogger.info('<history> <add> market ID = ' + market.marketId);
 	connect(function(Model) {
 		var marketdto = {
-				marketId: market.marketId, 
-				description: market.event.name + ':' + market.marketName,
+				marketId: market.id, 
+				description: market.name + ':' + market.marketName,
 				passivationTime: strutil.millisToDate(market.passivationTime)
 		};
 		var mitem = new Model(marketdto);

@@ -4,13 +4,13 @@ var env = process.env.NODE_ENV || 'development'
 	, root = '../../../../../'
 	, servicedir = root + 'app/models/services/'
 	, config = require(root + 'config/config')[env]
-	, betfair = require('betfair')
 	, async = require('async')
 	, winston = require(root + 'config/winston');
 
 // GLOBAL variables
 sysLogger = winston.getSysLogger()
-	
+betfair = require(root + 'app/models/api'); // Patched version 
+// betfair = require('betfair'); // node module
 	
 // Test modules
 var session = require(servicedir + 'session')
@@ -20,15 +20,34 @@ var session = require(servicedir + 'session')
 
 
 var filter = { marketIds: 
-   [ '1.110165036', '1.110165037'],
+   [ '1.110937271'],
   priceProjection: { priceData: [ 'EX_ALL_OFFERS' ] } };
 
 	
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
  	request.listMarketBook(filter, function(err, res) {
- 		console.log(res.response.result[0].runners[0]); 
-		//console.log(res.response.result[0].runners[0].ex.availableToBack ); 
+ 		//console.log(res.response.result[0].runners[0]); 
+ 		var book = res.response.result[0].runners[0];
+ 		var th = 1.00;
+		var avToBack = book.ex.availableToBack;
+		var avToLay = book.ex.availableToLay;
+		ordersToCall = [];
+		if(avToBack != null) {
+			for(var i = avToBack.length-1; i >= 0 ; i--) {
+				if(th < avToBack[i].price) {
+				 	ordersToCall.push({'type': 'LAY', 'price': avToBack[i].price, 'size': avToBack[i].size});
+				 }
+			}
+		}
+		if(avToLay != null) {
+			for(var i = avToLay.length-1; i >= 0 ; i--) {
+				if(th > avToLay[i].price) {
+				 	ordersToCall.push({'type': 'BACK', 'price': avToLay[i].price, 'size': avToLay[i].size});
+				 }
+			}
+		}
+		console.log(ordersToCall);
 	});
  });	
 

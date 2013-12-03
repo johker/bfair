@@ -1,53 +1,59 @@
 extends layout
 
 block content
+	link(rel='stylesheet', href='css/bootstrap-sortable.css')
 	script(src="/socket.io/socket.io.js")
 	script(src='js/jquery-ui-1.10.2.custom.min.js')
 	script(src='js/utils.js')
+	script(src='js/bootstrap-sortable.js')
+	script(src='js/moment.min.js')
 	include navbar
 	.container
 		.page-header
-			h2 Market Monitoring
+			h2 
 		p.lead
 			form#viewhistory(method='post', action='/history')
 				.alert.alert-info
 					.hist Show logged markets: 
 						button.btn.btn-primary.btn-mini(type='submit') History
 			form#viewdetail(method='post', action='/detail')        
-				table#idtable.table.table-bordered
+				table#idtable.table.table-bordered.sortable
 					thead
 						tr
+							th Event ID
 							th Market ID 
 							th Type
-							th Activation Time
-							th Date
+							th Open Date
 							th Detail
 							th Prices
 					tbody
-					script
+					
+					script				
 						io = io.connect();
 						io.emit('marketsready');
 						io.on('addmarket',function(data){
 							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
-							var mid = data.marketId.substring(2,data.marketId.length);							
-								$('#idtable tbody').append('<tr id="'+ data.marketId.substring(2,data.marketId.length) +'" class="trmarket">'
-									+ '<td class="mid">' + mid + '</td>'									
-									+ '<td class="mn">' + data.marketName + '</td>'
-									+ '<td class="mat">' + activationTime + '</td>'
-									+ '<td class="mt">' + data.event.openDate + '</td>'
-									+ '<td class="md">' + data.event.name + '</td>'
+							var mid = data.id.substring(2,data.id.length);							
+								$('#idtable tbody').append('<tr id="'+ data.id.substring(2,data.id.length) +'" class="trmarket">'
+									+ '<td class="mid">' + data.eventId + '</td>'	
+									+ '<td class="eid">' + mid + '</td>'									
+									+ '<td class="mn">' + data.name + '</td>'
+									+ '<td class="mt">' + millisToDate(data.openDate) + '</td>'
+									+ '<td class="md">' + data.eventName + '</td>'
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
-								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');  					
+								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');
+								$.bootstrapSortable(true);										
 							});							
 							io.on('updateclass',function(data){									
 									var mid = data.mid.substring(2,data.mid.length);
 									var rowId = '#' + mid;
+									console.log(data.thrclass);
 									switch(data.thrclass) {
 										case 1: $(rowId).css("background-color", "#ffffff"); break;
-										case 2: $(rowId).css("background-color", "#F0F7FD"); break;
-										case 3: $(rowId).css("background-color", "#D9ECFD"); break;
-										case 4: $(rowId).css("background-color", "#C6E3FC"); break;
+										case 2: $(rowId).css("background-color", "#F7FBFC"); break;
+										case 3: $(rowId).css("background-color", "#E2F5FC"); break;
+										case 4: $(rowId).css("background-color", "#CFEFFD"); break;
 									}									
 							});
 							io.on('removemarket', function(data) {	

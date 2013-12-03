@@ -3,11 +3,15 @@
 // Emulator allows test bots for "free" using real price data
 //
 
-var emulator = require('./emulator.js');
-var exchange = require('./emulator_exchange');
-var ec = require('./emulator_checks');
+var emulator = require('./emulator.js')
+	, exchange = require('./emulator_exchange')
+	
 
-var EmulatorBet = require('./emulator_bet.js');
+var EmulatorBet = require('./emulator_bet.js')
+	, EmulatorChecks = require('./emulator_checks')
+	, ejson = require('./emulator_json');
+
+
 
 function EmulatorMarket(marketId) {
     var self = this;
@@ -38,81 +42,39 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
     self.isInitialized = true;
 }
 
-
-
-
-
-
 // Process placeOrders API call
 EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
     var self = this;
-    var log = emulator.log;
+    var log = emulator.log;    
     log && log.info("Market: placeOrders");
-    // prepare error response
-    var result = prepareResult(req, self.marketId);     
+    
     var instructions = req.params.instructions;
-    prepareReports(instructions, result);    	
-	ec.checkInitialization(self, result, cb);	
-	ec.checkInstructions(self, instructions, res, result, cb); 
-	// ec.checkMarketStatus(self, res, result, cb);
-	ec.checkNumberOfBets(self, req, res, cb)
-	ec.checkBackLayCombination(self, instructions, cb);
-		
-    var dup = ec.isDuplicate(self, req);	
-	var betIds = createBets(self, instructions); 
+    var result = ejson.prepareResult(ejson.SUCCESS, req, self.marketId);
+	            	
+    var ec = new EmulatorChecks(self, req, res, instructions, result);
+             	
+	ec.checkInitialization(cb);	
+	ec.checkInstructions(cb); 
+	// ec.checkMarketStatus(cb);
+	ec.checkNumberOfBets(cb)
+	ec.checkBackLayCombination(cb);	
+    var dup = ec.isDuplicate();	
+    
+	var betIds = ejson.createBets(self, instructions); 
 	// Try to match bets using price matching
 	var bets = betIds.map(function(id) {
 		return self.bets[id];
-	});
+	});	
 	
-	
-	exchange.matchBetsUsingPrices(self, bets);	
-	cb(null);
-}
-
-
-function createBets(em, instructions) {
-	var betIds = [];
-	for ( var i = 0; i < instructions.length; ++i) {
-		var desc = instructions[i];
-		var bet = new EmulatorBet(em.marketId, desc.selectionId, 
-					desc.side, desc.limitOrder.price, 
-					desc.limitOrder.size);
-		betIds.push(bet.betId);
-		em.bets[bet.betId] = bet;
+	exchange.matchBetsUsingPrices(self, bets, result);	
+		 
+	for(var i = 0; i < bets.length; i++) {
+		ejson.addInstructionReport(ejson.SUCCESS, instructions[i], result, bets[i]) 
 	}
-	return betIds;
-	
+	var res = {}; 
+	res.response = ejson.prepareResponse(result);
+	cb(null, res);
 }
-
-/**
-* 
-*/ 
-function prepareResult(req, marketId) {
-	return { 
-		customerRef: req.params.customerRef, // optional
-        status: "FAILURE",
-        errorCode: "BET_ACTION_ERROR",
-        marketId: marketId,
-        instructionReports: []
-    };
-} 
-
-/**
-*
-*/
-function prepareReports(instructions, result) {
-	for (var i = 0; i < instructions.length; ++i) {
-        var inst = instructions[i];
-        var rep = {
-            status: "FAILURE",
-            errorCode: "ERROR_IN_ORDER",
-            instruction: inst
-        };
-        result.instructionReports.push(rep);
-    }
-}
-
 
 
 

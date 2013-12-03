@@ -4,6 +4,7 @@
  
 var env = process.env.NODE_ENV || 'development'
  , root = '../../../../'
+ , servicedir = root + 'app/models/services/'
  , config = require(root + 'config/config')[env]
  , EventEmitter = require('events').EventEmitter
  , util = require('util')
@@ -14,8 +15,7 @@ var env = process.env.NODE_ENV || 'development'
  , async = require('async')
  , lastLogged = {}     // used to check for changes 
  , executiondir = root + 'app/models/execution/'
- , trigger = require(executiondir + 'trigger'); 
- 
+ , bookutil = require(servicedir + 'book');
  
 
  /**
@@ -41,9 +41,6 @@ PriceObserver.prototype.synchronize = function(books) {
 
 
 function investigate(book, callback) {
-	if(book.totalMatched > config.execution.tmThreshold) {
-		trigger.addMarket(book.marketId); 
-	}	
 	log(book, callback);
 } 
 
@@ -52,7 +49,7 @@ function investigate(book, callback) {
 * Log price information with a winston logger.
 */
 function log(book, callback) {
-	var logobj = generateLogObj(book);
+	var logobj = bookutil.getPriceInformation(book);
 	logfac.getLogInstance(book.marketId, function(logger) {
 		if(logger == null) callback(new Error('Could not initialize logger')); 
 		var s1 = JSON.stringify(lastLogged[book.marketId]);	
@@ -78,29 +75,6 @@ PriceObserver.prototype.passivate = function(marketId) {
 	logfac.removeLogInstance(marketId);		
 }
 
-/**
-* Parses price data and generates database entry
-*/
-function generateLogObj(book) {
-	var logobj = {};	
-	logobj['timestamp'] = (new Date()).getTime();
-	logobj['message'] = ''; 
-	for ( var pIdx = 0; pIdx < book.runners.length; pIdx++) {
-		var avaliableToBack = book.runners[pIdx].ex.availableToBack;		
-		for(var bIdx = 0; bIdx < avaliableToBack.length; bIdx++) {
-			var index = '' + pIdx + bIdx;
-			logobj['vb' + index] = avaliableToBack[bIdx].size;								
-			logobj['pb' + index] = avaliableToBack[bIdx].price;		
-		}
-		var availableToLay = book.runners[pIdx].ex.availableToLay;
-		for(var bIdx = 0; bIdx < availableToLay.length; bIdx++) {
-			var index = '' + pIdx + bIdx;
-			logobj['vl' + index] = availableToLay[bIdx].size;									
-			logobj['pl' + index] = availableToLay[bIdx].price;		
-		}
-	}
-	return logobj;
-}
 
 
 module.exports = PriceObserver;

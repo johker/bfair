@@ -157,7 +157,7 @@ BetfairSession.prototype.listEventTypes = createInvocation("sports", "listEventT
 BetfairSession.prototype.listMarketBook = createInvocation("sports", "listMarketBook", true);
 BetfairSession.prototype.listMarketCatalogue = createInvocation("sports", "listMarketCatalogue");
 BetfairSession.prototype.listMarketTypes = createInvocation("sports", "listMarketTypes");
-BetfairSession.prototype.listTimeRanges = createInvocation("sports", "listTimeRanges");
+BetfairSession.prototype.listTimeRanges = createInvocation("sports", " listTimeRanges");
 BetfairSession.prototype.listVenues = createInvocation("sports", "listVenues");
 
 // betting

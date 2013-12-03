@@ -15,10 +15,11 @@ var root = '../../'
     , checks = require(servicedir + 'checks')
     , PriceObserver = require(servicedir + 'prices/priceobserver')
     , priceObserver = new PriceObserver()
+    , pricerequest = require(servicedir + 'prices/pricerequests')
     , MarketPing = require(servicedir + 'markets/pingmarkets')
 	, PricePing = require(servicedir + 'prices/pingprices')
 	, priceping = new PricePing ({session: session})
-	, marketping = new MarketPing ({session: session, eventType: '2'})
+	, marketping = new MarketPing ({session: session})
 	, history = require(root + 'app/models/db/history')
 	, logs = require(servicedir + 'prices/logfactory')
 	, cleandb = require(root + 'setup/clean')
@@ -31,6 +32,8 @@ var root = '../../'
 	, selectedMarketId
 	, marketName 
 	, runnerDescription = []
+ 	, RabbitConnector = require(root + 'app/models/pricing/rabbitconnector')
+ 	, rc = new RabbitConnector();
 
 
 session.Singelton.getInstance().login(function(err, res){
@@ -50,16 +53,17 @@ marketping.on('ping', function(markets){
 * Update database and emit websocket events for GUI. 
 */   
 priceping.on('ping', function(prices) {
-	sysLogger.debug('<apicontroller> <priceping.on:ping> market ID = ' + (prices != undefined ? prices.marketId : 'undefined!'));
-	priceObserver.synchronize(prices);
+	//sysLogger.debug('<apicontroller> <priceping.on:ping> market = ' + JSON.stringify(prices));
+	priceObserver.synchronize(prices);	
+	rc.marketDataUpdate(prices);
 });
 
 /**
 * Trigger logging for incomming market by adding it to ping list
 */
 marketObserver.on('logPrices',function(market) {
-	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + (market != undefined ? market.marketId : 'undefined!'));
-	priceping.addMarketId(market.marketId);
+	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + (market != undefined ? market.id : 'undefined!'));
+	priceping.addMarket(market);
 });
 
 /**
@@ -67,8 +71,8 @@ marketObserver.on('logPrices',function(market) {
 *  if logging is enabled. 
 */
 marketObserver.on('stopLogging', function(market) {
-	mid = '1.' + market.marketId;
-	priceping.removeMarketId(mid);		
+	mid = market.id;
+	priceping.removeMarket(market);		
 	async.waterfall([function(cb) {cb(null, mid);}, checks.marketIdLength, checks.marketStatus, checks.marketEventType], function(err,res) {
 	    if(err) {
 	    	sysLogger.error('<marketObserver> <on: stopLogging> ' + err);	  
@@ -86,18 +90,18 @@ priceping.start();
 
 /**
 * 
-* Broadcast active markets list. Overwrite activation time to unknown
-* as this is the initial list. 
+* Broadcast active markets list. 
 * TODO: Declare new event with accumulated information
 */
 app.io.route('marketsready', function(req) {
-	sysLogger.info('<apicontroller> event: marketsready');	
-	var markets = marketObserver.getList();
+	if(marketObserver.getList().length == 0) {
+		sysLogger.debug('<apicontroller> event: marketsready - Fetching List...');
+		marketping.initialRequest();
+	}
+	var markets = marketObserver.getList();	
 	for(var i=0; i < markets.length; i++) {
-		markets[i]['activationTime'] = undefined;
 		app.io.broadcast('addmarket', markets[i]);		
 	 }	
-	//app.io.broadcast('updatecounters', {active: marketObserver.getSize()});			
 })
 
 /**
@@ -114,17 +118,29 @@ app.io.route('historyready', function(req) {
 
 /**
 * 
-* Broadcast market detail information. 
+* Get price information independent of poll cycle for initial detail page call
 */
-app.io.route('detailpageready', function(req) {	
-	app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});
+app.io.route('detailsready', function(req) {		
+    var mid = '1.' +  req.data.id;
+	var filter = {"marketIds": [mid], "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
+	pricerequest.listMarketBook(filter, function(err, res) {
+		app.io.broadcast('tick_' + req.data.id, res.response.result[0]);
+	});
+})
+
+/**
+* 
+* Broadcast market detail information for initial detail page call. 
+*/
+app.io.route('detailpageready', function(req) {  
+    app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});
 
 })
+
 
 exports.markets = function(req, res) {		
 	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
 };    
-
 
 exports.orders = function(req, res) {		
 	res.render('orders',  { title: bundle.title.overview, username: req.user.username});	

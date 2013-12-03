@@ -1,5 +1,36 @@
+var env = process.env.NODE_ENV || 'development'
+ , root = '../'
+ , config = require(root + 'config/config')[env]
+
 var monthNames = [ "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December" ];
+
+
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
+}
+
+exports.adjustTimezone = function(date) {
+	return date.addHours(config.timezoneShiftGMT);
+}
+
+/**
+* Parse date from a string of the form 
+* 2013-11-20T11:11:00.000Z
+*/
+exports.parseBetfairDate = function(input) {
+	if(input == null) return null;
+	input = replaceAll('z', '', input); 
+	input = replaceAll('T', '-', input); 
+	input = replaceAll(':', '-', input); 
+	var res = input.split("-");
+	return new Date(res[0], res[1]-1, res[2], res[3], res[4], 0, 0)
+}
+
+function replaceAll(find, replace, str) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
 
 exports.parseDate = function(input) {
 	if(input == null) return null;

@@ -12,7 +12,8 @@ var env = process.env.NODE_ENV || 'development'
 	, marketmock = require(root + 'test/mock/marketfactory')
 	, marketrequest = require(servicedir + 'markets/marketrequests')
 	, utils = require(root + 'util/stringutil')
-	, events = require('events');
+	, events = require('events')
+	, eventfilter = require(servicedir + 'filter/eventfilter')
 
 /*
 * Ping Constructor 
@@ -21,7 +22,6 @@ var Ping = function Ping (opts) {
     this.eventType = opts.eventType || config.api.eventType; 
     this.timeout = opts.timeout || config.api.baseto.market; 
     this.handle = null;
-    this.filter = opts.filter || {"filter": {"eventTypeIds" : [2], "turnsInPlay" : true}};
     this.session = opts.session;
 };
 
@@ -46,17 +46,24 @@ Ping.prototype.stop = function() {
 
 Ping.prototype.ping = function(){
 	var self = this;
-    if(env == 'test') {           	       	
+    if(config.mock.usemarkets) {           	       	
       	marketmock.getMarkets(function(markets, err) {
        		self.emit('ping', markets);
        	});      		         		
 	} else {
-     	marketrequest.listMarkets(self.filter, function(err, res) {
+     	marketrequest.listMarkets(eventfilter.getEventFilter(), function(err, res) {
      		self.emit('ping', res);
 	   });
     }           
    
 }
+
+Ping.prototype.intitialRequest = function() {
+	marketrequest.listMarkets(eventfilter.getEventFilter(), function(err, res) {
+     		self.emit('ping', res);
+	 });
+}
+
 
 
 module.exports = Ping;

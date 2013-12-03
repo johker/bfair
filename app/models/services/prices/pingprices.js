@@ -1,4 +1,3 @@
-	
 var env = process.env.NODE_ENV || 'development'
 	,  root = '../../../../'
 	, EventEmitter = require('events').EventEmitter
@@ -14,7 +13,7 @@ var env = process.env.NODE_ENV || 'development'
 	, _ = require('underscore')
 	, throttle = require(servicedir + 'throttle') 
 	, batch = require(servicedir + 'batch')
-	, marketfactory = require(servicedir + 'prices/marketfactory') 
+	, marketfactory = require(servicedir + 'marketfactory') 
 	
 /*
 * Ping Constructor 
@@ -45,16 +44,12 @@ Ping.prototype.stop = function() {
     this.handle = null;
 };
 
-Ping.prototype.addMarketId = function(mid) {	
-	// Generate market object to track number of requests
-	var market = new marketfactory.Market(mid);	
+Ping.prototype.addMarket = function(market) {		
 	batch.addMarket(market);
 	throttle.addMarket(market);
 }
 
-Ping.prototype.removeMarketId = function(mid) {
-	// Generate market object to track number of requests
-	var market = new marketfactory.Market(mid);
+Ping.prototype.removeMarket = function(market) {
 	batch.removeMarket(market);
 	throttle.removeMarket(market);
 }
@@ -63,7 +58,7 @@ Ping.prototype.ping = function() {
 	var self = this;
 	sysLogger.debug('<pingprices> <ping> timeout = ' + self.timeout);
 	try {
-		if(env == 'test') {		
+		if(config.mock.useprices) {		
 			pricemock.getPrices(batch.getNextBatch(), function(res, err) {
 		           	self.emit('ping', res);
 		    });
@@ -79,7 +74,7 @@ Ping.prototype.ping = function() {
 		   						self.updateCategories(res.response.result, markets); 
 		   					}  
 		   					self.emit('ping', res.response.result);
-		        	});
+		        		});
 	   			}
 		    }
         }

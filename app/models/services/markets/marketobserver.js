@@ -9,8 +9,12 @@ var env = process.env.NODE_ENV || 'development'
  , sync = require(servicedir + 'markets/synchronize') 
  , strutils = require(root + 'util/stringutil')
  , listutils = require(root + 'util/listutil')
+ , marketfactory = require(servicedir + 'marketfactory') 
  , watchedmarkets = {}
  , mid = 'marketId'
+
+
+
 
 /**
 * MarketObserver Constructor 
@@ -25,7 +29,7 @@ util.inherits(MarketObserver, EventEmitter);
 * TODO: use undescore
 */
 MarketObserver.prototype.getList = function() {
-	sysLogger.info('<marketObserver> <getList> size = ' + listutils.count(watchedmarkets));
+	sysLogger.debug('<marketObserver> <getList> size = ' + listutils.count(watchedmarkets));
 	var innerArray = [];
 	for (property in watchedmarkets) {
 	    innerArray.push(watchedmarkets[property]);
@@ -37,20 +41,22 @@ MarketObserver.prototype.getList = function() {
 * Return locally stored markets list size
 */
 MarketObserver.prototype.getSize = function() {
-	//console.log(listutils.count(watchedmarkets));
 	return listutils.count(watchedmarkets);
 }
 
 /**
-* Emits event with stale market and remove it from the list. 
+* Emits event with stale market and remove it from the list +
+* if not-retrieved limit exceeded. 
 */
 MarketObserver.prototype.remove = function(id) {
 	var self = this;
-	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].event.openDate);	
- 	app.io.broadcast('removemarket', watchedmarkets[id]);
- 	watchedmarkets[id]['passivationTime'] = Date.now();
- 	self.emit('stopLogging', watchedmarkets[id]);	
-	delete watchedmarkets[id]; 	
+	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate);	
+	if(watchedmarkets[id].remove()) {
+		app.io.broadcast('removemarket', watchedmarkets[id]);
+ 		watchedmarkets[id].setPassivationTime(Date.now());
+ 		self.emit('stopLogging', watchedmarkets[id]);	
+		delete watchedmarkets[id];
+	}	 	
 }
 
 /**
@@ -58,11 +64,12 @@ MarketObserver.prototype.remove = function(id) {
 */ 
 MarketObserver.prototype.add = function(market, id) {
 	var self = this;
-	watchedmarkets[id] = market;
-	sysLogger.debug('<marketobserver> <add> id = ' + id + ', date: ' + market.event.openDate); 
-	watchedmarkets[id]['activationTime'] = Date.now();	
+	var openDate = strutils.parseBetfairDate(market.event.openDate);
+	tz = strutils.adjustTimezone(openDate);
+	watchedmarkets[id] = new marketfactory.Market(id, market.marketName, tz, market.event.id, market.event.name);
+	sysLogger.debug('<marketobserver> <add> id = ' + id + ', Open date: ' + openDate); 
 	app.io.broadcast('addmarket', watchedmarkets[id]);	
-	self.emit('logPrices', market);
+	self.emit('logPrices', watchedmarkets[id]);
              
 	                              
 }
@@ -86,7 +93,7 @@ MarketObserver.prototype.synchronize = function(incoming) {
 		sysLogger.debug('<marketobserver> <synchronize> incoming == undefined'); 
 		return; 
 	}	
-	sync.markets(watchedmarkets, incoming, mid, self);   
+	sync.markets(watchedmarkets, incoming, mid, self);  
     init = false;	
 }
 
@@ -98,7 +105,7 @@ MarketObserver.prototype.synchronize = function(incoming) {
 */
 MarketObserver.prototype.sort = function(markets) {
 	markets.sort(function(first, second) {
-     	var dtime = first.description.openDate - second.event.openDate;
+     	var dtime = first.event.openDate - second.event.openDate;
      	var did = first.marketId - second.marketId;
      	var res = dtime != 0 ? dtime : did
      	return res; 

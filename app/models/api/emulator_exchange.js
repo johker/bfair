@@ -29,12 +29,14 @@ exports.matchBetsUsingPrices = function(em, betlist) {
             var bestLayPrice = player.ex.availableToBack[0] ? player.ex.availableToBack[0].price : undefined;
             var bestLaySize =  player.ex.availableToBack[0] ? player.ex.availableToBack[0].amount : undefined;
             if (1 * bestLayPrice < 1 * bet.price) {
-                bet.matchWhole(bestLayPrice);
+                bet.matchWhole(bestLayPrice); 
             } else if ((Math.abs(bestLayPrice - bet.price) < 0.0001)
                     && (1 * bestLaySize > 1 * bet.size)) {
                 bet.matchWhole(bestLayPrice);
             }
         }
+        
+        
         sysLogger.info('<emulator_exchange> <matchBetsUsingPrices> EMU: matched size =  ' + bet.matchedSize());
     } // for
 }
@@ -44,3 +46,6 @@ exports.matchBetsUsingTradedVolume = function(em, betlist) {
 }
 
 
+exports.handleGetMarketProfitAndLoss = function() {
+
+}

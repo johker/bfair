@@ -10,14 +10,14 @@ var env = process.env.NODE_ENV || 'development'
 // GLOBAL variables
 sysLogger = winston.getSysLogger()
 betfair = require(root + 'app/models/api'); // Patched version 
-// betfair = require('betfair'); // node module
+	// betfair = require('betfair'); // node module
 	
 // Test modules
 var session = require(servicedir + 'session')
 	, instance = session.Singelton.getInstance()
 	, request = require(servicedir + 'markets/marketrequests')
 
-, mid = '1.107453576';
+, mid = '1.111936981';
 	/*
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');
@@ -26,6 +26,8 @@ instance.login(function(err, res){
 	});
  });	
 */
+console.log(process.env.TZ);
+
 
 instance.login(function(err, res){
  	sysLogger.info('<test_marketrequests> Logged in to Betfair');

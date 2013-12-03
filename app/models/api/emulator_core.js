@@ -73,7 +73,7 @@ Emulator.prototype.placeOrders = function (req, res, cb) {
     var market = self.markets[marketId];
     if (!self.isMarketUsingBetEmulator(marketId) || !market) {
         var ex = {
-            "errorDetails": "market id passed is invalid",
+            "errorDetails": "Market id passed is invalid. Probable cause: Emulator not enabled.",
             "errorCode": "INVALID_INPUT_DATA"
         };
         self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
@@ -83,8 +83,8 @@ Emulator.prototype.placeOrders = function (req, res, cb) {
 	
     setTimeout(function () {
     	sysLogger.debug("<emulator_core> <placeOrders> Delay = " +  self.bettingDelay);
-    	market.placeOrders(req, res, function () {
-        		cb(null);
+    	market.placeOrders(req, res, function (err,marketres) {
+        		cb(err,marketres);
     		}); 
     	}, self.bettingDelay);
    

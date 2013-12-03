@@ -7,14 +7,27 @@ var betfairPrice = require('./betfair_price');
 var minimumBetSize = 2.0; // GBP
 var maximumBetSize = 10000.0; //? GBP 
  
+function EmulatorCheck(em, req, res, instructions, result) {
+	var self = this; 
+	
+	self.market = em; 
+	self.instructions = instructions; 
+	self.request = req;
+	self.response = res;
+	self.result = result;
+	
+}
+ 
+ 
  /**
  *
  */
- exports.checkInitialization = function(em, result, cb) { 
+ EmulatorCheck.prototype.checkInitialization = function(cb) { 
+ 	var self = this; 
  	// reply with error if market not yet initialized 	
-    if (!em.isInitialized) {
+    if (!self.market.isInitialized) {
     	sysLogger.info('<emulator_checks> <checkInitialization> Not initialized'); 
-        em.emulator.sendResponse(res, result);
+        self.market.emulator.sendResponse(self.response, self.result);
         cb(null);
         return;
     }
@@ -24,12 +37,13 @@ var maximumBetSize = 10000.0; //? GBP
  /**
  * Duplicate customer refs.
  */
- exports.isDuplicate = function(em, req) {
- 	var ref = req.params.customerRef;
+ EmulatorCheck.prototype.isDuplicate = function() {
+ 	var self = this; 
+ 	var ref = self.request.params.customerRef;
     if (!ref)
         return;
-    var isDup = self.customerRefs[ref] ? true : false;
-    em.customerRefs[ref] = true;
+    var isDup = self.market.customerRefs[ref] ? true : false;
+    self.market.customerRefs[ref] = true;
     return isDup;
  
  }
@@ -37,33 +51,34 @@ var maximumBetSize = 10000.0; //? GBP
  /** 
  * Check bet instructions
  */
- exports.checkInstructions = function(em, instructions, res, result, cb) { 	
-    for (var i = 0; i < instructions.length; ++i) {
-        var inst = instructions[i];
+ EmulatorCheck.prototype.checkInstructions = function(cb) { 	
+ 	var self = this; 
+    for (var i = 0; i < self.instructions.length; ++i) {
+        var inst = self.instructions[i];
         // check order
         if (!inst.orderType || inst.orderType !== 'LIMIT') {
         	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Order Type'); 
-            em.emulator.sendErrorResponse(res, -32602, "DSC-018");
+            self.market.emulator.sendErrorResponse(self.response, -32602, "DSC-018");
             cb(null);
             return;
         }
         var error; 
-        
-		error = checkPlaceBetItem(em, inst);	  
+        error = self.checkPlaceBetItem(inst);	  
 		if (error) {
         	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Bet Item'); 
-            result.status = "INVALID_BET_ITEM";
-            em.emulator.sendResponse(res, result);
+            self.result.status = "INVALID_BET_ITEM";
+            self.result.errorCode = error;
+            self.market.emulator.sendResponse(self.response, self.result);
             cb(null);
             return;
         }
         // check selectionId
         var selId = inst.selectionId;
-        var player = em.players[selId];
+        var player = self.market.players[selId];
         if (!player) {
         	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Runner'); 
-            result.status = "INVALID_RUNNER";
-            em.emulator.sendResponse(res, result);
+            self.result.status = "INVALID_RUNNER";
+            self.market.emulator.sendResponse(self.response, self.result);
             cb(null);
             return;
         }
@@ -74,9 +89,9 @@ var maximumBetSize = 10000.0; //? GBP
  /**
 * Check a single bet item from placeBets bets list
 */
-function checkPlaceBetItem(em, desc) {
-
-    if (!desc.limitOrder ||
+EmulatorCheck.prototype.checkPlaceBetItem = function(desc) {
+	var self = this; 
+	if (!desc.limitOrder ||
     	( desc.limitOrder.persistenceType !== 'LAPSE' 
     	&& desc.limitOrder.persistenceType !== 'PERSIST'
     	&& desc.limitOrder.persistenceType !== 'MARKET_ON_CLOSE')) {
@@ -95,7 +110,7 @@ function checkPlaceBetItem(em, desc) {
         return 'INVALID_PRICE';
     }
 
-    if (!em.players[desc.selectionId]) {
+    if (!self.market.players[desc.selectionId]) {
     	sysLogger.info('<emulator_checks> <checkPlaceBetItem> SELECTION_REMOVED');
         return 'SELECTION_REMOVED';
 	}
@@ -111,16 +126,18 @@ function checkPlaceBetItem(em, desc) {
 /**
 * Check a single bet item from updateBets bets list
 */
-function checkUpdateBetItem(em, desc) {
+EmulatorCheck.prototype.checkUpdateBetItem = function(desc) {
+	var self = this; 
     throw new Error('Not yet implemented');
 }
 
 /**
 * Check a single bet item from cancelBets bets list
 */
-function checkCancelBetItem (em, desc) {
+EmulatorCheck.prototype.checkCancelBetItem = function(desc) {
+	var self = this; 
     // check betId is mine
-    if (!em.bets[desc.betId]) {
+    if (!self.market.bets[desc.betId]) {
         // MARKET_IDS_DONT_MATCH - Bet ID does not exist
         return 'MARKET_IDS_DONT_MATCH';
     }
@@ -130,42 +147,44 @@ function checkCancelBetItem (em, desc) {
  
  
  
- exports.checkMarketStatus = function(em, res, result, cb) {
+EmulatorCheck.prototype.checkMarketStatus = function(cb) {
+	var self = this; 
 	 // handle market status, only 'ACTIVE' allows placing bets
-	    if (em.marketStatus === 'SUSPENDED') {
+	    if (self.market.marketStatus === 'SUSPENDED') {
 	    	sysLogger.info('<emulator_checks> <checkMarketStatus> Invalid Market Staus: EVENT_SUSPENDED'); 
-            result.status = "EVENT_SUSPENDED";
-            result.errorCode = 'MARKET_STATUS_INVALID';
-            em.emulator.sendResponse(res, result);
+            self.result.status = "EVENT_SUSPENDED";
+            self.result.errorCode = 'MARKET_STATUS_INVALID';
+            self.market.emulator.sendResponse(self.response, self.result);
             cb(null);
             return;
-	    } else if (em.marketStatus === 'CLOSED') {
+	    } else if (self.market.marketStatus === 'CLOSED') {
 	    	sysLogger.info('<emulator_checks> <checkMarketStatus> Invalid Market Staus: EVENT_CLOSED'); 
-            result.status = "EVENT_CLOSED";
-            result.errorCode = 'MARKET_STATUS_INVALID';
-            em.emulator.sendResponse(res, result);
+            self.result.status = "EVENT_CLOSED";
+            self.result.errorCode = 'MARKET_STATUS_INVALID';
+            self.market.emulator.sendResponse(self.response, self.result);
             cb(null);
             return;
-	    } else if (em.marketStatus !== 'ACTIVE') {
+	    } else if (self.market.marketStatus !== 'ACTIVE') {
 	    	sysLogger.info('<emulator_checks> <checkMarketStatus> Invalid Market Staus: EVENT_INACTIVE'); 
-            result.status = "EVENT_INACTIVE";
-            result.errorCode = 'MARKET_STATUS_INVALID';
-            em.emulator.sendResponse(res, result);
+            self.result.status = "EVENT_INACTIVE";
+            self.result.errorCode = 'MARKET_STATUS_INVALID';
+            self.market.emulator.sendResponse(self.response, self.result);
             cb(null);
 	        return;
 	    } 
  }
  
- exports.checkNumberOfBets = function(em, instructions, res, cb) {
- 	if(!instructions) 
+EmulatorCheck.prototype.checkNumberOfBets = function(cb) {
+	var self = this; 
+ 	if(!self.instructions) 
  		return;
  	 // BETWEEN_1_AND_60_BETS_REQUIRED - number of bets to be placed
-    var betsCount = instructions.length;
+    var betsCount = self.instructions.length;
     if (betsCount < 1 || betsCount > 60) {
     	sysLogger.info('<emulator_checks> <checkNumberOfBets> Invalid Number Of Bets: BETWEEN_1_AND_60_BETS_REQUIRED'); 
-        result.errorCode = 'BETWEEN_1_AND_60_BETS_REQUIRED';        
-        result.status = "FAILURE";
-        em.emulator.sendResponse(res, result);
+        self.result.errorCode = 'BETWEEN_1_AND_60_BETS_REQUIRED';        
+        self.result.status = "FAILURE";
+        self.market.emulator.sendResponse(self.response, self.result);
         cb(null);
         return
     }  
@@ -174,9 +193,10 @@ function checkCancelBetItem (em, desc) {
  /**
  * BACK_LAY_COMBINATION - invalid prices
  */
- exports.checkBackLayCombination = function(em, instructions, res, cb) {
+EmulatorCheck.prototype.checkBackLayCombination = function(cb) {
+	var self = this; 
     var playerPrices = {};
-    instructions.forEach(function(item) {
+    self.instructions.forEach(function(item) {
         if (!playerPrices[item.selectionId])
             playerPrices[item.selectionId] = {};
         var pl = playerPrices[item.selectionId];
@@ -196,13 +216,15 @@ function checkCancelBetItem (em, desc) {
         var pl = playerPrices[sId];
         if (1 * pl.minBackPrice <= 1 * pl.maxLayPrice) {
         	sysLogger.info('<emulator_checks> <checkBackLayCombination> minBackPrice > maxLayPrice: BACK_LAY_COMBINATION'); 
-            result.errorCode = 'BACK_LAY_COMBINATION';        
-        	result.status = "FAILURE";
-        	em.emulator.sendResponse(res, result);
+            self.result.errorCode = 'BACK_LAY_COMBINATION';        
+        	self.result.status = "ERROR";
+        	self.market.emulator.sendResponse(self.response, self.result);
         	cb(null);
         	return;
         }
     }
  
  }
+ 
+ module.exports = EmulatorCheck;
    

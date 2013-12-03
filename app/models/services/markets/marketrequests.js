@@ -18,10 +18,8 @@ var env = process.env.NODE_ENV || 'development'
 exports.listEvents = function(filter, cb)  {
 	if(!cb) cb = filter;  // cb is first parameter    
     session.listEvents(filter, function(err,res) {
-    	if(err) sysLogger.error('<marketrequests> <listEvents>' + JSON.stringify(err))
-        sysLogger.debug("<marketrequests> <listEvents> Request:%s\n", JSON.stringify(res.request, null, 2))
-        sysLogger.debug("<marketrequests> <listEvents> Response:%s\n", JSON.stringify(res.response, null, 2));
-        cb(err,res);
+    	if(err) sysLogger.error('<marketrequests> <listEvents>' + JSON.stringify(err));
+       cb(err,res);
     });
 }
 
@@ -33,12 +31,15 @@ exports.listEvents = function(filter, cb)  {
 exports.listMarkets = function(filter, cb) {
 	sysLogger.notice('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
 	exports.listEvents(filter, function(err, res) {
-		var resf = eventfilter.byPlayer(res.response.result); 
-		var mids = [];
-		for(var i in resf) {
-			mids.push(resf[i].event.id);	
-		}
-		exports.listMarketCatalogue({"filter":{"eventIds":mids},"maxResults":config.api.maxResults,"sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
+		var events = res.response.result; 		
+		var eids = [];
+		// Only one id for testing purposes
+		if(config.api.applyEventId) {
+ 			eids = [config.api.testEventId];
+ 		} else {
+ 			eids = eventfilter.getFilteredEventIds(events);
+ 		}
+ 		exports.listMarketCatalogue({"filter":{"eventIds":eids},"maxResults":config.api.maxResults,"sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
 			 cb(err,res.response.result);
 		});
 		
@@ -54,11 +55,8 @@ exports.listMarkets = function(filter, cb) {
 */
 exports.listMarketCatalogue = function(filter, cb)  {
 	if(!cb) cb = par;  // cb is first parameter    
-	//console.log(filter);
     session.listMarketCatalogue(filter, function(err,res) {
        	if(err) sysLogger.notice("<marketrequests> <listMarketCatalogue> " + JSON.stringify(err));
-        sysLogger.debug("<marketrequests> <listMarketCatalogue> Request:%s\n", JSON.stringify(res.request, null, 2))
-        sysLogger.debug("<marketrequests> <listMarketCatalogue> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);
     });
 }
@@ -72,8 +70,6 @@ exports.listMarketBook = function(filter, cb)  {
 	//console.log(filter);
     session.listMarketBook(filter, function(err,res) {
        	if(err) sysLogger.notice("<marketrequests> <listMarketBook> " + JSON.stringify(err));
-        sysLogger.debug("<marketrequests> <listMarketBook> Request:%s\n", JSON.stringify(res.request, null, 2))
-        sysLogger.debug("<marketrequests> <listMarketBook> Response:%s\n", JSON.stringify(res.response, null, 2));
         cb(err,res);
     });
 }

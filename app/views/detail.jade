@@ -1,14 +1,17 @@
 extends layout
 block content
+	link(rel='stylesheet', href='css/bootstrap-sortable.css')
 	script(src="/socket.io/socket.io.js")
 	script(src='js/jquery-ui-1.10.2.custom.min.js')
 	script(src='js/d3.v3.min.js')
 	link(rel='stylesheet', href='css/detail.css')
 	script(src='js/utils.js')
+	script(src='js/bootstrap-sortable.js')
+	script(src='js/moment.min.js')
 	include navbar
 	.container
 		.page-header
-				h2 Market Detail
+				h2 
 			p.lead
 				.row
 					.span12
@@ -37,16 +40,18 @@ block content
 						form#backform(method='post', action='/markets')
 							button.btn.btn-primary.btn-mini(type='submit') Back				
 					script
-						io = io.connect();																
+						io = io.connect();	
+						io.emit('detailsready', {id: #{id}});															
 						io.on('tick_' + #{id},function(data){
 							$('.mid strong').text(' ' + data.marketId);
 							$('.toa strong').text(' ' + data.totalAvailable);
 							$('.ip strong').text(' ' + data.inplay);							
 							if($('#marketbook tr').length == 1) {
 								createTable(data); 
-								io.emit('detailpageready');
+								io.emit('detailpageready', {id: #{id}});
 							} 
 							assign(data);
+							$.bootstrapSortable(true);
 						});		
 						io.on('runnerdesc',function(data){
 							$('.mn strong').text(' ' +data.marketName);
@@ -55,12 +60,10 @@ block content
 								}
 						});
 						function createTable(data) {
-							console.log('createTable'); 
 							for ( var rIdx = 0; rIdx < data.runners.length; ++rIdx) {
 								$('#marketbook tbody').append('<tr id="r' + rIdx + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');								
 							}							
-						}
-						
+						}						
 						function assign(data) {
 							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
 								var runner = data.runners[pIdx];

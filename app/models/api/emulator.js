@@ -148,8 +148,13 @@ EmulatorRequest.prototype.end = function () {
     var handler = core[self.method];
     if (handler && typeof(handler) === 'function') {
         log && log.debug('Emulator: Call handler for method:' + self.method);
-        handler.call(core, self, self.response, function (err, res) {
-            sendResponse();
+        handler.call(core, self, self.response, function (err, res) {        		
+        	if(err) {
+        		self.error = err;
+        	} else if(res) {
+        		self.response.result = res.response.result;
+        	} 
+        	sendResponse();
         });
     } else {
         // just error

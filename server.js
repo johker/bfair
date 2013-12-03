@@ -14,6 +14,8 @@ var env = process.env.NODE_ENV || 'development'
   , mongoose = require('mongoose')
 
 process.env['NODE_ENV'] = 'development';
+process.env['TZ'] = 'Europe/Amsterdam';
+
 
 // Bootstrap globals
 apiLogger = winston.getApiLogger();
