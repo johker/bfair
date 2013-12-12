@@ -199,7 +199,7 @@ BetfairInvocation.prototype.end = function () {
     try {
         self.response = JSON.parse(self.jsonResponseBody);
     } catch (err) {
-        //console.log(self.jsonResponseBody);
+        console.log(self.jsonResponseBody);
         self.response = { error: "Got bad JSON from server" };
     }
     self.finishDate = new Date;

@@ -12,9 +12,9 @@ var env = process.env.NODE_ENV || 'development'
  , updtct = 0
  , exchange
  , RabbitProducer = require(root + 'app/models/pricing/rabbitpublisher')
- 
  , marketPublisher = new RabbitProducer(config.amqp.queues.marketpub)
- 
+ , executioncontroller = require(root + 'app/controllers/executioncontroller');
+
 
 var RabbitConnector = function RabbitConnector() { 	
 	var self = this;
@@ -25,17 +25,16 @@ var RabbitConnector = function RabbitConnector() {
 RabbitConnector.prototype.marketDataUpdate = function(books) {
 	sysLogger.debug('<RabbitConnector.prototype.marketDataUpdate> ');
 	var self = this;
-	if(updtct % 20 == 0) {
-	      async.forEach(books, self.sendMarket, function(err) {	
-			if (err) return next(err);		
-	       	sysLogger.debug('<RabbitConnector.prototype.marketDataUpdate> Updated ' + books.length + ' books');
-	    });
-	}
+     async.forEach(books, self.sendMarket, function(err) {	
+		if (err) return next(err);		
+	      sysLogger.debug('<RabbitConnector.prototype.marketDataUpdate> Updated ' + books.length + ' books');
+	});
 	updtct++; 
 }
 
 RabbitConnector.prototype.sendMarket = function(book) {
 	if(book.marketId == config.api.testMarketId){
+		sysLogger.crit('<RabbitConnector.prototype.sendMarket> Published Market Update: ' + book.marketId);
 		marketPublisher.publish(bookutil.getDataTransferObject(book), 'bookdto')	
 	}
 }

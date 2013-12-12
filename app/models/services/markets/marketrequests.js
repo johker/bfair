@@ -18,7 +18,7 @@ var env = process.env.NODE_ENV || 'development'
 exports.listEvents = function(filter, cb)  {
 	if(!cb) cb = filter;  // cb is first parameter    
     session.listEvents(filter, function(err,res) {
-    	if(err) sysLogger.error('<marketrequests> <listEvents>' + JSON.stringify(err));
+    	if(err) sysLogger.error('<marketrequests> <listEvents> ' + JSON.stringify(err));
        cb(err,res);
     });
 }

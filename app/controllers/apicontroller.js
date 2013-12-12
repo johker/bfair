@@ -53,7 +53,6 @@ marketping.on('ping', function(markets){
 * Update database and emit websocket events for GUI. 
 */   
 priceping.on('ping', function(prices) {
-	//sysLogger.debug('<apicontroller> <priceping.on:ping> market = ' + JSON.stringify(prices));
 	priceObserver.synchronize(prices);	
 	rc.marketDataUpdate(prices);
 });

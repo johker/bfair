@@ -17,7 +17,8 @@ exports.executeTheoretical = function(thprice, cb) {
 	var mid = thprice.marketId;
 	var sid = thprice.sid; 
 	var th = thprice.theoretical;
-
+	sysLogger.crit('<execution> <executeTheoretical> returns');
+	return; 
 	 getCurrentOrders(mid, sid, function(sidBets) {
 		var bidtc = getBetIdsToCancel(sidBets, th); 
 		cancelDirtyOrders(bidtc, mid, function(err, res) {

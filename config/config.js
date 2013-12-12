@@ -66,9 +66,9 @@ module.exports = {
       	},
       	removeBuffer: 10,
       	eventType: '7',
-      	testMarketId: '1.112108446',
-      	testEventId:'27110756',
-      	applyEventId: false,
+      	testMarketId: '1.112192746',
+      	testEventId:'27115145',
+      	applyEventId: true,
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {
@@ -77,8 +77,8 @@ module.exports = {
 		    },      		
 		    afterStDateBiasHrs: 0,  
 		    afterStDateBiasMin: 10,
-		    beforeStDateBiasHrs: 0,
-		    beforeStDateBiasMin: 30,		    
+		    beforeStDateBiasHrs: 4,
+		    beforeStDateBiasMin: 0,		    
 		    minMarketCt: 0,
 		    applyAfterStDate: true,
 		    applyBeforeStDate: true, 

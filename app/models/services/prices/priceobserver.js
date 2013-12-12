@@ -62,6 +62,9 @@ function log(book, callback) {
 			logger.info('' , logobj);
 		} 
 		var mid = book.marketId.substring(2,book.marketId.length);	
+		if(book.marketId == config.api.testMarketId) {
+			sysLogger.debug('<priceobserver> <log> tick_' + book.marketId);	
+		}
 		app.io.broadcast('tick_' + mid, book);
 		callback();
 	});

@@ -114,15 +114,16 @@ Ping.prototype.updateCounters = function(markets) {
 
 
 Ping.prototype.updateCategories = function(books) {
-	var mid, tm, thrclass;  
+	var mid, tm, thrclass, status;  
 	for(var i = 0; i < books.length; i++) {
 		mid = books[i].marketId;
 		tm = books[i].totalMatched;
+		status = books[i].status;
 		if(tm == 0) {
 			continue;
 		}
 		thrclass = throttle.updateMarket(mid, tm);
-		app.io.broadcast('updateclass', {mid: mid, thrclass: thrclass, tm: tm});	   
+		app.io.broadcast('updateclass', {mid: mid, thrclass: thrclass, tm: tm, status: status});	   
 	}
 	throttle.sort();
 }

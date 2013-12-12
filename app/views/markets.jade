@@ -47,14 +47,17 @@ block content
 							});							
 							io.on('updateclass',function(data){									
 									var mid = data.mid.substring(2,data.mid.length);
-									var rowId = '#' + mid;
-									console.log(data.thrclass);
-									switch(data.thrclass) {
-										case 1: $(rowId).css("background-color", "#ffffff"); break;
-										case 2: $(rowId).css("background-color", "#F7FBFC"); break;
-										case 3: $(rowId).css("background-color", "#E2F5FC"); break;
-										case 4: $(rowId).css("background-color", "#CFEFFD"); break;
-									}									
+									if(data.status != 'OPEN') {
+										$(rowId).css("background-color", "#EED3D7");
+									} else {
+										var rowId = '#' + mid;
+										switch(data.thrclass) {
+											case 1: $(rowId).css("background-color", "#ffffff"); break;
+											case 2: $(rowId).css("background-color", "#F7FBFC"); break;
+											case 3: $(rowId).css("background-color", "#E2F5FC"); break;
+											case 4: $(rowId).css("background-color", "#CFEFFD"); break;
+										}							
+									}		
 							});
 							io.on('removemarket', function(data) {	
 								var mid = data.marketId.substring(2,data.marketId.length);	
