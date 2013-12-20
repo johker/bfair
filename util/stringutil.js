@@ -1,6 +1,5 @@
-var env = process.env.NODE_ENV || 'development'
- , root = '../'
- , config = require(root + 'config/config')[env]
+var root = '../'
+ , rtc = require(root + 'app/controllers/configcontroller')
 
 var monthNames = [ "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December" ];
@@ -12,7 +11,7 @@ Date.prototype.addHours= function(h){
 }
 
 exports.adjustTimezone = function(date) {
-	return date.addHours(config.timezoneShiftGMT);
+	return date.addHours(rtc.getConfig('config.timezoneShiftGMT'));
 }
 
 /**

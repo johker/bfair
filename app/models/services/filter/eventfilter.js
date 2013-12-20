@@ -2,9 +2,8 @@
 /**
  * Module Dependencies
  */
-var env = process.env.NODE_ENV || 'development'
-	, root = '../../../../'
- 	, config = require(root + 'config/config')[env]
+var root = '../../../../'
+ 	, rtc = require(root + 'app/controllers/configcontroller')
  	, _ = require('underscore'); 
  	
 var keysmpl = ['Lobkov', 'Djokovic', 'Murray', 'Federer', 'Ferrer', 'Nadal', 'Berdych', 'Tsonga', 'Del Potro', 'Gasquet', 'Wawrinka', 'Haas', 'Cilic', 'Nishikori', 'Tipsarevic', 'Raonic', 'Almagro', 'Simon', 'Kohlschreiber', 'Querrey', 'Monaco']
@@ -20,8 +19,8 @@ var soccer = {'teams': keysteams, 'negative': nkeyssoccer};
 * arrays where n is specified by maxIndex. 
 */ 
 function tennisKeys() {
-	return tennis.male.slice(0,config.api.filter.maxEvIdx.tennis)
-		.concat(tennis.female.slice(0, config.api.filter.maxEvIdx.tennis));
+	return tennis.male.slice(0,rtc.getConfig('api.filter.maxEvIdx.tennis'))
+		.concat(tennis.female.slice(0, rtc.getConfig('api.filter.maxEvIdx.tennis')));
 }
 
 function negativeTennisKeys() {
@@ -32,7 +31,7 @@ function negativeTennisKeys() {
 * Takes first n entries from soccer keys. 
 */ 
 function soccerKeys() {
-	return soccer.teams.slice(0,config.api.filter.maxEvIdx.soccer)
+	return soccer.teams.slice(0,rtc.getConfig('api.filter.maxEvIdx.soccer'))
 }
 
 function negativeSoccerKeys() {
@@ -61,7 +60,7 @@ function byKeys(events, keys, nkeys) {
 */ 
 function byMarketCount(events) {
 	return resf = _.filter(events, function(obj) {
-		return obj.marketCount >= config.api.filter.minMarketCt;
+		return obj.marketCount >= rtc.getConfig('api.filter.minMarketCt');
 	});
  } 
  
@@ -78,19 +77,19 @@ function byMarketCount(events) {
  	var resf = [];
  	
  	// Tennis
- 	if(config.api.eventType == '2') {
+ 	if(rtc.getConfig('api.eventType') == '2') {
  		resf = byKeys(events, tennisKeys(), negativeTennisKeys());
  		
  	// Soccer		
-	} else if(config.api.eventType == '1') {
+	} else if(rtc.getConfig('api.eventType') == '1') {
 		resf = byKeys(events, soccerKeys(), negativeSoccerKeys());
 		
 	// Greyhound Racing		
-	} else if(config.api.eventType == '4339') {
+	} else if(rtc.getConfig('api.eventType') == '4339') {
 		resf = events; // no filter
 		
 	// Horse Racing
-	} else if(config.api.eventType == '7') {
+	} else if(rtc.getConfig('api.eventType') == '7') {
 		resf = byMarketCount(events); // Focus on Events with many markets
 		
 	// Default
@@ -121,19 +120,19 @@ Date.prototype.addMinutes= function(min){
 }
 
 exports.getEventFilter = function() {
-	var eventFilter = {"filter": {"eventTypeIds" : [config.api.eventType], "turnsInPlay" : config.api.filter.turnsInPlay}};
+	var eventFilter = {"filter": {"eventTypeIds" : [rtc.getConfig('api.eventType')], "turnsInPlay" : rtc.getConfig('api.filter.turnsInPlay')}};
 	eventFilter.filter['marketStartTime'] = {};
 	var earliestStart = new Date()
- 							.addHours(-config.api.filter.afterStDateBiasHrs + config.timezoneShiftGMT)
- 							.addMinutes(-config.api.filter.afterStDateBiasMin)
+ 							.addHours(-rtc.getConfig('api.filter.afterStDateBiasHrs') + rtc.getConfig('timezoneShiftGMT'))
+ 							.addMinutes(-rtc.getConfig('api.filter.afterStDateBiasMin'))
 	var latestStart = new Date()
- 							.addHours(config.api.filter.beforeStDateBiasHrs + config.timezoneShiftGMT)
- 							.addMinutes(config.api.filter.beforeStDateBiasMin)
-	if(config.api.filter.applyAfterStDate && config.api.filter.applyBeforeStDate) {
+ 							.addHours(rtc.getConfig('api.filter.beforeStDateBiasHrs') + rtc.getConfig('timezoneShiftGMT'))
+ 							.addMinutes(rtc.getConfig('api.filter.beforeStDateBiasMin'))
+	if(rtc.getConfig('api.filter.applyAfterStDate') && rtc.getConfig('api.filter.applyBeforeStDate')) {
  		eventFilter.filter['marketStartTime'] = {"from": earliestStart,"to": latestStart}
- 	} else if(config.api.filter.applyAfterStDate) {
+ 	} else if(rtc.getConfig('api.filter.applyAfterStDate')) {
  		eventFilter.filter['marketStartTime'] = {"from": earliestStart};
- 	} else if(config.api.filter.applyBeforeStDate) {
+ 	} else if(rtc.getConfig('api.filter.applyBeforeStDate')) {
  		eventFilter.filter['marketStartTime'] = {"to": latestStart};
  	}
  	

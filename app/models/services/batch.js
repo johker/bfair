@@ -2,9 +2,8 @@
  * Splits queries into batches to overcome TOO_MUCH_DATA restrictions  
  */
 
-  var env = process.env.NODE_ENV || 'development'
-	,  root = '../../../'
-	, config = require(root + 'config/config')[env]
+  var root = '../../../'
+	, rtc = require(root + 'app/controllers/configcontroller')
 	, _ = require('underscore')	
 	, batchct = 1 // number of batches
 	, mbatches = []
@@ -14,8 +13,8 @@
 
 function increaseBatchCt() {
 	batchct++;
-	if(batchct > config.api.batch.max) {
-		console.log(batchct +', ' + config.api.batch.max);		
+	if(batchct > rtc.getConfig('api.batch.max')) {
+		sysLogger.debug('<batch> <increaseBatchCt> ' + batchct + ', ' + rtc.getConfig('api.batch.max'));		
 		throw new Error('Market ID imit exceeded');
 	}
 }
@@ -63,7 +62,7 @@ exports.getNextBatch = function() {
 exports.addMarket = function(market) {
 	sysLogger.debug('<batch> <addMarketId> id = ' + market.getId());
 	// add to current batch if possible 
-	if(currbatch.length < config.api.batch.size) { 
+	if(currbatch.length < rtc.getConfig('api.batch.size')) { 
 		currbatch.push(market);
 	} else { // create another batch
 		mbatches.push(currbatch);

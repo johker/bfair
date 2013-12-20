@@ -4,9 +4,8 @@
  *  
  */ 
 
-var env = process.env.NODE_ENV || 'development'
-	,  root = '../../../'
-	, config = require(root + 'config/config')[env]
+var root = '../../../'
+	, rtc = require(root + 'app/controllers/configcontroller')
 	, _ = require('underscore')	
 	, classes = [];
 	
@@ -37,13 +36,13 @@ exports.updateMarket = function(id, value) {
 	if(!match) {
 		throw new Error('Market ID ' + mid + ' cannot be found in throttle classes.'); 
 	}
-	if(value > config.api.throttle.th3) {
+	if(value > rtc.getConfig('api.throttle.th3')) {
 		return C4;
 	} 
-	if (value > config.api.throttle.th2) {
+	if (value > rtc.getConfig('api.throttle.th2')) {
 		return C3;
 	}
-	if (value > config.api.throttle.th1) {
+	if (value > rtc.getConfig('api.throttle.th1')) {
 		return C2;
 	}
 	return C1;
@@ -55,7 +54,7 @@ exports.sort = function() {
 
 exports.ready = function(market) {
 	var timeout = calcTimeout(market.getReqCt());
-	return timeout >= (getThrottleFactor(market.getId()) * config.api.baseto.price);
+	return timeout >= (getThrottleFactor(market.getId()) * rtc.getConfig('api.baseto.price'));
 }
 
 function getThrottleFactor(mid) {
@@ -63,19 +62,19 @@ function getThrottleFactor(mid) {
 	if(!match) {
 		throw new Error('Market ID ' + mid + ' cannot be found in throttle classes.'); 
 	}
-	var fac = config.api.throttle.fac1; 
+	var fac = rtc.getConfig('api.throttle.fac1'); 
 	switch(match.thrclass) {
 		case C1: 
-		fac = config.api.throttle.fac1; 
+		fac = rtc.getConfig('api.throttle.fac1'); 
 		break;
 		case C2: 
-		fac = config.api.throttle.fac2; 
+		fac = rtc.getConfig('api.throttle.fac2'); 
 		break;
 		case C3: 
-		fac = config.api.throttle.fac3; 
+		fac = rtc.getConfig('api.throttle.fac3'); 
 		break;
 		case C4: 		
-		fac = config.api.throttle.fac4; 
+		fac = rtc.getConfig('api.throttle.fac4'); 
 		break;
 	}
 	return fac;  	
@@ -83,5 +82,5 @@ function getThrottleFactor(mid) {
 
 
 function calcTimeout(reqct) {
-	return reqct * config.api.baseto.price;
+	return reqct * rtc.getConfig('api.baseto.price');
 }  

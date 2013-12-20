@@ -1,8 +1,7 @@
 // This module contains functions shared by multiple tests
 var util = require('util')
-	, env = process.env.NODE_ENV || 'development'
 	, root = '../../../'
-	, config = require(root + 'config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
 
 
 module.exports.Singelton = (function () {
@@ -35,20 +34,20 @@ module.exports.Singelton = (function () {
       }, 
       getSession: function() {
       	var self = this;
-      	sysLogger.debug('<session> <getSession> applicationkey = ' + config.betfair.applicationkey);
+      	sysLogger.debug('<session> <getSession> applicationkey = ' + rtc.getConfig('betfair.applicationkey'));
 		if(self.session) {
 			sysLogger.debug('<session> <getSession> return session instance, emulated = ' + self.session.isMarketUsingBetEmulator('1.110365959'));
 			return self.session; 
 		}
 		else {
-			sysLogger.crit('<session> <getSession> New Session Instance, Active App Key = ' + config.betfair.applicationkey);
+			sysLogger.crit('<session> <getSession> New Session Instance, Active App Key = ' + rtc.getConfig('betfair.applicationkey'));
 			self.session = betfair.newSession();
-			self.session.setApplicationKeys({active: config.betfair.applicationkey, delayed: config.betfair.delayedapplicationkey})
+			self.session.setApplicationKeys({active: rtc.getConfig('betfair.applicationkey'), delayed: rtc.getConfig('betfair.delayedapplicationkey')})
 			return self.session;
 		} 
       },
-	  username : config.betfair.user,
-	  password : config.betfair.password
+	  username : rtc.getConfig('betfair.user'),
+	  password : rtc.getConfig('betfair.password')
     };
   }
   return {

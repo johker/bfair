@@ -1,10 +1,9 @@
 /**
  * Module Dependencies
  */
-var env = process.env.NODE_ENV || 'development'
-	, root = '../../../../'
+var root = '../../../../'
 	, servicedir = root + 'app/models/services/'
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, _ = require('underscore')
 	, eventfilter = require(servicedir + 'filter/eventfilter')
 	, marketfilter = require(servicedir + 'filter/marketfilter') 
@@ -34,12 +33,12 @@ exports.listMarkets = function(filter, cb) {
 		var events = res.response.result; 		
 		var eids = [];
 		// Only one id for testing purposes
-		if(config.api.applyEventId) {
- 			eids = [config.api.testEventId];
+		if(rtc.getConfig('api.applyEventId')) {
+ 			eids = [rtc.getConfig('api.testEventId')];
  		} else {
  			eids = eventfilter.getFilteredEventIds(events);
  		}
- 		exports.listMarketCatalogue({"filter":{"eventIds":eids},"maxResults":config.api.maxResults,"sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
+ 		exports.listMarketCatalogue({"filter":{"eventIds":eids},"maxResults":rtc.getConfig('api.maxResults'),"sort":marketfilter.getMarketSort(),"marketProjection":marketfilter.getMarketProjection()}, function(err, res) {
 			 cb(err,res.response.result);
 		});
 		

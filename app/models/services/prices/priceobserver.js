@@ -2,10 +2,9 @@
  * Stores list of logged markets 
  */
  
-var env = process.env.NODE_ENV || 'development'
- , root = '../../../../'
+var root = '../../../../'
  , servicedir = root + 'app/models/services/'
- , config = require(root + 'config/config')[env]
+ , rtc = require(root + 'app/controllers/configcontroller')
  , EventEmitter = require('events').EventEmitter
  , util = require('util')
  , strutils = require(root + 'util/stringutil')
@@ -62,7 +61,7 @@ function log(book, callback) {
 			logger.info('' , logobj);
 		} 
 		var mid = book.marketId.substring(2,book.marketId.length);	
-		if(book.marketId == config.api.testMarketId) {
+		if(book.marketId == rtc.getConfig('api.lockedMarketId')) {
 			sysLogger.debug('<priceobserver> <log> tick_' + book.marketId);	
 		}
 		app.io.broadcast('tick_' + mid, book);

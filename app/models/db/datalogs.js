@@ -6,7 +6,7 @@
 // Load configurations
 var env = process.env.NODE_ENV || 'development'
 	, root = '../../../'
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, async = require('async')
 	, su = require(root + 'util/stringutil')
 	, mongoose = require('mongoose')
@@ -98,10 +98,10 @@ function executeQuery(callback) {
 * a query string with time and id restrictions.
 */
 function getQuery(callback) {
-	sysLogger.info('<datalogs.getQuery> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
+	sysLogger.info('<datalogs.getQuery> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
+	mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'), function(err, db) {
 		if(err) { sysLogger.error('<datalogs> <getQuery> '+ err); }
-		Data = mongoose.model('Data', dataSchema, config.logs.collection.prices);	
+		Data = mongoose.model('Data', dataSchema, rtc.getConfig('logs.collection.prices'));	
 		var query = Data.where('eventId').equals(eventId)
 		if(from != null) query = query.where('timestamp').gt(from)
 		if(to != null) query = query.where('timestamp').lt(to)  
@@ -113,10 +113,10 @@ function getQuery(callback) {
 * Removes all logs matching conditions
 */
 function removeResults(callback) {
-	sysLogger.info('<datalog> <removeResults> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
-	mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
+	sysLogger.info('<datalog> <removeResults> Accessing logs at ' + 'mongodb://' + rct.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
+	mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'), function(err, db) {
 		if(err) { sysLogger.error('<datalogs> <removeResults> '+ err); }
-		Model = mongoose.model('Data', dataSchema, config.logs.collection.prices);	
+		Model = mongoose.model('Data', dataSchema, rtc.getConfig('logs.collection.prices'));	
 		if(from != null && to != null) 
 			Model.find({})
 			.where('eventId').equals(eventId)
@@ -159,14 +159,14 @@ function removeResults(callback) {
 * a customized query formatter.
 */ 
 function streamResults(res, callback) {
-	sysLogger.info('<datalogs> <streamResults> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
-	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
-	var Data = db.model('Data', dataSchema, config.logs.collection.prices);
+	sysLogger.info('<datalogs> <streamResults> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
+	var db = mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db')).connection; 
+	var Data = db.model('Data', dataSchema, rtc.getConfig('logs.collection.prices'));
 	var format = new formatter.createFormatter();	
 	var customstream = buildQueryStream(Data, format);
 	// Customized format
 	var d = new Date();
-	res.setHeader('Content-disposition', 'attachment; filename='  + d.fileformat() + '_logsexp' + config.filetype);
+	res.setHeader('Content-disposition', 'attachment; filename='  + d.fileformat() + '_logsexp' + rtc.getConfig('filetype'));
 	res.writeHead(200, {'Content-Type': 'text/csv; charset=utf-8'}); 
 	customstream.pipe(res);
 	callback();
@@ -219,7 +219,7 @@ function buildQueryStream(Model, format) {
 
 function testQuery() {
 	console.log('<datalogs> <testQuery>');	
-	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
+	var db = mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.get('config.logs.port') + '/' + rtc.getConfig('logs.db')).connection; 
 	var Data = db.model('Data', dataSchema, 'prices');
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 

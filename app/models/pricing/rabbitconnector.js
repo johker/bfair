@@ -1,8 +1,7 @@
 
-var env = process.env.NODE_ENV || 'development'
- , root = '../../../'
+var root = '../../../'
  , servicedir = root + 'app/models/services/'
- , config = require(root + 'config/config')[env]
+ , rtc = require(root + 'app/controllers/configcontroller')
  , amqp = require('amqp') 
  , util = require('util')
  , bookutil = require(servicedir + 'book')
@@ -12,7 +11,7 @@ var env = process.env.NODE_ENV || 'development'
  , updtct = 0
  , exchange
  , RabbitProducer = require(root + 'app/models/pricing/rabbitpublisher')
- , marketPublisher = new RabbitProducer(config.amqp.queues.marketpub)
+ , marketPublisher = new RabbitProducer(rtc.getConfig('amqp.queues.marketpub'))
  , executioncontroller = require(root + 'app/controllers/executioncontroller');
 
 
@@ -33,7 +32,7 @@ RabbitConnector.prototype.marketDataUpdate = function(books) {
 }
 
 RabbitConnector.prototype.sendMarket = function(book) {
-	if(book.marketId == config.api.testMarketId){
+	if(book.marketId == rtc.getConfig('api.lockedMarketId')){
 		sysLogger.debug('<RabbitConnector.prototype.sendMarket> Published Market Update: ' + book.marketId);
 		marketPublisher.publish(bookutil.getDataTransferObject(book), 'bookdto')	
 	}

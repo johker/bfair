@@ -2,11 +2,10 @@ var mongoose = require('mongoose'),
     SES = require('../app/models/db/ses');
 
 // Load configurations
-var env = process.env.NODE_ENV || 'development'
-  , config = require('../config/config')[env]
+var rtc = require(root + 'app/controllers/configcontroller')
   , mongoose = require('mongoose')
 
-mongoose.connect(config.db, function(err) {
+mongoose.connect(rtc.getConfig('db'), function(err) {
     if (err) throw err;
     console.log('Successfully connected to MongoDB');
 });

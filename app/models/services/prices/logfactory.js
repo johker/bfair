@@ -4,7 +4,7 @@
  */
 var env = process.env.NODE_ENV || 'development'
 	, root = '../../../../'
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, _ = require('underscore')
 	, winston = require('winston')
 	, formatter = require(root +  'util/streamformatter')
@@ -26,14 +26,14 @@ var activeLogger;
 * is generated. 
 */
 exports.getLogInstance = function(mid, callback) {
-	var prop = config.logs.collection.prefix + mid;
+	var prop = rtc.getConfig('logs.collection.prefix') + mid;
   	if(_.has(loggers, prop)) {
   		callback(loggers[prop]);
   	} else {
   		sysLogger.notice('<logfactory> <getLogInstance> create new logger instance: ' + prop );
 	  	var logger = new (winston.Logger)({
 		  	transports: [
-		  		new winston.transports.MongoDB({ db: config.logs.db , collection: prop, level: config.logs.level})
+		  		new winston.transports.MongoDB({ db: rtc.getConfig('logs.db') , collection: prop, level: rtc.getConfig('logs.level')})
 		  		]
 		  	});  
 		loggers[prop] = logger;
@@ -46,7 +46,7 @@ exports.getLogInstance = function(mid, callback) {
 * Removes the winston logger instance from the list. 
 */ 
 exports.removeLogInstance = function(mid) {
-	var collection = config.logs.collection.prefix + mid;
+	var collection = rtc.getConfig('logs.collection.prefix') + mid;
  	sysLogger.debug('<logfactory> <removeLogInstance> collection: ' + collection);
  	delete loggers[collection];
 } 
@@ -56,7 +56,7 @@ exports.removeLogInstance = function(mid) {
 * Streams content of collection given by market ID
 */
 exports.exportLogInstance = function(mid, res, callback) {
-	var collection = config.logs.collection.prefix + mid;
+	var collection = rtc.getConfig('logs.collection.prefix') + mid;
  	sysLogger.notice('<logfactory> <exportLogInstance> collection: ' + collection);
  	closeConnection();
  	streamResults(collection, res, callback);
@@ -81,15 +81,15 @@ function closeConnection() {
 * a customized query formatter.
 */ 
 function streamResults(collection, res, callback) {
-	sysLogger.crit('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
-	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
+	sysLogger.crit('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
+	var db = mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db')).connection; 
 	sysLogger.notice('<logfactory> <streamResults> collection: ' + collection);
 	var Data = db.model('Data', generateSchema(), collection);	
 	var format = new formatter.createFormatter();	
 	var customstream = buildQueryStream(Data, format);
 	// Customized format
 	var d = new Date();
-	res.setHeader('Content-disposition', 'attachment; filename='  + d.fileformat() + '_logsexp' + config.filetype);
+	res.setHeader('Content-disposition', 'attachment; filename='  + d.fileformat() + '_logsexp' + rtc.getConfig('filetype'));
 	res.writeHead(200, {'Content-Type': 'text/csv; charset=utf-8'}); 
 	customstream.pipe(res);
 	callback();
@@ -129,7 +129,7 @@ function generateSchema() {
 exports.testQuery = function(collection) {
 	sysLogger.notice('<logfactory> <testQuery>');	
 	closeConnection();
-	var db = mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db).connection; 
+	var db = mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db')).connection; 
 	var Data = mongoose.model('Data', LogSchema, collection);
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 

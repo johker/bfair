@@ -8,10 +8,12 @@ var express = require('express.io')
 
 
 // Load configurations
-var env = process.env.NODE_ENV || 'development'
-  , config = require('./config/config')[env]
-  , auth = require('./config/authorization')
-  , mongoose = require('mongoose')
+var root = './' 
+	, env = process.env.NODE_ENV || 'development'
+	, config = require('./config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
+	, auth = require('./config/authorization')
+	, mongoose = require('mongoose')
 
 process.env['NODE_ENV'] = 'development';
 process.env['TZ'] = 'Europe/Amsterdam';
@@ -32,11 +34,11 @@ if(env == 'development') {
 
 
 // Bootstrap db connection
-sysLogger.notice('<server> DB config: ' + config.db);
-mongoose.connect(config.db)
+sysLogger.notice('<server> DB config: ' + rtc.getConfig('db'));
+mongoose.connect(rtc.getConfig('db'))
 
 // Bootstrap models
-var models_path = config.root + '/app/models/db'
+var models_path = rtc.getConfig('root') + '/app/models/db'
 fs.readdirSync(models_path).forEach(function (file) {
   require(models_path+'/'+file)
 })

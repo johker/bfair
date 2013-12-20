@@ -1,9 +1,8 @@
 var nodemailer = require("nodemailer")
-	,  mongoose = require('mongoose')
- 	, env = process.env.NODE_ENV || 'development'
-	, root = '../../../'
+	, mongoose = require('mongoose')
+ 	, root = '../../../'
 	, servicedir = root + 'app/models/services/'
-	, config = require(root + 'config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
 	, request = require(servicedir + 'markets/marketrequests');
 
 
@@ -30,7 +29,7 @@ exports.marketStatusClosed = function(marketId, cb) {
 exports.marketEventType = function(marketId, cb) {
 	var err = null;
 	request.listMarketCatalogue( {"filter":{"marketIds":[marketId]},"maxResults":"1","marketProjection":["EVENT_TYPE"]}, function(err, res) {
-		if(res.response.result[0].eventType.id != config.api.eventType) {
+		if(res.response.result[0].eventType.id != rtc.getConfig('api.eventType')) {
 			err = new Error('Market Event Type Error');	
 		}
 		cb(err, marketId); 

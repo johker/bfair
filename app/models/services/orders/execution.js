@@ -1,7 +1,6 @@
 	
-var env = process.env.NODE_ENV || 'development'
- 	, root = '../../../../'
- 	, config = require(root + 'config/config')[env]
+var root = '../../../../'
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, servicedir = root + 'app/models/services/'
 	, pricerequests = require(servicedir + 'prices/pricerequests')
 	, orderrequests = require(servicedir + 'orders/orderrequests') 
@@ -20,7 +19,7 @@ exports.executeTheoretical = function(thprice, cb) {
 	/**
 	* TODO: REMOVE THIS LINE 
 	*/
-	if(thprice.selectionId != config.api.testSelectionId) return;
+	if(thprice.selectionId != rtc.getConfig('api.testSelectionId')) return;
 	var mid = thprice.marketId;
 	var sid = thprice.selectionId; 
 	var th = thprice.theoretical;
@@ -53,13 +52,13 @@ function callOrders(ordersToCall, mid, sid, cb) {
 		var lo = {
 			'size':ordersToCall[i].size,
 			'price':ordersToCall[i].price, 
-			'persistenceType':config.api.defaultsettings.persistenceType 
+			'persistenceType': rtc.getConfig('api.defaultsettings.persistenceType') 
 		};	
 		var bi = {
 			'selectionId': sid,
-			'handicap':config.api.defaultsettings.handicap,
+			'handicap': rtc.getConfig('api.defaultsettings.handicap'),
 			'side': ordersToCall[i].side,
-			'orderType': config.api.defaultsettings.orderType,
+			'orderType': rtc.getConfig('api.defaultsettings.orderType'),
 			'limitOrder': lo
 		};
 		betInstructions.push(bi);

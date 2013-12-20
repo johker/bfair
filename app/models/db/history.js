@@ -1,7 +1,6 @@
 
-var env = process.env.NODE_ENV || 'development'
-	, root = '../../../'
- 	, config = require(root + 'config/config')[env]
+var root = '../../../'
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, _ = require('underscore')
 	, sysLogger = require(root + 'config/winston').getSysLogger()
     , mongoose = require('mongoose')
@@ -27,9 +26,9 @@ function connect(callback) {
 	sysLogger.debug('<history> <connect>');
 	mongoose.connection.close( function(err) {
 		if(err) {sysLogger.error('<history> <closeConnection> '+  err);	}
-		mongoose.connect('mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db, function(err, db) {
+		mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'), function(err, db) {
 			if(err) { return sysLogger.error('<history> <connect> '+ err); }
-			HistoryModel = mongoose.model('History', HistorySchema, config.logs.collection.prices);
+			HistoryModel = mongoose.model('History', HistorySchema, rtc.getConfig('logs.collection.prices'));
 			sysLogger.notice('<history> <connect> HistoryModel initialized');
 			callback(HistoryModel); 
 		});
@@ -79,7 +78,7 @@ exports.getList = function(callback) {
 * 
 */
 exports.removeAll = function(callback) {
-	sysLogger.debug('<history> <removeAll> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	sysLogger.debug('<history> <removeAll> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
 	connect(function(Model) {
 		Model.find({})		
 			.remove(function(err, numberRemoved) {
@@ -94,7 +93,7 @@ exports.removeAll = function(callback) {
 * @param {string} mid - market ID to be removed.
 */
 exports.removeEntry = function(mid, callback) {
-	sysLogger.debug('<history> <removeEntry> Accessing logs at ' + 'mongodb://' + config.logs.host + ':' + config.logs.port + '/' + config.logs.db);
+	sysLogger.debug('<history> <removeEntry> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
 	connect(function(Model) {
 		Model.find({marketId : mid})		
 			.remove(function(err, numberRemoved) {

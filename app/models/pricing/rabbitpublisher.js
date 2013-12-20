@@ -6,7 +6,7 @@ var open = require('amqplib').connect('amqp://localhost')
 
 var RabbitProducer = function RabbitProducer(queue) { 	
 	var self = this;
-	self.q = queue || config.amqp.queues.defaultpub
+	self.q = queue || rtc.getConfig('amqp.queues.defaultpub')
 
 }
 
@@ -18,7 +18,7 @@ RabbitProducer.prototype.publish = function(data, type) {
 	    ch.assertQueue(self.q);
 	    ch.sendToQueue(self.q, new Buffer(JSON.stringify(data)), {
 	     contentType:'application/json', 
-	     replyTo: config.amqp.queues.consumer,
+	     replyTo: rtc.getConfig('amqp.queues.consumer'),
 	     headers:{ __TypeId__: type}
 	    });
 	  });

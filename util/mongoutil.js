@@ -2,10 +2,9 @@
  * Native DB operation support
  */
  
- var env = process.env.NODE_ENV || 'development'
-	, root = '../'
+ var root = '../'
 	, mongodb = require("mongodb")
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
     , Db = mongodb.Db
     , MongoClient = require('mongodb').MongoClient
     , Server = require('mongodb').Server
@@ -20,7 +19,7 @@
  */
 exports.removeCollection = function(collection,  callback) {
 	sysLogger.warning('Removing collection named ' + collection); 	
-	var db = new Db(config.logs.db, new Server(config.logs.host, config.logs.port), {safe:false});
+	var db = new Db(rtc.getConfig('logs.db'), new Server(rtc.getConfig('logs.host'), rtc.getConfig('logs.port')), {safe:false});
 	// Establish connection to db
 	db.open(function(err, db) {
 	  assert.equal(null, err);	  
@@ -52,8 +51,8 @@ var c;
 * @param {string} database name
 */ 
 exports.listCollections = function(callback, dbname) {
-	var db = dbname || config.logs.db; 
-	var db_connector = new Db(db, new Server(config.logs.host, config.logs.port, {safe:false}));
+	var db = dbname || rtc.getConfig('logs.db'); 
+	var db_connector = new Db(db, new Server(rtc.getConfig('logs.host'), rtc.getConfig('logs.port'), {safe:false}));
 	db_connector.open(function(err, db){
 	    db.collectionNames(function(err, collections){
 	    	db.close();

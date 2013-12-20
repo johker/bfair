@@ -2,12 +2,11 @@
  * Pings prices or markets - depending on the type that was
  * passed to the constructor
  */
-var env = process.env.NODE_ENV || 'development'
-	,  root = '../../../../'
+var root = '../../../../'
 	, EventEmitter = require('events').EventEmitter
 	, util = require('util')
 	, servicedir = root + 'app/models/services/'
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, pricemock = require(root + 'test/mock/pricefactory')
 	, marketmock = require(root + 'test/mock/marketfactory')
 	, marketrequest = require(servicedir + 'markets/marketrequests')
@@ -19,8 +18,8 @@ var env = process.env.NODE_ENV || 'development'
 * Ping Constructor 
 */
 var Ping = function Ping (opts) {
-    this.eventType = opts.eventType || config.api.eventType; 
-    this.timeout = opts.timeout || config.api.baseto.market; 
+    this.eventType = opts.eventType || rtc.getConfig('api.eventType'); 
+    this.timeout = opts.timeout || rtc.getConfig('api.baseto.market'); 
     this.handle = null;
     this.session = opts.session;
 };
@@ -46,7 +45,7 @@ Ping.prototype.stop = function() {
 
 Ping.prototype.ping = function(){
 	var self = this;
-    if(config.mock.usemarkets) {           	       	
+    if(rtc.getConfig('mock.usemarkets')) {           	       	
       	marketmock.getMarkets(function(markets, err) {
        		self.emit('ping', markets);
        	});      		         		

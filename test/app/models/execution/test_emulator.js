@@ -20,8 +20,8 @@ var orders = require(servicedir + 'orders/orderrequests')
 	, request = require(servicedir + 'prices/pricerequests')
 	, session =  require(servicedir + 'session').Singelton.getInstance().getSession();
 
-var mid = config.api.testMarketId;
-var sid = config.api.testSelectionId;
+var mid = rtc.getConfig('api.testMarketId');
+var sid = rtc.getConfig('api.testSelectionId');
  	
 
 session.enableBetEmulatorForMarket(mid);
@@ -52,7 +52,7 @@ function enableEmulator(data, cb) {
 }
 
 
-session.login(config.betfair.user, config.betfair.password, function(err, res) {
+session.login(rtc.getConfig('betfair.user'), rtc.getConfig('betfair.password'), function(err, res) {
 	sysLogger.debug('<test_emulator> <login>');
 	request.listMarketBook(filter, function(err, res) {
 		sysLogger.debug('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2));

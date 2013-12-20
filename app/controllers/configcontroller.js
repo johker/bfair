@@ -16,6 +16,7 @@ var root = '../../'
 * exist, it falls back on static properties - provided by config.js
 */
 exports.getConfig = function(key) {
+	// TODO: Define exceptions for performance improvement - e.g. db settings
 	return dynconfig.get(key) != null ? dynconfig.get(key) : dynobs.getValue(config, key); 
 
 }

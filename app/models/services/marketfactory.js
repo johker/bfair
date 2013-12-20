@@ -2,9 +2,8 @@
  * Usage behavior representation of market ids
  */
 
-var env = process.env.NODE_ENV || 'development'
- , root = '../../../'
- , config = require(root + 'config/config')[env]
+var root = '../../../'
+ , rtc = require(root + 'app/controllers/configcontroller')
 
 
 
@@ -42,7 +41,7 @@ var env = process.env.NODE_ENV || 'development'
  	}
  	
  	this.remove = function() {
- 		return ++(this.nrct) > config.api.removeBuffer; 
+ 		return ++(this.nrct) > rtc.getConfig('api.removeBuffer'); 
  	} 	
  	
  	this.setPassivationTime = function(time) {

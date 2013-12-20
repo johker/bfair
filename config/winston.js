@@ -1,16 +1,16 @@
 var winston = require('winston');
 
 // Load configurations
-var env = process.env.NODE_ENV || 'development'
-  , config = require('../config/config')[env]
+var root = '../'
+	, rtc = require(root + 'app/controllers/configcontroller');
  
 require('winston-mongodb').MongoDB;
 
 exports.getSysLogger = function() {
 	var sysLogger = new (winston.Logger)({
 	  transports: [
-	    new winston.transports.Console({level: config.logs.level , json: false, timestamp: true }),
-	    new winston.transports.File({ filename: config.root + config.syslogfile , json: false, timestamp: true })
+	    new winston.transports.Console({level: rtc.getConfig('logs.level') , json: false, timestamp: true }),
+	    new winston.transports.File({ filename: rtc.getConfig('root') + rtc.getConfig('syslogfile') , json: false, timestamp: true })
 	  ],
 	  exitOnError: false
 	});
@@ -21,7 +21,7 @@ exports.getSysLogger = function() {
 exports.getApiLogger = function() {
   var apiLogger = new (winston.Logger)({
         transports: [
-                new winston.transports.MongoDB({ db: config.logs.db , collection: config.logs.collection.prices, level: config.logs.level})
+                new winston.transports.MongoDB({ db: rtc.getConfig('logs.db') , collection: rtc.getConfig('logs.collection.prices'), level: rtc.getConfig('logs.level')})
                 ]
                 });             
   return apiLogger;

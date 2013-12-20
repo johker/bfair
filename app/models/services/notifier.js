@@ -1,9 +1,8 @@
 var nodemailer = require("nodemailer")
 	,  mongoose = require('mongoose')
- 	, env = process.env.NODE_ENV || 'development'
-	, root = '../../../'
+ 	, root = '../../../'
 	, Schema = mongoose.Schema
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
  	, winston = require(root + 'config/winston')
  	, sysLogger = winston.getSysLogger()
  	, NotifierModel
@@ -21,9 +20,9 @@ function connect(callback) {
 	sysLogger.debug('<notifier> <connect>');
 	mongoose.connection.close( function(err) {
 		if(err) {sysLogger.error('<notifier> <closeConnection> '+  err);	}
-		mongoose.connect('mongodb://' + config.mail.host + ':' + config.mail.port + '/' + config.mail.db, function(err, db) {
+		mongoose.connect('mongodb://' + rtc.getConfig('mail.host') + ':' + rtc.getConfig('mail.port') + '/' + rtc.getConfig('mail.db'), function(err, db) {
 			if(err) { return sysLogger.error('<notifier> <connect> '+ err); }
-			NotifierModel = mongoose.model('mySES', AwsAccessSchema, config.mail.collection);	
+			NotifierModel = mongoose.model('mySES', AwsAccessSchema, rtc.getConfig('mail.collection'));	
 			sysLogger.notice('<notifier> <connect> NotifierModel initialized');
 			callback(NotifierModel); 
 		});
@@ -59,8 +58,8 @@ exports.sendMail = function(title, message) {
 			});
 			var mailoptions = {
 				transport : transport, //pass your transport
-		     	sender : config.mail.sender,
-		     	to : config.mail.to,
+		     	sender : rtc.getConfig('mail.sender'),
+		     	to : rtc.getConfig('mail.to'),
 		     	subject : title,
 		     	html: '<p>' + message + '</p>'
 			}
@@ -79,7 +78,7 @@ exports.sendMail = function(title, message) {
 }
 
 // Test
-//console.log('mongodb://' + config.mail.host + ':' + config.mail.port + '/' + config.mail.db); 
+//console.log('mongodb://' + rtc.getConfig('mail.host') + ':' + rtc.getConfig('mail.port') + '/' + rtc.getConfig('mail.db')); 
 //exports.sendMail('Test title', 'Test message'); 
 
 

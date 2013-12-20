@@ -1,9 +1,8 @@
-var env = process.env.NODE_ENV || 'development'
-	,  root = '../../../../'
+var  root = '../../../../'
 	, EventEmitter = require('events').EventEmitter
 	, util = require('util')
 	, servicedir = root + 'app/models/services/'
- 	, config = require(root + 'config/config')[env]
+ 	, rtc = require(root + 'app/controllers/configcontroller')
 	, pricemock = require(root + 'test/mock/pricefactory')
 	, marketmock = require(root + 'test/mock/marketfactory')
 	, strutils = require(root + 'util/stringutil')
@@ -19,7 +18,7 @@ var env = process.env.NODE_ENV || 'development'
 * Ping Constructor 
 */
 var Ping = function Ping (opts) {
-    this.timeout = opts.timeout || config.api.baseto.price; 
+    this.timeout = opts.timeout || rtc.getConfig('api.baseto.price'); 
     this.handle = null;
     this.session = opts.session;
     this.marketIds = [];
@@ -58,7 +57,7 @@ Ping.prototype.ping = function() {
 	var self = this;
 	sysLogger.debug('<pingprices> <ping> timeout = ' + self.timeout);
 	try {
-		if(config.mock.useprices) {		
+		if(rtc.getConfig('mock.useprices')) {		
 			pricemock.getPrices(batch.getNextBatch(), function(res, err) {
 		           	self.emit('ping', res);
 		    });
@@ -69,7 +68,7 @@ Ping.prototype.ping = function() {
 	   			if(marketIds.length > 0) {
 	   				var filter = {"marketIds": marketIds, "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
 		   				pricerequest.listMarketBook(filter, function(err, res) {
-		   					if((++self.reqct / batch.getBatchCt()) >= config.api.throttle.thupdt == 0) {
+		   					if((++self.reqct / batch.getBatchCt()) >= rtc.getConfig('api.throttle.thupdt') == 0) {
 		   						self.reqct = 0;
 		   						self.updateCategories(res.response.result, markets); 
 		   					}  
@@ -92,7 +91,7 @@ Ping.prototype.updateInterval = function() {
 	if(batch.getBatchCt() != self.batchCt) { 
 			self.batchCt = batch.getBatchCt();
 			clearInterval(self.handle);
-			var newinterval = Math.round(config.api.baseto.price / self.batchCt);
+			var newinterval = Math.round(rtc.getConfig('api.baseto.price') / self.batchCt);
 			sysLogger.crit('<pingprices> <ping> Minimum interval changed to ' + newinterval + 'ms');
 		    self.handle = setInterval(function () {
 		       		self.ping();

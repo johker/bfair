@@ -1,7 +1,6 @@
 var open = require('amqplib').connect('amqp://localhost')
-	, env = process.env.NODE_ENV || 'development'
 	, root = '../../../'
-	, config = require(root + 'config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
 	, util = require('util')
 	, EventEmitter = require('events').EventEmitter
 
@@ -10,7 +9,7 @@ var open = require('amqplib').connect('amqp://localhost')
 
 var RabbitConsumer = function RabbitConsumer(queue) { 	
 	var self = this;
-	self.q = queue || config.amqp.queues.defaultsub
+	self.q = queue || rtc.getConfig('amqp.queues.defaultsub')
 		
 	// Consumer
 	open.then(function(conn) {

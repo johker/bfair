@@ -1,9 +1,8 @@
 
  /** Local version of active markets - STORED BY EVENT DATE ASCENDING */
-var env = process.env.NODE_ENV || 'development'
- , root = '../../../../'
+var root = '../../../../'
  , servicedir = root + 'app/models/services/'
- , config = require(root + 'config/config')[env]
+ , rtc = require(root + 'app/controllers/configcontroller')
  , EventEmitter = require('events').EventEmitter
  , util = require('util')
  , sync = require(servicedir + 'markets/synchronize') 
