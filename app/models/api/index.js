@@ -5,8 +5,7 @@
 //
 
 var root = '../../../'
-, env = process.env.NODE_ENV || 'development'
-, config = require(root + 'config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
 
 
 
@@ -15,7 +14,7 @@ var root = '../../../'
 var BetfairSession = require('./betfair_session');
 exports.newSession = function (appKey) {
 	var bsession = new BetfairSession();
-	bsession.setApplicationKeys({active: config.betfair.applicationkey, delayed: config.betfair.delayedapplicationkey});
+	bsession.setApplicationKeys({active: rtc.getConfig('betfair.applicationkey'), delayed: rtc.getConfig('betfair.delayedapplicationkey')});
 	return bsession;
 };
 

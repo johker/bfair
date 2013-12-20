@@ -66,22 +66,14 @@ MarketObserver.prototype.add = function(market, id) {
 	var self = this;
 	var openDate = strutils.parseBetfairDate(market.event.openDate);
 	tz = strutils.adjustTimezone(openDate);
-	watchedmarkets[id] = new marketfactory.Market(id, market.marketName, tz, market.event.id, market.event.name);
+	watchedmarkets[id] = new marketfactory.Market(id, market.marketName, tz, market.event.id, market.event.name, market.event.countryCode);
 	sysLogger.debug('<marketobserver> <add> id = ' + id + ', Open date: ' + openDate); 
 	app.io.broadcast('addmarket', watchedmarkets[id]);	
-	self.emit('logPrices', watchedmarkets[id]);
+	self.emit('newMarket', watchedmarkets[id]);
              
 	                              
 }
 
-/**
-* Update lastRefresh and totalMatched of exisiting markets. Emit 
-* event for every updated market. 
-*/
-MarketObserver.prototype.update = function(market, id) {
-	sysLogger.debug('<marketobserver> <update> id = ' + id); 
-	app.io.broadcast('updatemarket', watchedmarkets[id.valueOf()]);	   
-}
 
 
 /**

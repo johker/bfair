@@ -23,6 +23,7 @@ block content
 							th Event ID
 							th Market ID 
 							th Type
+							th Country Code
 							th Open Date
 							th Detail
 							th Prices
@@ -35,9 +36,10 @@ block content
 							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
 							var mid = data.id.substring(2,data.id.length);							
 								$('#idtable tbody').append('<tr id="'+ data.id.substring(2,data.id.length) +'" class="trmarket">'
-									+ '<td class="mid">' + data.eventId + '</td>'	
-									+ '<td class="eid">' + mid + '</td>'									
+									+ '<td class="eid">' + data.eventId + '</td>'	
+									+ '<td class="mid">' + mid + '</td>'									
 									+ '<td class="mn">' + data.name + '</td>'
+									+ '<td class="cc">' + data.countryCode + '</td>'
 									+ '<td class="mt">' + millisToDate(data.openDate) + '</td>'
 									+ '<td class="md">' + data.eventName + '</td>'
 									+ '<td class="mpl"></td>'
@@ -59,6 +61,20 @@ block content
 										}							
 									}		
 							});
+							io.on('addbatch', function(data) {
+								var mid = data.marketId.substring(2,data.marketId.length);		
+								$('#' + mid + ' td.eid').append('  <span class="badge">TH</span>'); 
+								$('#' + mid)
+									.animate( { backgroundColor: "#E6E6E6" }, 500 )
+									.animate( { backgroundColor: "transparent" }, 500);								
+							});
+							io.on('removebatch', function(data) {
+								var mid = data.marketId.substring(2,data.marketId.length);
+								$('.badge').remove();
+								$('#' + mid + ' td.eid')
+									.animate( { backgroundColor: "#E6E6E6" }, 500 )
+									.animate( { backgroundColor: "transparent" }, 500);								
+							});
 							io.on('removemarket', function(data) {	
 								var mid = data.marketId.substring(2,data.marketId.length);	
 								$('#' + mid)
@@ -68,7 +84,7 @@ block content
 									$('#' + mid).remove()}, 750);
 							});
 							$("#viewdetail").click(function(e) {
-								var id = e.target.id;
-								var players = $('#' + id + ' td.md').text();
-								io.emit('viewprdetail', {marketId: id, detail: players});
-							});		
+								var mid = e.target.id;
+								var eid = $('#' + mid + ' td.eid').text();
+								io.emit('viewprdetail', {marketId: mid, eventId: eid});
+							});

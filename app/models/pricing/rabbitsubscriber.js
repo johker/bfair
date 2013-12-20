@@ -20,7 +20,7 @@ var RabbitConsumer = function RabbitConsumer(queue) {
 	    ch.consume(self.q, function(msg) {
 	      if (msg !== null) {
 	      	var data = JSON.parse(msg.content.toString());
-	      	sysLogger.crit('<rabbitsubscriber> data = ' + JSON.stringify(data));
+	      	sysLogger.debug('<rabbitsubscriber> data = ' + JSON.stringify(data));
 	        self.emit('rabbitsub' , data);
 	        ch.ack(msg);
 	      }

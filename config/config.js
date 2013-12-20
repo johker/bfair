@@ -38,6 +38,7 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
+      	emulated:true,
       	defaultsettings: {
       		handicap: '0',
       		persistenceType: 'LAPSE',
@@ -66,9 +67,10 @@ module.exports = {
       	},
       	removeBuffer: 10,
       	eventType: '7',
-      	testMarketId: '1.112192746',
-      	testEventId:'27115145',
-      	applyEventId: true,
+      	lockedMarketId: '1.112260662',
+      	lockedEventId:'27118368',
+      	lockedSelectionId:'8149830',
+      	applyEventId: false,
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {
@@ -77,7 +79,7 @@ module.exports = {
 		    },      		
 		    afterStDateBiasHrs: 0,  
 		    afterStDateBiasMin: 10,
-		    beforeStDateBiasHrs: 4,
+		    beforeStDateBiasHrs: 2,
 		    beforeStDateBiasMin: 0,		    
 		    minMarketCt: 0,
 		    applyAfterStDate: true,

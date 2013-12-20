@@ -9,14 +9,16 @@ var env = process.env.NODE_ENV || 'development'
 
 
 
- exports.Market = function (id, name, d, eventId, eventName) {
+ exports.Market = function (id, name, d, eventId, eventName, countryCode) {
  	sysLogger.debug('<marketfactory> <market> New Market generated with id = ' + id);
  	this.id = id;
  	this.name = name;  	
  	this.openDate = d.getTime();
  	this.eventId = eventId; 	
  	this.eventName = eventName;
+ 	this.countryCode = countryCode;
  	this.activationTime = Date.now();  	
+ 	this.priceAvailable = false; // Theoeretical price available
 
  	
  	this.reqct = 0; // Base ticks since last price request 

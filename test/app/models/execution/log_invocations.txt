@@ -1,3 +1,3 @@
-{"name":"invocations","hostname":"imitator","pid":10048,"level":30,"method":"listMarketBook","duration":0.877,"isSuccess":true,"isEmulated":false,"msg":"listMarketBook","time":"2013-11-14T13:48:42.638Z","v":0}
-{"name":"invocations","hostname":"imitator","pid":10048,"level":30,"method":"placeOrders","duration":0.138,"isSuccess":true,"isEmulated":true,"msg":"placeOrders","time":"2013-11-14T13:48:42.777Z","v":0}
-{"name":"invocations","hostname":"imitator","pid":10048,"level":30,"method":"listMarketBook","duration":0.25,"isSuccess":true,"isEmulated":false,"msg":"listMarketBook","time":"2013-11-14T13:48:43.028Z","v":0}
+{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"listMarketBook","duration":0.266,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-12-14T17:03:42.717Z","v":0}
+{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"placeOrders","duration":0.14,"isSuccess":true,"isEmulated":true,"msg":"placeOrders","time":"2013-12-14T17:03:42.875Z","v":0}
+{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"listMarketBook","duration":0.06,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-12-14T17:03:42.936Z","v":0}

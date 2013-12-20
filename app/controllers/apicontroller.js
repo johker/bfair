@@ -28,16 +28,19 @@ var root = '../../'
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, validationutil = require(root + 'util/validation')  
 	, notifier = require(root + 'app/models/services/notifier')
+	, marketemulation = require(servicedir + 'markets/marketemulation')
 	// Detail Information
-	, selectedMarketId
+	, selectedMarketId, selectedEventId
 	, marketName 
 	, runnerDescription = []
  	, RabbitConnector = require(root + 'app/models/pricing/rabbitconnector')
- 	, rc = new RabbitConnector();
-
+ 	, rc = new RabbitConnector()
+ 	, OrderObserver = require(servicedir + 'orders/orderobserver')
+	, orderobserver = new OrderObserver()
 
 session.Singelton.getInstance().login(function(err, res){
  	sysLogger.info('<apicontroller> Logged in to Betfair');
+
  });
  
  
@@ -60,8 +63,10 @@ priceping.on('ping', function(prices) {
 /**
 * Trigger logging for incomming market by adding it to ping list
 */
-marketObserver.on('logPrices',function(market) {
-	sysLogger.debug('<apicontroller> <marketObserver.on:logPrices>  market ID = ' + (market != undefined ? market.id : 'undefined!'));
+marketObserver.on('newMarket',function(market) {
+	if(market == undefined) return; 
+	sysLogger.debug('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);
+	marketemulation.enable(market.id);
 	priceping.addMarket(market);
 });
 
@@ -95,12 +100,16 @@ priceping.start();
 app.io.route('marketsready', function(req) {
 	if(marketObserver.getList().length == 0) {
 		sysLogger.debug('<apicontroller> event: marketsready - Fetching List...');
-		marketping.initialRequest();
+		marketping.intitialRequest();
 	}
 	var markets = marketObserver.getList();	
 	for(var i=0; i < markets.length; i++) {
 		app.io.broadcast('addmarket', markets[i]);		
 	 }	
+	 var theoreticals = orderobserver.getList();
+	for(var i=0; i < theoreticals.length; i++) {
+		app.io.broadcast('addbatch', theoreticals[i]);		
+	} 
 })
 
 /**
@@ -144,17 +153,14 @@ exports.markets = function(req, res) {
 exports.orders = function(req, res) {		
 	res.render('orders',  { title: bundle.title.overview, username: req.user.username});	
 };   
-
-exports.rules = function(req, res) {		
-	res.render('rules',  { title: bundle.title.overview, username: req.user.username});	
-};   
-
+	
 /**
 * Market view sets values. Routing is done by method 'pricedetail'
 */
 app.io.route('viewprdetail', function(m) {
 	try {
 		selectedMarketId = m.data.marketId;	
+		selectedEventId = m.data.eventId;
 		marketrequests.listMarketCatalogue({"filter":{"marketIds":['1.' + selectedMarketId]},"maxResults":"10","marketProjection":["RUNNER_DESCRIPTION"]}, function(err, res) {
 			runnerDescription = res.response.result[0].runners;
 			marketName = res.response.result[0].marketName;
@@ -166,7 +172,7 @@ app.io.route('viewprdetail', function(m) {
 });
 
 exports.pricedetail = function(req, res) {	
-	res.render('detail', { title: bundle.title.overview, username: req.user.username, id: selectedMarketId});			
+	res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId});			
 }
 
 exports.history = function(req, res) {	
@@ -174,7 +180,7 @@ exports.history = function(req, res) {
 }
 
 exports.exporthistory = function(mid, res) {
-	sysLogger.crit('<apicontroller> <exportHistory> mid = ' +  mid);
+	sysLogger.debug('<apicontroller> <exportHistory> mid = ' +  mid);
 	logs.exportLogInstance(mid, res, function(err) {
 		if (err) return err; 
 	});
@@ -182,7 +188,6 @@ exports.exporthistory = function(mid, res) {
 }
 
 exports.removehistory = function(mid) {
-	sysLogger.debug('<apicontroller> <removehistory>');
 	cleandb.removeEntry(mid); 
 	app.io.broadcast('stalepmarket', mid);
 }

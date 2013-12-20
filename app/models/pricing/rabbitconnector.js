@@ -34,7 +34,7 @@ RabbitConnector.prototype.marketDataUpdate = function(books) {
 
 RabbitConnector.prototype.sendMarket = function(book) {
 	if(book.marketId == config.api.testMarketId){
-		sysLogger.crit('<RabbitConnector.prototype.sendMarket> Published Market Update: ' + book.marketId);
+		sysLogger.debug('<RabbitConnector.prototype.sendMarket> Published Market Update: ' + book.marketId);
 		marketPublisher.publish(bookutil.getDataTransferObject(book), 'bookdto')	
 	}
 }

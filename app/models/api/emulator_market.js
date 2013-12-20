@@ -27,14 +27,12 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
 
     log && log.info("Market: onListMarketBook for marketId=" + rec.marketId);
     self.bookRecord = rec;
-
-    var p1 = self.bookRecord.runners[0];
-    var p2 = self.bookRecord.runners[1];
     
-    //p1.bestBack
-    
-    self.players[p1.selectionId] = p1;
-    self.players[p2.selectionId] = p2;
+    // Set players
+    for(var i = 0; i < self.bookRecord.runners.length; i++) {
+    	var p = self.bookRecord.runners[i]; 
+    	self.players[self.bookRecord.runners[i].selectionId] = p;
+    }
 
     if (!self.isInitialized) {
         log && log.info("Market: market is initialized");

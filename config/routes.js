@@ -12,11 +12,12 @@ var root = '../'
 module.exports = function (app, passport, auth) {
 
 // controllers
-var uctrl = require('../app/controllers/usercontroller');
-var actrl = require('../app/controllers/accountcontroller');
-var apictrl = require('../app/controllers/apicontroller');
-var dctrl = require('../app/controllers/datacontroller');
-
+var cns = root + '/app/controllers/'
+var uctrl = require(cns + 'usercontroller');
+var actrl = require(cns + 'accountcontroller');
+var apictrl = require(cns + 'apicontroller');
+var dctrl = require(cns + 'datacontroller');
+var cctrl = require(cns + 'configcontroller'); 
 
 // user routes
 app.get('/', uctrl.login);
@@ -30,7 +31,6 @@ app.get('/users/:userId', uctrl.show)
 app.get('/account', auth.requiresLogin, actrl.account);
 app.get('/markets', auth.requiresLogin, apictrl.markets);
 app.get('/orders', auth.requiresLogin, apictrl.orders);
-app.get('/rules', auth.requiresLogin, apictrl.rules);
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
 	function(req, res) {
@@ -67,7 +67,16 @@ app.post('/delete', function(req, res) {
 });
 
 app.post('/detail', function(req, res) {
-	apictrl.pricedetail(req, res);
+	try {	
+		if(req.body.operation == 'lock') {
+			cctrl.setConfig('api.lockedMarketId', req.body.marketId);
+			cctrl.setConfig('api.lockedEventId', req.body.eventId);
+		} else {
+			apictrl.pricedetail(req, res);
+		}
+	} catch (ex) {
+		sysLogger.error('<routes> <post:detail> ' +  JSON.stringify(ex));	
+	}
 });
 
 app.post('/markets', function(req, res) {
@@ -115,13 +124,12 @@ app.post('/history', function(req, res) {
 		}			
 		
 	} catch (ex) {
-		sysLogger.error('<routes> <post:history> ' +  ex);	
+		sysLogger.error('<routes> <post:history> ' +  JSON.stringify(ex));	
 	}	
 
 }); 
 
 app.post('/validateorder', function(req, res) {
-	console.log(req.body); 
 	apictrl.validateorder(req,res, function(values, err) {
 		sysLogger.debug('<routes> <validateorder:callback> Entries not validated');
 		res.writeHead(200, {'Content-Type': 'application/json'});

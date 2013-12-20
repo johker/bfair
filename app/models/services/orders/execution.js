@@ -13,19 +13,23 @@ var env = process.env.NODE_ENV || 'development'
 * @param thprice - RabbitMQ (theoretical) Price JSON DTO
 * @param cb - callback function
 */
-exports.executeTheoretical = function(thprice, cb) {
+exports.executeTheoretical = function(thprice, cb) {	
+	sysLogger.crit('<execution> <executeTheoretical> SID: ' + thprice.selectionId);
+	
+	
+	/**
+	* TODO: REMOVE THIS LINE 
+	*/
+	if(thprice.selectionId != config.api.testSelectionId) return;
 	var mid = thprice.marketId;
-	var sid = thprice.sid; 
+	var sid = thprice.selectionId; 
 	var th = thprice.theoretical;
-	sysLogger.crit('<execution> <executeTheoretical> returns');
-	return; 
 	 getCurrentOrders(mid, sid, function(sidBets) {
 		var bidtc = getBetIdsToCancel(sidBets, th); 
 		cancelDirtyOrders(bidtc, mid, function(err, res) {
 			getMarketBookForSid(mid, sid, function(book) {
 				getOrdersToCall(book, sid, function(ordersToCall) {
 					callOrders(ordersToCall, mid, sid, function(err, res) {
-						sysLogger.crit('<execution> <callOrders> res = ' + JSON.stringify(res,null,2));
 						cb(err,res);
 					});
 				});
@@ -80,14 +84,14 @@ function getOrdersToCall(book, th, cb) {
 	if(avToBack != null) {
 		for(var i = avToBack.length-1; i >= 0 ; i--) {
 			if(th < avToBack[i].price) {
-			 	ordersToCall.push({'type': 'LAY', 'price': avToBack[i].price, 'size': avToBack[i].size});
+			 	ordersToCall.push({'side': 'LAY', 'price': avToBack[i].price, 'size': avToBack[i].size});
 			 }
 		}
 	}
 	if(avToLay != null) {
 		for(var i = avToLay.length-1; i >= 0 ; i--) {
 			if(th > avToLay[i].price) {
-			 	ordersToCall.push({'type': 'BACK', 'price': avToLay[i].price, 'size': avToLay[i].size});
+			 	ordersToCall.push({'side': 'BACK', 'price': avToLay[i].price, 'size': avToLay[i].size});
 			 }
 		}
 	}
@@ -100,7 +104,7 @@ function getOrdersToCall(book, th, cb) {
 * @param sid - selectionId
 * @param cb - callback function
 */
-function getMarketBookForSid(mid, sid) {
+function getMarketBookForSid(mid, sid, cb) {
 	pricerequests.listMarketBook({marketIds: [mid], priceProjection: {priceData: ['EX_ALL_OFFERS']}}, function(err, res) {
 		var runners = res.response.result[0].runners;
 		for(var i = 0; i < runners.length; i++ ){
@@ -118,6 +122,7 @@ function getMarketBookForSid(mid, sid) {
 * @param cb - callback function  
 */
 function cancelDirtyOrders(bidtc, mid, cb) {
+	sysLogger.crit('<execution> <cancelDirtyOrders>');
 	var instructions = [];
 	var cancelinst = {}; 
 	for(var i = 0; i < bidtc.length; i++) {
@@ -125,7 +130,7 @@ function cancelDirtyOrders(bidtc, mid, cb) {
 		cancelinst['sizeReduction'] = bidtc[i].sizeRemaining; 
 		instructions.push(cancelinst)
 	}
-	orders.cancelBets({"marketId":mid,"instructions":instructions}, function(err, res) {
+	orderrequests.cancelOrders({"marketId":mid,"instructions":instructions}, function(err, res) {
 			cb(err, res);
 	});	
 }
@@ -137,6 +142,7 @@ function cancelDirtyOrders(bidtc, mid, cb) {
 * @param th - theoretical price   
 */
 function getBetIdsToCancel(sidBets, th) {
+	sysLogger.crit('<execution> <getBetIdsToCancel>');
 	 var betIdsToCancel = [];
 	for(var i = 0; i < sidBets; i++) {
 			if(sidBets[i].side == 'BACK' && sidBets[i].priceSize.price < th

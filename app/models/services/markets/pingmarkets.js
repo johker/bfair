@@ -58,12 +58,14 @@ Ping.prototype.ping = function(){
    
 }
 
+
+
 Ping.prototype.intitialRequest = function() {
+	var self = this;
 	marketrequest.listMarkets(eventfilter.getEventFilter(), function(err, res) {
      		self.emit('ping', res);
 	 });
-}
-
+};
 
 
 module.exports = Ping;

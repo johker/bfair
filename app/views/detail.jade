@@ -23,7 +23,12 @@ block content
 							.toa Total Available:
 								strong
 							.ip In Play:
-								strong							
+								strong		
+				.row
+					.span12
+						.alert.alert-error
+							.lockinfo Apply Market and Event ID Restriction: 
+								button#lock.btn.btn-mini.btn-danger(type='button') LOCK
 				.row
 					.span12
 						table#marketbook.table.table-bordered
@@ -34,21 +39,21 @@ block content
 									th Total Matched
 									th(colspan="3") Back
 									th(colspan="3") Lay
-							tbody								
+							tbody#maintable								
 				.row
 					.span6
 						form#backform(method='post', action='/markets')
 							button.btn.btn-primary.btn-mini(type='submit') Back				
 					script
 						io = io.connect();	
-						io.emit('detailsready', {id: #{id}});															
-						io.on('tick_' + #{id},function(data){
+						io.emit('detailsready', {id: #{mid}});															
+						io.on('tick_' + #{mid},function(data){
 							$('.mid strong').text(' ' + data.marketId);
 							$('.toa strong').text(' ' + data.totalAvailable);
 							$('.ip strong').text(' ' + data.inplay);							
 							if($('#marketbook tr').length == 1) {
 								createTable(data); 
-								io.emit('detailpageready', {id: #{id}});
+								io.emit('detailpageready', {id: #{mid}});
 							} 
 							assign(data);
 							$.bootstrapSortable(true);
@@ -56,32 +61,56 @@ block content
 						io.on('runnerdesc',function(data){
 							$('.mn strong').text(' ' +data.marketName);
 							for(var i = 0; i<data.runnerDescription.length; i++) {
-									setAndHighlightItem('marketbook tbody tr#r' + i + 's td#rdesc', data.runnerDescription[i].runnerName, data.runnerDescription[i].selectionId);			
-								}
+								setAndHighlightItem('marketbook tbody tr#r' + data.runnerDescription[i].selectionId + 's td#rdesc', data.runnerDescription[i].runnerName, data.runnerDescription[i].selectionId);			
+							}
 						});
+						io.on('addorder',function(data){
+							var sid = data.selectionId;			
+							$('#ordertable' + sid + ' tbody').append('<tr><td id="bid">' + data.betId + '</td><td id="pd">' + data.placedDate + '</td><td id="sm"></td><td id="otype">' + data.instructions.orderType + '</td><td id="ptype">' + data.instruction.limitOrder.persistenceType + '</td><td id="sp"></td></tr>');
+							$('#ordertable' + sid).attr("style", "");
+														
+						});
+						io.on('clearorders_' + #{mid},function(){
+							$('.accordion-inner table').empty();
+							$('.accordion-inner table').attr("style", "display:none;");
+						});
+						$('#lock').click(function(e) {
+							var xhr = $.ajax({
+								type: 'POST',
+								cache: false,
+								data: {operation: 'lock', eventId: #{eid}, marketId: #{mid}},
+								success: function(data){
+									console.log('Success');															
+								}, 
+								error: function(jqXHR, textStatus, err){
+									console.error(err);
+								}
+							});	
+						})
 						function createTable(data) {
-							for ( var rIdx = 0; rIdx < data.runners.length; ++rIdx) {
-								$('#marketbook tbody').append('<tr id="r' + rIdx + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');								
+							for (var rIdx = 0; rIdx < data.runners.length; ++rIdx) {
+								var sid = data.runners[rIdx].selectionId;
+								$('#marketbook tbody#maintable').append('<tr data-toggle="collapse" data-target="#orders' + sid + '" class="accordion-toggle" id="r' + data.runners[rIdx].selectionId + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');
+								$('#marketbook tbody#maintable').append('<td style="background-color:#FBFBFC;" colspan="9" class="hiddenRow"><div class="accordian-body collapse" id="orders' + sid + '"><div class="accordion-inner"></div></div></td>');		
+								$('#orders' + sid + ' .accordion-inner ').append('<div id="empty">No Orders available.</div>');
+								$('#orders' + sid + ' .accordion-inner ').append('<table id="ordertable' + sid + '" style="display:none;" class="table table-bordered"><tr><th>Bet ID</th><th>Placed Date</th><th>Size Matched (Av. Price)</th><th>Order Type</th><th>Persistence Type</th><th>Size/Price</th><tbody></tbody></table>');
 							}							
 						}						
 						function assign(data) {
 							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
 								var runner = data.runners[pIdx];
-								if($('#idselect option').size() < 2) {
-									$('#idselect').append(new Option(runner.selectionId,runner.selectionId));
-								}
-								setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#rlpt', '', runner.lastPriceTraded);
-								setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#rtm', '', runner.totalMatched);
+								setAndHighlightItem('marketbook tbody tr#r' + runner.selectionId + 's td#rlpt', '', runner.lastPriceTraded);
+								setAndHighlightItem('marketbook tbody tr#r' + runner.selectionId + 's td#rtm', '', runner.totalMatched);
 								var atb = data.runners[pIdx].ex.availableToBack;								
 								for(var bIdx = 2; bIdx >= 0; bIdx--) {
 									if(atb[bIdx]) {
-										setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#b' + (2-bIdx), atb[bIdx].size, atb[bIdx].price);
+										setAndHighlightItem('marketbook tbody tr#r' + runner.selectionId + 's td#b' + (2-bIdx), atb[bIdx].size, atb[bIdx].price);
 									}									
 								}																					
 								var atl = data.runners[pIdx].ex.availableToLay;									
 								for(var lIdx = 0; lIdx < 3; lIdx++) {									
 									if(atl[lIdx]) {
-										setAndHighlightItem('marketbook tbody tr#r' + pIdx + 's td#l' + lIdx, atl[lIdx].size, atl[lIdx].price);
+										setAndHighlightItem('marketbook tbody tr#r' + runner.selectionId + 's td#l' + lIdx, atl[lIdx].size, atl[lIdx].price);
 									}	
 								}
 							}

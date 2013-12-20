@@ -3,7 +3,6 @@
 	fill: steelblue;
 }
 
-
 .chart .rectlay {
 	stroke: white;
 	fill: #269;
@@ -12,4 +11,8 @@
 .chart .rectback {
 	stroke: white;
 	fill: #200;
+}
+
+.hiddenRow {
+    padding: 0 !important;
 }
