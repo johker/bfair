@@ -1,7 +1,8 @@
 var open = require('amqplib').connect('amqp://localhost')
 	, env = process.env.NODE_ENV || 'development'
 	, root = '../../../'
-	, config = require(root + 'config/config')[env]
+	, rtc = require(root + 'app/controllers/configcontroller')
+	
 	
 
 var RabbitProducer = function RabbitProducer(queue) { 	

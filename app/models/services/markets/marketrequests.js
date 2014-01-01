@@ -28,13 +28,13 @@ exports.listEvents = function(filter, cb)  {
 * name filter.
 */
 exports.listMarkets = function(filter, cb) {
-	sysLogger.notice('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
+	sysLogger.debug('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
 	exports.listEvents(filter, function(err, res) {
 		var events = res.response.result; 		
 		var eids = [];
 		// Only one id for testing purposes
-		if(rtc.getConfig('api.applyEventId')) {
- 			eids = [rtc.getConfig('api.testEventId')];
+		if(rtc.getConfig('api.applyLock')) {
+			eids = [rtc.getConfig('api.lockedEventId')];
  		} else {
  			eids = eventfilter.getFilteredEventIds(events);
  		}

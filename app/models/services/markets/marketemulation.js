@@ -13,6 +13,7 @@ var env = process.env.NODE_ENV || 'development'
 * TODO Manage list of emulated markets. 
 */
 module.exports.enable = function(id) {
+	sysLogger.crit('<marketemulation> <enable> MID = ' +  id); 
 	session.enableBetEmulatorForMarket(id);
 } 
  

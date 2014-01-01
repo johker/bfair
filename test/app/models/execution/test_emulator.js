@@ -20,8 +20,8 @@ var orders = require(servicedir + 'orders/orderrequests')
 	, request = require(servicedir + 'prices/pricerequests')
 	, session =  require(servicedir + 'session').Singelton.getInstance().getSession();
 
-var mid = rtc.getConfig('api.testMarketId');
-var sid = rtc.getConfig('api.testSelectionId');
+var mid = rtc.getConfig('api.lockedMarketId');
+var sid = rtc.getConfig('api.lockedSelectionId');
  	
 
 session.enableBetEmulatorForMarket(mid);

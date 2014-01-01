@@ -17,7 +17,7 @@ var lastBetId = 10000000000;
 
 function EmulatorBet(markId, selId, type, price, size) {
     var self = this;
-
+	console.log('<emulator_bet> New Bet size = ' + size); 
     if (type !== 'BACK' && type !== 'LAY')
         throw new Error('Bet type should be BACK or LAY');
 
@@ -46,9 +46,36 @@ function EmulatorBet(markId, selId, type, price, size) {
 
 EmulatorBet.prototype.isMatched = function() {
     var self = this;
-
     return self.size < 0.001 && self.matchedParts.length > 0;
 }
+
+/**
+* Mapping of EmulatorBet to Betfair Order Summary
+* @return CurrentOrderSummary - Summary of a current order.
+*/ 
+EmulatorBet.prototype.getCurrentOrderSummary = function() {
+	var self = this;
+	return { betId: self.betId,
+    marketId: self.marketId,
+    selectionId: self.selectionId,
+    handicap: 0,
+    priceSize: { price: self.price, size: self.size },
+    bspLiability: 0,
+    side: self.betType,
+    status: self.isMatched() ? 'EXECUTION_COMPLETE' : 'EXECUTABLE',
+    persistenceType: 'LAPSE',
+    orderType: 'LIMIT',
+    placedDate: self.placedDate,
+    averagePriceMatched: self.averageMatchedPrice(),
+    sizeMatched: self.matchedSize(),
+    sizeRemaining: self.unmatchedSize(),
+    sizeLapsed: -1,	// TODO: calculate values
+    sizeCancelled: -1,
+    sizeVoided: -1,
+    regulatorCode: 'GIBRALTAR REGULATOR' }
+}
+
+
 
 EmulatorBet.prototype.averageMatchedPrice = function() {
     var self = this;
@@ -110,25 +137,42 @@ EmulatorBet.prototype.matchPortion = function(price, size) {
 }
 
 // cancelBets, just cancel unmatched portion
-EmulatorBet.prototype.cancel = function() {
+EmulatorBet.prototype.cancel = function(sizereduction) {
     var self = this;
-
-    var desc = {
-        code : 'REMAINING_CANCELLED',
-        sizeCancelled : self.unmatchedSize(),
-        sizeMatched : self.matchedSize(),
-        success : 'true'
-    };
-    // self.size is the unmatched portion size
-    self.size = 0;
-    self.cancelled = true;
-
+	var sizeCancelled;
+	if(sizereduction != null && sizereduction < self.unmatchedSize()) {
+	 	self.reduceSize(sizereduction);
+	 	sizeCancelled = sizereduction;
+	 	var desc = {
+	        code : 'SIZE_REDUCED',
+	        sizeCancelled : sizeCancelled,
+	        sizeMatched : self.matchedSize(),
+	        success : 'true'
+    	};
+    	self.cancelled = false;
+	 } else {
+	 	self.reduceSize(self.unmatchedSize());
+	 	sizeCancelled = self.unmatchedSize();
+	 	var desc = {
+	        code : 'REMAINING_CANCELLED',
+	        sizeCancelled : sizeCancelled,
+	        sizeMatched : self.matchedSize(),
+	        success : 'true'
+    	};
+    	self.cancelled = true;
+	}
     return desc;
 }
 
 // updateBets, reduce bet size
-EmulatorBet.prototype.reduceSize = function(size) {
+EmulatorBet.prototype.reduceSize = function(sizereduction) {
     var self = this;
+    // self.size is the unmatched portion size
+    if(sizereduction > self.size) {
+    	throw new Error('Invalid Bet size reduction.'); 
+    }   
+    self.size = self.size - sizereduction;
+    
 }
 
 // updateBets, change persistence type

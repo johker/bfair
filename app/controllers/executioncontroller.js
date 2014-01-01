@@ -14,8 +14,8 @@ var root = '../../'
  
  priceSubscriber.on('rabbitsub',function(theoretical) {
  	orderobserver.add(theoretical);
+ 	sysLogger.debug('<executioncontroller> <priceSubscriber.on:rabbitsub> Theoretichal Market ID = ' + theoretical.marketId);
  	executionHandler.executeTheoretical(theoretical, function(err, res) {
-		sysLogger.debug('<executioncontroller> <priceSubscriber.on:rabbitsub>');
 		orderobserver.updateCurrentOrderInformation(theoretical.marketId);
 	});
 });

@@ -22,7 +22,6 @@ var RabbitConnector = function RabbitConnector() {
 
 	
 RabbitConnector.prototype.marketDataUpdate = function(books) {
-	sysLogger.debug('<RabbitConnector.prototype.marketDataUpdate> ');
 	var self = this;
      async.forEach(books, self.sendMarket, function(err) {	
 		if (err) return next(err);		

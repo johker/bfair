@@ -16,6 +16,11 @@ block content
 				.alert.alert-info
 					.hist Show logged markets: 
 						button.btn.btn-primary.btn-mini(type='submit') History
+				.row
+					.span12
+						#lockpanel.alert.alert-error(style="display:none")
+							.lockinfo Locked EID: #{eid}, MID: #{mid} 
+							button#unlock.btn.btn-mini.btn-danger(type='button') UNLOCK
 			form#viewdetail(method='post', action='/detail')        
 				table#idtable.table.table-bordered.sortable
 					thead
@@ -31,6 +36,11 @@ block content
 					
 					script				
 						io = io.connect();
+						if(#{locked}) {
+							var mid = '' + #{mid} 
+							$('#lockpanel').attr("style", "");													
+						}
+						var nounlock = true;
 						io.emit('marketsready');
 						io.on('addmarket',function(data){
 							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
@@ -45,7 +55,14 @@ block content
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
 								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');
-								$.bootstrapSortable(true);										
+								$.bootstrapSortable(true);
+								console.log(#{locked} && nounlock);		
+								if(#{locked} && nounlock) {
+									var lmid = '' + #{mid} 
+									if (!$('#' + lmid + ' td.mid').find("span.label").length) {
+										$('#' + lmid + ' td.mid').append(' <span id="locklabel" class="label label-important">LOCKED</span>'); 
+									}
+								}								
 							});							
 							io.on('updateclass',function(data){									
 									var mid = data.mid.substring(2,data.mid.length);
@@ -61,14 +78,14 @@ block content
 										}							
 									}		
 							});
-							io.on('addbatch', function(data) {
+							io.on('addbadge', function(data) {
 								var mid = data.marketId.substring(2,data.marketId.length);		
-								$('#' + mid + ' td.eid').append('  <span class="badge">TH</span>'); 
+								$('#' + mid + ' td.eid').append('<span class="badge"> TH</span>'); 
 								$('#' + mid)
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )
 									.animate( { backgroundColor: "transparent" }, 500);								
 							});
-							io.on('removebatch', function(data) {
+							io.on('removebadge', function(data) {
 								var mid = data.marketId.substring(2,data.marketId.length);
 								$('.badge').remove();
 								$('#' + mid + ' td.eid')
@@ -76,15 +93,30 @@ block content
 									.animate( { backgroundColor: "transparent" }, 500);								
 							});
 							io.on('removemarket', function(data) {	
-								var mid = data.marketId.substring(2,data.marketId.length);	
+								var mid = data.id.substring(2,data.id.length);	
 								$('#' + mid)
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )
 									.animate( { backgroundColor: "transparent" }, 500);
 								setTimeout(function(){
 									$('#' + mid).remove()}, 750);
 							});
+							io.on('unlocked', function(isLocked) {	
+								if(!isLocked) {
+									$('#lockpanel').attr("style", "display:none;");
+									nounlock = false;
+								} 
+							});
 							$("#viewdetail").click(function(e) {
 								var mid = e.target.id;
 								var eid = $('#' + mid + ' td.eid').text();
+								eid = eid.replace('TH', '');
 								io.emit('viewprdetail', {marketId: mid, eventId: eid});
 							});
+							$('#unlock').click(function(e) {
+								$('#locklabel').remove();
+								var xhr = $.ajax({
+									type: 'POST',
+									cache: false,
+									data: {operation: 'unlock'}								
+								});	
+							})

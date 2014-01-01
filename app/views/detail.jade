@@ -46,6 +46,9 @@ block content
 							button.btn.btn-primary.btn-mini(type='submit') Back				
 					script
 						io = io.connect();	
+						if(#{locked}) {
+							showLockedView();
+						}
 						io.emit('detailsready', {id: #{mid}});															
 						io.on('tick_' + #{mid},function(data){
 							$('.mid strong').text(' ' + data.marketId);
@@ -64,36 +67,49 @@ block content
 								setAndHighlightItem('marketbook tbody tr#r' + data.runnerDescription[i].selectionId + 's td#rdesc', data.runnerDescription[i].runnerName, data.runnerDescription[i].selectionId);			
 							}
 						});
-						io.on('addorder',function(data){
-							var sid = data.selectionId;			
-							$('#ordertable' + sid + ' tbody').append('<tr><td id="bid">' + data.betId + '</td><td id="pd">' + data.placedDate + '</td><td id="sm"></td><td id="otype">' + data.instructions.orderType + '</td><td id="ptype">' + data.instruction.limitOrder.persistenceType + '</td><td id="sp"></td></tr>');
-							$('#ordertable' + sid).attr("style", "");
-														
+						io.on('theoretical_'+ #{mid},function(data){
+							var sid = data.selectionId;	
+							$('#orders' + sid + ' .accordion-inner #information').text('');
+							$('#orders' + sid + ' .theoretical strong').text(data.theoretical);
 						});
-						io.on('clearorders_' + #{mid},function(){
-							$('.accordion-inner table').empty();
-							$('.accordion-inner table').attr("style", "display:none;");
+						io.on('addorder_'+ #{mid},function(data){
+							var sid = data.selectionId;	
+							var bid = data.betId; 
+							if($('#' + bid).length == 0) {
+								$('#ordertable' + sid + ' tbody').append('<tr id="'+bid+'"><td id="bid">' + data.betId + '</td><td id="pd">' + data.placedDate + '</td><td id="sm">' + data.sizeMatched + ' (' + data.averagePriceMatched + ') </td><td id="side">' + data.side + '</td><td id="ptype">' + data.persistenceType + '</td><td id="sp">' +  data.priceSize.size + '<br><strong>' +  data.priceSize.price + '</strong></td></tr>');
+							}														
+						});
+						io.on('removeorder_'+ #{mid},function(data){
+							console.log('removeorder BID = ' + data.betId);
+							var sid = data.selectionId;	
+							var bid = data.betId; 
+							if($('#' + bid).length) {
+								$('#' + bid).remove();
+							}														
+						});
+						io.on('locked', function(isLocked) {	
+								if(isLocked) {
+									showLockedView();
+								} 
 						});
 						$('#lock').click(function(e) {
 							var xhr = $.ajax({
 								type: 'POST',
 								cache: false,
-								data: {operation: 'lock', eventId: #{eid}, marketId: #{mid}},
-								success: function(data){
-									console.log('Success');															
-								}, 
-								error: function(jqXHR, textStatus, err){
-									console.error(err);
-								}
+								data: {operation: 'lock', eventId: #{eid}, marketId: '1.' + #{mid}},
 							});	
 						})
+						function showLockedView() {
+							$('#lock').attr("style", "display:none;");
+							$('.lockinfo').text('Market locked.');
+						}
 						function createTable(data) {
 							for (var rIdx = 0; rIdx < data.runners.length; ++rIdx) {
 								var sid = data.runners[rIdx].selectionId;
 								$('#marketbook tbody#maintable').append('<tr data-toggle="collapse" data-target="#orders' + sid + '" class="accordion-toggle" id="r' + data.runners[rIdx].selectionId + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');
 								$('#marketbook tbody#maintable').append('<td style="background-color:#FBFBFC;" colspan="9" class="hiddenRow"><div class="accordian-body collapse" id="orders' + sid + '"><div class="accordion-inner"></div></div></td>');		
-								$('#orders' + sid + ' .accordion-inner ').append('<div id="empty">No Orders available.</div>');
-								$('#orders' + sid + ' .accordion-inner ').append('<table id="ordertable' + sid + '" style="display:none;" class="table table-bordered"><tr><th>Bet ID</th><th>Placed Date</th><th>Size Matched (Av. Price)</th><th>Order Type</th><th>Persistence Type</th><th>Size/Price</th><tbody></tbody></table>');
+								$('#orders' + sid + ' .accordion-inner ').append('<div class="alert alert-success"><div id="information">No Price available.</div><div class="theoretical">Theoretical: <strong>-</strong></div></div>');
+								$('#orders' + sid + ' .accordion-inner ').append('<table id="ordertable' + sid + '" class="table table-bordered"><tr><th>Bet ID</th><th>Placed Date</th><th>Size Matched (Av. Price)</th><th>Order Type</th><th>Persistence Type</th><th>Size/Price</th></table>');
 							}							
 						}						
 						function assign(data) {

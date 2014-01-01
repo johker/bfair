@@ -10,7 +10,7 @@ var open = require('amqplib').connect('amqp://localhost')
 var RabbitConsumer = function RabbitConsumer(queue) { 	
 	var self = this;
 	self.q = queue || rtc.getConfig('amqp.queues.defaultsub')
-		
+	
 	// Consumer
 	open.then(function(conn) {
 	  var ok = conn.createChannel();
@@ -18,16 +18,15 @@ var RabbitConsumer = function RabbitConsumer(queue) {
 	    ch.assertQueue(self.q);
 	    ch.consume(self.q, function(msg) {
 	      if (msg !== null) {
-	      	var data = JSON.parse(msg.content.toString());
-	      	sysLogger.debug('<rabbitsubscriber> data = ' + JSON.stringify(data));
-	        self.emit('rabbitsub' , data);
+	        var data = JSON.parse(msg.content.toString());
+	      	self.emit('rabbitsub', data);
 	        ch.ack(msg);
 	      }
 	    });
 	  });
 	  return ok;
 	}).then(null, console.warn);
-	
+	 
 }
 
 

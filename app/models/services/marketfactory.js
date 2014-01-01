@@ -4,7 +4,8 @@
 
 var root = '../../../'
  , rtc = require(root + 'app/controllers/configcontroller')
-
+ , servicedir = root + 'app/models/services/'	
+ , marketemulation = require(servicedir + 'markets/marketemulation')
 
 
 
@@ -19,6 +20,7 @@ var root = '../../../'
  	this.activationTime = Date.now();  	
  	this.priceAvailable = false; // Theoeretical price available
 
+ 	marketemulation.enable(id); // Emulator registration
  	
  	this.reqct = 0; // Base ticks since last price request 
  	this.nrct = 0; // Request counts since id has not been retrieved 	

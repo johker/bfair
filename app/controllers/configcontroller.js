@@ -17,8 +17,10 @@ var root = '../../'
 */
 exports.getConfig = function(key) {
 	// TODO: Define exceptions for performance improvement - e.g. db settings
+	if(key == 'api.lockedEventId') {
+		sysLogger.debug('<configcontroller> <getConfig> key = ' + key + ', value = ' + (dynconfig.get(key) != null ? dynconfig.get(key) : dynobs.getValue(config, key)));
+	} 
 	return dynconfig.get(key) != null ? dynconfig.get(key) : dynobs.getValue(config, key); 
-
 }
 
 /**

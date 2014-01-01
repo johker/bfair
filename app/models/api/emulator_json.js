@@ -65,7 +65,7 @@ exports.createBets = function(em, instructions) {
 					desc.side, desc.limitOrder.price, 
 					desc.limitOrder.size);
 		betIds.push(bet.betId);
-		em.bets[bet.betId] = bet;
+		em.bets[bet.betId] = bet;		
 	}
 	return betIds;	
 }

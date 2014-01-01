@@ -71,6 +71,8 @@ app.post('/detail', function(req, res) {
 		if(req.body.operation == 'lock') {
 			cctrl.setConfig('api.lockedMarketId', req.body.marketId);
 			cctrl.setConfig('api.lockedEventId', req.body.eventId);
+			cctrl.setConfig('api.applyLock', true);
+			app.io.broadcast('locked', true);	
 		} else {
 			apictrl.pricedetail(req, res);
 		}
@@ -81,7 +83,12 @@ app.post('/detail', function(req, res) {
 
 app.post('/markets', function(req, res) {
 	try {
-		apictrl.markets(req, res);
+		if(req.body.operation == 'unlock') {
+			cctrl.setConfig('api.applyLock', false);
+			app.io.broadcast('unlocked', false);	
+		} else {
+			apictrl.markets(req, res);
+		}
 	} catch (ex) {
 		sysLogger.error('<routes> <post:markets> ' +  ex);	
 	}	

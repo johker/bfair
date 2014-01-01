@@ -38,7 +38,7 @@ module.exports = {
       }, 
       api: {
       	marketName: 'Wettquoten',
-      	emulated:true,
+      	emulated: true,
       	defaultsettings: {
       		handicap: '0',
       		persistenceType: 'LAPSE',
@@ -46,7 +46,7 @@ module.exports = {
       	},
       	baseto: {
       		market: 10000, 	// Timeout for market requests
-      		price: 1000    // Basic Timeout price requests
+      		price: 300    // Basic Timeout price requests
       	},
       	throttle: {
       		fac1: 10,
@@ -67,10 +67,10 @@ module.exports = {
       	},
       	removeBuffer: 10,
       	eventType: '7',
-      	lockedMarketId: '1.112260662',
-      	lockedEventId:'27118368',
-      	lockedSelectionId:'8149830',
-      	applyEventId: false,
+      	lockedMarketId: '1.112339768',
+      	lockedEventId:'27122953',
+      	lockedSelectionId:'8179311',
+      	applyLock: false,
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {
@@ -80,10 +80,10 @@ module.exports = {
 		    afterStDateBiasHrs: 0,  
 		    afterStDateBiasMin: 10,
 		    beforeStDateBiasHrs: 2,
-		    beforeStDateBiasMin: 0,		    
+		    beforeStDateBiasMin: 30,		    
 		    minMarketCt: 0,
 		    applyAfterStDate: true,
-		    applyBeforeStDate: true, 
+		    applyBeforeStDate: false, 
 		   	turnsInPlay: true
 	    }
       },

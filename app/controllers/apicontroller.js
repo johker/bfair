@@ -3,9 +3,9 @@
  */
 var root = '../../'
 	, env = process.env.NODE_ENV || 'development'
-	, bundle = require(root + 'config/resourcebundle')['en']
 	, servicedir = root + 'app/models/services/'	
-	, config = require(root + 'config/config')[env]
+	, bundle = require(root + 'config/resourcebundle')['en']
+	, rtc = require(root + 'app/controllers/configcontroller')
 	, strutils = require(root + 'util/stringutil')
 	, listutils = require(root + 'util/listutil')	
 	, async = require('async')
@@ -27,8 +27,7 @@ var root = '../../'
 	, expressValidator = require('express-validator')
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, validationutil = require(root + 'util/validation')  
-	, notifier = require(root + 'app/models/services/notifier')
-	, marketemulation = require(servicedir + 'markets/marketemulation')
+	, notifier = require(root + 'app/models/services/notifier')	
 	// Detail Information
 	, selectedMarketId, selectedEventId
 	, marketName 
@@ -65,8 +64,7 @@ priceping.on('ping', function(prices) {
 */
 marketObserver.on('newMarket',function(market) {
 	if(market == undefined) return; 
-	sysLogger.debug('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);
-	marketemulation.enable(market.id);
+	sysLogger.crit('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);	
 	priceping.addMarket(market);
 });
 
@@ -84,8 +82,11 @@ marketObserver.on('stopLogging', function(market) {
 	    }    
 	});		
 	priceObserver.passivate(mid);
-	sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + mid);
-	history.add(market);
+	// Only add to history if not removed by LOCK operation
+	if(rtc.getConfig('api.applyLock')) {
+		sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + mid);
+		history.add(market);
+	}	
 });
 
 marketping.start();
@@ -98,8 +99,8 @@ priceping.start();
 * TODO: Declare new event with accumulated information
 */
 app.io.route('marketsready', function(req) {
-	if(marketObserver.getList().length == 0) {
-		sysLogger.debug('<apicontroller> event: marketsready - Fetching List...');
+	if(marketObserver.getList().length == 0 || rtc.getConfig('api.applyLock')) {
+		sysLogger.crit('<apicontroller> event: marketsready - Fetching List...');
 		marketping.intitialRequest();
 	}
 	var markets = marketObserver.getList();	
@@ -108,7 +109,7 @@ app.io.route('marketsready', function(req) {
 	 }	
 	 var theoreticals = orderobserver.getList();
 	for(var i=0; i < theoreticals.length; i++) {
-		app.io.broadcast('addbatch', theoreticals[i]);		
+		app.io.broadcast('addbadge', theoreticals[i]);		
 	} 
 })
 
@@ -147,7 +148,7 @@ app.io.route('detailpageready', function(req) {
 
 
 exports.markets = function(req, res) {		
-	res.render('markets',  { title: bundle.title.overview, username: req.user.username});	
+	res.render('markets',  { title: bundle.title.overview, username: req.user.username, locked: rtc.getConfig('api.applyLock'), eid: rtc.getConfig('api.lockedEventId'), mid: rtc.getConfig('api.lockedMarketId')});	
 };    
 
 exports.orders = function(req, res) {		
@@ -172,7 +173,12 @@ app.io.route('viewprdetail', function(m) {
 });
 
 exports.pricedetail = function(req, res) {	
-	res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId});			
+	if(rtc.getConfig('api.applyLock') && selectedMarketId == rtc.getConfig('api.lockedMarketId')) {
+		res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId, locked: true});			
+	} else {
+		res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId, locked: false});			
+	}
+	
 }
 
 exports.history = function(req, res) {	

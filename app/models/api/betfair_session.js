@@ -10,6 +10,9 @@ var auth = require('./betfair_auth.js');
 var BetfairInvocation = invocation.BetfairInvocation;
 
 var emulator = require('./emulator.js');
+var root = '../../../'
+	, rtc = require(root + 'app/controllers/configcontroller');
+
 
 function BetfairSession() {
 	var self = this;
@@ -151,19 +154,28 @@ BetfairSession.prototype.getDeveloperAppKeys = createInvocation("accounts", "get
 // readonly
 BetfairSession.prototype.listCompetitions = createInvocation("sports", "listCompetitions");
 BetfairSession.prototype.listCountries = createInvocation("sports", "listCountries");
-BetfairSession.prototype.listCurrentOrders = createInvocation("sports", "listCurrentOrders");
+BetfairSession.prototype.listCurrentOrders = createInvocation("sports", "listCurrentOrders", rtc.getConfig('api.emulated'));
 BetfairSession.prototype.listEvents = createInvocation("sports", "listEvents");
 BetfairSession.prototype.listEventTypes = createInvocation("sports", "listEventTypes");
-BetfairSession.prototype.listMarketBook = createInvocation("sports", "listMarketBook", true);
+BetfairSession.prototype.listMarketBook = createInvocation("sports", "listMarketBook", rtc.getConfig('api.emulated'));
 BetfairSession.prototype.listMarketCatalogue = createInvocation("sports", "listMarketCatalogue");
 BetfairSession.prototype.listMarketTypes = createInvocation("sports", "listMarketTypes");
 BetfairSession.prototype.listTimeRanges = createInvocation("sports", " listTimeRanges");
 BetfairSession.prototype.listVenues = createInvocation("sports", "listVenues");
 
 // betting
-BetfairSession.prototype.placeOrders = createInvocation("sports", "placeOrders", true);
-BetfairSession.prototype.replaceOrders = createInvocation("sports", "replaceOrders");
-BetfairSession.prototype.updateOrders = createInvocation("sports", "updateOrders");
-BetfairSession.prototype.cancelOrders = createInvocation("sports", "cancelOrders");
+BetfairSession.prototype.placeOrders = createInvocation("sports", "placeOrders", rtc.getConfig('api.emulated'));
+BetfairSession.prototype.replaceOrders = createInvocation("sports", "replaceOrders", rtc.getConfig('api.emulated'));
+BetfairSession.prototype.updateOrders = createInvocation("sports", "updateOrders", rtc.getConfig('api.emulated'));
+BetfairSession.prototype.cancelOrders = createInvocation("sports", "cancelOrders", rtc.getConfig('api.emulated'));
+
+
+
+// ************************************************************************
+// * Scores API - https://api.betfair.com:443/exchange/account/json-rpc/v1/
+// ************************************************************************
+BetfairSession.prototype.listScores = createInvocation("scores", "listScores");
+BetfairSession.prototype.listIncidents = createInvocation("scores", "listIncidents");
+BetfairSession.prototype.listAvailableEvents = createInvocation("scores", "listAvailableEvents");
 
 module.exports = BetfairSession;

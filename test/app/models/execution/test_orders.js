@@ -42,11 +42,11 @@ instance.login(function(err, res){
 			getCurrentOrders(mid, sid1, function(sidBets) {
 				console.log(sidBets);
 			}); 
-			/*
+			
 			orders.cancelOrders({}, function() {
 				sysLogger.debug('<test_orders> <cancelOrders>');
 			});
-			*/	
+			
 		});
 	});
  });	
@@ -54,6 +54,7 @@ instance.login(function(err, res){
 function getCurrentOrders(mid, sid, cb) {
 	orders.listCurrentOrders({"marketIds":[mid], "placedDateRange":{}}, function(err, data) {
 		var currentBets = data.response.result.currentOrders;
+		console.log(data);
 		var sidBets = []; 
 		for(var i = 0; i < currentBets.length; i++ ){
 			if(currentBets[i].selectionId == sid) {

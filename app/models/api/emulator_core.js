@@ -4,7 +4,8 @@
 //
 
 var emulator = require('./emulator.js');
-var EmulatorMarket = require('./emulator_market.js');
+var EmulatorMarket = require('./emulator_market.js')
+	, ejson = require('./emulator_json');
 
 var log = emulator.log;
 
@@ -13,6 +14,41 @@ function Emulator() {
     self.markets = {};
     self.customerRefs = {};
 }
+
+
+/**
+*
+*/
+Emulator.prototype.getMarket = function(marketId, res, cb) {
+	var self = this; 
+	// check marketId
+    var market = self.markets[marketId];
+    if (!self.isMarketUsingBetEmulator(marketId) || !market) {
+        var ex = {
+            "errorDetails": "Market id passed is invalid. Probable cause: Emulator not enabled.",
+            "errorCode": "INVALID_INPUT_DATA"
+        };
+        self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
+        cb(null);
+        return;
+    }
+    return market;
+}
+
+/**
+* Check on return type
+*/ 
+Emulator.prototype.checkInstructions = function(req, marketId, res, cb) {
+	var self = this;
+    var instructions = req.params.instructions;
+    sysLogger.debug("<emulator_core> <checkInstructions> INST = " +  JSON.stringify(instructions));
+    if (!marketId || !instructions || instructions.length < 1) {
+        self.sendErrorResponse(res, -32602, "DSC-018");
+        cb(null);
+        return; 
+    }
+} 
+
 
 // emulator control interface
 Emulator.prototype.enableBetEmulatorForMarket = function (marketId) {
@@ -60,27 +96,11 @@ Emulator.prototype.onListMarketBook = function (result) {
 // Process placeOrders API call
 Emulator.prototype.placeOrders = function (req, res, cb) {
     var self = this;
+	var marketId = req.params.marketId;
 
-    // mandatory parameters
-    var marketId = req.params.marketId;
-    var instructions = req.params.instructions;
-    if (!marketId || !instructions || instructions.length < 1) {
-        self.sendErrorResponse(res, -32602, "DSC-018");
-        return;
-    }
-
-    // check marketId
-    var market = self.markets[marketId];
-    if (!self.isMarketUsingBetEmulator(marketId) || !market) {
-        var ex = {
-            "errorDetails": "Market id passed is invalid. Probable cause: Emulator not enabled.",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
-	
+    self.checkInstructions(req, marketId, res, cb); 
+    var market = self.getMarket(marketId, res, cb);
+   
     setTimeout(function () {
     	sysLogger.debug("<emulator_core> <placeOrders> Delay = " +  self.bettingDelay);
     	market.placeOrders(req, res, function (err,marketres) {
@@ -90,63 +110,51 @@ Emulator.prototype.placeOrders = function (req, res, cb) {
    
 }
 
-// Process replaceOrders API call
-Emulator.prototype.replaceOrders = function (req, res, cb) {
-    var self = this;
-
-    // mandatory parameters
-    var marketId = req.params.marketId;
-    var instructions = req.params.instructions;
-    if (!marketId || !instructions || instructions.length < 1) {
-        self.sendErrorResponse(res, -32602, "DSC-018");
-        cb(null);
-        return;
-    }
-
-    // check marketId
-    var market = self.markets[marketId];
-    if (!self.isMarketUsingBetEmulator(marketId) || !!market) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
-
+// Process listCurrentOrders API call
+Emulator.prototype.listCurrentOrders = function (req, res, cb) {
+    var self = this; 
+    var res = {};
+    var summaryReport = [];
     setTimeout(function () {
-    	sysLogger.debug("<emulator_core> <replaceOrders> Delay = " +  self.bettingDelay);
-    	market.replaceOrders(req, res, function () {
-        		cb(null);
+       	for(var i = 0; i< req.params.marketIds.length; i++) {
+	    	var marketId = req.params.marketIds[i];
+	    	sysLogger.debug('<emulator_core> <listCurrentOrders> MID = ' + marketId );
+	    	if (!marketId) {
+		        self.sendErrorResponse(res, -32602, "DSC-018");
+		        cb(null);
+		        return; 
+	    	}
+	    	var market = self.getMarket(marketId, res, cb);
+	    	market.listCurrentOrders(req, res, function (err,meorders) {
+        		if(meorders) {
+        			for(var idx in meorders) {
+        				summaryReport.push(meorders[idx]);
+        			}
+        		}
     		}); 
-    	}, self.bettingDelay);
+	    }
+	    var result = {currentOrders: summaryReport, moreAvailable: false }
+		res.response = ejson.prepareResponse(result);
+		cb(null,res);
+    }, self.bettingDelay);
 }
+
 
 // Process updateOrders API call
 Emulator.prototype.updateOrders = function (req, res, cb) {
     var self = this;
+	var marketId = req.params.marketId;
 
-    // mandatory parameters
-    var marketId = req.params.marketId;
-    var instructions = req.params.instructions;
-    if (!marketId || !instructions || instructions.length < 1) {
-        self.sendErrorResponse(res, -32602, "DSC-018");
-        cb(null);
-        return;
-    }
-
-    // check marketId
-    var market = self.markets[marketId];
-    if (!self.isMarketUsingBetEmulator(marketId) || !!market) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
+   self.checkInstructions(req, marketId, res, cb); 
+   var market = self.getMarket(marketId, res, cb);
+    
+    // TODO REMOVE THIS 
+	var ex = {
+            "errorDetails": "Not implemented yet.",
+            "errorCode": "INTERNAL ERROR"
+     };
+     self.sendExceptionResponse(res, -32099, "ANGX-0000", ex);
+    
 	setTimeout(function () {
     	sysLogger.debug("<emulator_core> <updateOrders> Delay = " +  self.bettingDelay);
     	market.updateOrders(req, res, function () {
@@ -158,27 +166,11 @@ Emulator.prototype.updateOrders = function (req, res, cb) {
 // Process cancelOrders API call
 Emulator.prototype.cancelOrders = function (req, res, cb) {
     var self = this;
-
-    // mandatory parameters
-    var marketId = req.params.marketId;
-    var instructions = req.params.instructions;
-    if (!marketId || !instructions || instructions.length < 1) {
-        self.sendErrorResponse(res, -32602, "DSC-018");
-        cb(null);
-        return;
-    }
-
-    // check marketId
-    var market = self.markets[marketId];
-    if (!self.isMarketUsingBetEmulator(marketId) || !!market) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        self.sendExceptionResponse(res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
+	var marketId = req.params.marketId;
+	sysLogger.debug("<emulator_core> <cancelOrders> MID = " +  marketId);
+    self.checkInstructions(req, marketId, res, cb); 
+    var market = self.getMarket(marketId, res, cb);
+        
 	setTimeout(function () {
     	sysLogger.debug("<emulator_core> <cancelOrders> Delay = " +  self.bettingDelay);
     	market.cancelOrders(req, res, function () {
@@ -235,6 +227,9 @@ Emulator.prototype.sendExceptionResponse = function (res, code, message, excepti
         }
     };
 }
+
+
+
 
 // Emulator is a singleton object
 var emulator = module.exports = new Emulator();

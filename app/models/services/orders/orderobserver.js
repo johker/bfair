@@ -25,16 +25,14 @@ var OrderObserver = function OrderObserver() {
 * @param mid - Market ID to look into
 */
 OrderObserver.prototype.updateCurrentOrderInformation = function(marketId) {
+	sysLogger.crit('<orderobserver> <updateCurrentOrderInformation> marketId = ' + JSON.stringify(marketId));
 	orderrequests.listCurrentOrders({"marketIds":[marketId],"placedDateRange":{},"orderBy":"BY_MARKET"}, function(err, data) {
 		var currentBets = data.response.result.currentOrders;
 		var sidBets = []; 
-		var mid = marketId.substring(2,marketId.length);		
-		console.log(data.response.result);
-		app.io.broadcast('clearorders_'+mid, mid);	
+		var mid = marketId.substring(2,marketId.length);
 		for(var i = 0; i < currentBets.length; i++ ){
-			var sid = currentBets[i].selecctionId;
-			console.log('addorder_'+sid);
-			app.io.broadcast('addorder_'+sid, currentBets[i]);				
+			var sid = currentBets[i].selectionId;
+			app.io.broadcast('addorder_'+mid, currentBets[i]);				
 		}
 	});
 } 
@@ -60,7 +58,7 @@ OrderObserver.prototype.getList = function() {
 */
 OrderObserver.prototype.remove = function(theoretical) {
 	var self = this;
-	app.io.broadcast('removebatch', theoreticals[theoretical.marketId]);	
+	app.io.broadcast('removebadge', theoreticals[theoretical.marketId]);	
 	theoreticals[theoretical.marketId].remove(); 
 }
 
@@ -71,7 +69,7 @@ OrderObserver.prototype.add = function(theoretical) {
 	var self = this;
 	if(theoreticals[theoretical.marketId] == undefined) {
 		theoreticals[theoretical.marketId] = theoretical;     
-		app.io.broadcast('addbatch', theoreticals[theoretical.marketId]);
+		app.io.broadcast('addbadge', theoreticals[theoretical.marketId]);
 	}
 }
 

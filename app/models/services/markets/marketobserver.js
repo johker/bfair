@@ -8,6 +8,7 @@ var root = '../../../../'
  , sync = require(servicedir + 'markets/synchronize') 
  , strutils = require(root + 'util/stringutil')
  , listutils = require(root + 'util/listutil')
+ , servicedir = root + 'app/models/services/'	
  , marketfactory = require(servicedir + 'marketfactory') 
  , watchedmarkets = {}
  , mid = 'marketId'
@@ -44,13 +45,13 @@ MarketObserver.prototype.getSize = function() {
 }
 
 /**
-* Emits event with stale market and remove it from the list +
-* if not-retrieved limit exceeded. 
+* Emits event with stale market and remove it from the list -
+* if not-retrieved limit exceeded OR a market has been locked. 
 */
 MarketObserver.prototype.remove = function(id) {
 	var self = this;
-	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate);	
-	if(watchedmarkets[id].remove()) {
+	sysLogger.crit('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate + ', EID = ' + watchedmarkets[id].eventId);	
+	if(watchedmarkets[id].remove() || rtc.getConfig('api.applyLock')) {
 		app.io.broadcast('removemarket', watchedmarkets[id]);
  		watchedmarkets[id].setPassivationTime(Date.now());
  		self.emit('stopLogging', watchedmarkets[id]);	

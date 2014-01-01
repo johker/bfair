@@ -19,6 +19,19 @@ function EmulatorMarket(marketId) {
     self.isInitialized = false;
     self.players = {};
     self.bets = {};
+    self.currentOrders = {}
+}
+
+EmulatorMarket.prototype.listCurrentOrders = function(req, res, cb) {
+	var self = this;
+	var summaryReport = [];
+	for (var embet in self.bets) {
+	    if (self.bets.hasOwnProperty(embet)) {
+	       	summaryReport.push(self.bets[embet].getCurrentOrderSummary());
+	       	sysLogger.crit('<emulator_market> <listCurrentOrders> = ' + self.bets[embet].getCurrentOrderSummary().priceSize.size); 
+	    }
+	}	
+	cb(null, summaryReport);
 }
 
 EmulatorMarket.prototype.onListMarketBook = function (rec) {
@@ -59,11 +72,11 @@ EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
     var dup = ec.isDuplicate();	
     
 	var betIds = ejson.createBets(self, instructions); 
-	// Try to match bets using price matching
+	
 	var bets = betIds.map(function(id) {
 		return self.bets[id];
 	});	
-	
+	// Try to match bets using price matching
 	exchange.matchBetsUsingPrices(self, bets, result);	
 		 
 	for(var i = 0; i < bets.length; i++) {
@@ -75,52 +88,12 @@ EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
 }
 
 
-
-// Process replaceOrders API call
-EmulatorMarket.prototype.replaceOrders = function (req, res, cb) {
-    var self = this;
-    var log = emulator.log;
-
-    // check marketId
-    var marketId = req.params.marketId;
-    if (!self.isMarketUsingBetEmulator(marketId)) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        sendExceptionResponse(req, res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
-
-    // is duplicate
-    var dup = isDuplicate(self, req);
-
-    sendErrorResponse(req, res, -32602, "DSC-018");
-    cb(null);
-}
-
 // Process updateOrders API call
 EmulatorMarket.prototype.updateOrders = function (req, res, cb) {
     var self = this;
     var log = emulator.log;
-
-    // check marketId
-    var marketId = req.params.marketId;
-    if (!self.isMarketUsingBetEmulator(marketId)) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        sendExceptionResponse(req, res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
-
-    // is duplicate
-    var dup = isDuplicate(self, req);
-
-    sendErrorResponse(req, res, -32602, "DSC-018");
+	
+	var instructions = req.params.instructions;	
     cb(null);
 }
 
@@ -128,23 +101,20 @@ EmulatorMarket.prototype.updateOrders = function (req, res, cb) {
 EmulatorMarket.prototype.cancelOrders = function (req, res, cb) {
     var self = this;
     var log = emulator.log;
-
-    // check marketId
-    var marketId = req.params.marketId;
-    if (!self.isMarketUsingBetEmulator(marketId)) {
-        var ex = {
-            "errorDetails": "market id passed is invalid",
-            "errorCode": "INVALID_INPUT_DATA"
-        };
-        sendExceptionResponse(req, res, -32099, "ANGX-0002", ex);
-        cb(null);
-        return;
-    }
-
-    // is duplicate
-    var dup = checks.isDuplicate(self, req);
-
-    sendErrorResponse(req, res, -32602, "DSC-018");
+	 
+	var instructions = req.params.instructions;
+	var betIds = [];
+	
+	for(var i = 0; i < instructions.length; i++) {
+		var embet = self.bets[instructions[i].betId];
+		if(embet) {
+			embet.cancel(instructions[i].sizeReduction);
+		}
+	}
+	var bets = betIds.map(function(id) {
+		return self.bets[id];
+	});	
+	
     cb(null);
 }
 

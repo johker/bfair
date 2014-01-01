@@ -24,9 +24,10 @@ apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 betfair = require('./app/models/api'); // Patched version 
 
+
 if(env == 'development') {
 	process.on('uncaughtException', function(err) {
-	  sysLogger.crit('<server> <uncaught exception>');
+	  sysLogger.error('<server> <uncaught exception> ' + JSON.stringify(err));
 	  //notifier.sendMail('Bfair App Crash',  err.message); 
 	  console.error(err.stack);
 	});

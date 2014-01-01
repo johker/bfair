@@ -136,16 +136,9 @@ EmulatorCheck.prototype.checkUpdateBetItem = function(desc) {
 */
 EmulatorCheck.prototype.checkCancelBetItem = function(desc) {
 	var self = this; 
-    // check betId is mine
-    if (!self.market.bets[desc.betId]) {
-        // MARKET_IDS_DONT_MATCH - Bet ID does not exist
-        return 'MARKET_IDS_DONT_MATCH';
-    }
-    return null;
-}
+    throw new Error('Not yet implemented');
  
- 
- 
+ }
  
 EmulatorCheck.prototype.checkMarketStatus = function(cb) {
 	var self = this; 

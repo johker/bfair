@@ -13,21 +13,21 @@ var root = '../../../../'
 * @param cb - callback function
 */
 exports.executeTheoretical = function(thprice, cb) {	
-	sysLogger.crit('<execution> <executeTheoretical> SID: ' + thprice.selectionId);
-	
-	
+	sysLogger.debug('<execution> <executeTheoretical> SID: ' + thprice.selectionId);
 	/**
 	* TODO: REMOVE THIS LINE 
 	*/
-	if(thprice.selectionId != rtc.getConfig('api.testSelectionId')) return;
+	if(thprice.selectionId != rtc.getConfig('api.lockedSelectionId')) return;
+	
 	var mid = thprice.marketId;
 	var sid = thprice.selectionId; 
 	var th = thprice.theoretical;
+	app.io.broadcast('theoretical_'+ mid.substring(2,mid.length), {theoretical: thprice.theoretical, selectionId: thprice.selectionId});
 	 getCurrentOrders(mid, sid, function(sidBets) {
 		var bidtc = getBetIdsToCancel(sidBets, th); 
 		cancelDirtyOrders(bidtc, mid, function(err, res) {
 			getMarketBookForSid(mid, sid, function(book) {
-				getOrdersToCall(book, sid, function(ordersToCall) {
+				getOrdersToCall(book, th, function(ordersToCall) {
 					callOrders(ordersToCall, mid, sid, function(err, res) {
 						cb(err,res);
 					});
@@ -61,7 +61,12 @@ function callOrders(ordersToCall, mid, sid, cb) {
 			'orderType': rtc.getConfig('api.defaultsettings.orderType'),
 			'limitOrder': lo
 		};
+		sysLogger.crit('<execution> <callOrders> betInstruction = ' + JSON.stringify(bi));
 		betInstructions.push(bi);
+	}
+	if(betInstructions.length == 0) {
+		cb();
+		return;
 	}
 	var params =  {'marketId':mid, 'instructions': betInstructions}
 	orderrequests.placeOrders(params, function(err, res) {
@@ -83,14 +88,16 @@ function getOrdersToCall(book, th, cb) {
 	if(avToBack != null) {
 		for(var i = avToBack.length-1; i >= 0 ; i--) {
 			if(th < avToBack[i].price) {
-			 	ordersToCall.push({'side': 'LAY', 'price': avToBack[i].price, 'size': avToBack[i].size});
+			 	ordersToCall.push({'side': 'BACK', 'price': avToBack[i].price, 'size': avToBack[i].size});
+			 	sysLogger.crit('<execution> <getOrdersToCall> BACKING TH = ' + th + ', AVL. PRICE = ' + avToBack[i].price);
 			 }
 		}
 	}
 	if(avToLay != null) {
 		for(var i = avToLay.length-1; i >= 0 ; i--) {
 			if(th > avToLay[i].price) {
-			 	ordersToCall.push({'side': 'BACK', 'price': avToLay[i].price, 'size': avToLay[i].size});
+			 	ordersToCall.push({'side': 'LAY', 'price': avToLay[i].price, 'size': avToLay[i].size});
+			 	sysLogger.crit('<execution> <getOrdersToCall> LAYING TH = ' + th + ', AVL. PRICE = ' + avToLay[i].price);
 			 }
 		}
 	}
@@ -121,14 +128,21 @@ function getMarketBookForSid(mid, sid, cb) {
 * @param cb - callback function  
 */
 function cancelDirtyOrders(bidtc, mid, cb) {
-	sysLogger.crit('<execution> <cancelDirtyOrders>');
+	var shortmid = mid.substring(2,mid.length);
 	var instructions = [];
 	var cancelinst = {}; 
+	if(bidtc.length < 1) {
+		sysLogger.crit('<execution> <cancelDirtyOrders> bidtc.length = ' + 0);
+		cb();
+		return;
+	}
 	for(var i = 0; i < bidtc.length; i++) {
 		cancelinst['betId'] = bidtc[i].betId;
 		cancelinst['sizeReduction'] = bidtc[i].sizeRemaining; 
-		instructions.push(cancelinst)
+		instructions.push(cancelinst); 
+		app.io.broadcast('removeorder_'+shortmid, bidtc[i].betId);	// If only partially canceled it will be added again 			
 	}
+	sysLogger.crit('<execution> <cancelDirtyOrders> instructions = ' + JSON.stringify(instructions));
 	orderrequests.cancelOrders({"marketId":mid,"instructions":instructions}, function(err, res) {
 			cb(err, res);
 	});	
@@ -141,11 +155,13 @@ function cancelDirtyOrders(bidtc, mid, cb) {
 * @param th - theoretical price   
 */
 function getBetIdsToCancel(sidBets, th) {
-	sysLogger.crit('<execution> <getBetIdsToCancel>');
-	 var betIdsToCancel = [];
-	for(var i = 0; i < sidBets; i++) {
+	sysLogger.debug('<execution> <getBetIdsToCancel> sidBets = ' + JSON.stringify(sidBets));	 
+	var betIdsToCancel = [];
+	for(var i = 0; i < sidBets.length; i++) {
+		sysLogger.debug('<execution> <getBetIdsToCancel> SIDE = ' + sidBets[i].side + ', PRICE = ' + sidBets[i].priceSize.price + ', TH = ' + th + ', RESULT = ' + (sidBets[i].side == 'BACK' && sidBets[i].priceSize.price < th
+			|| sidBets[i].side == 'LAY' && sidBets[i].priceSize.price > th));
 			if(sidBets[i].side == 'BACK' && sidBets[i].priceSize.price < th
-			|| sideBets[i].side == 'LAY' && sidBets[i].priceSize.price > th) {
+			|| sidBets[i].side == 'LAY' && sidBets[i].priceSize.price > th) {
 					betIdsToCancel.push(sidBets[i]);
 			} 
 	}
@@ -162,12 +178,13 @@ function getBetIdsToCancel(sidBets, th) {
 function getCurrentOrders(mid, sid, cb) {
 	orderrequests.listCurrentOrders({"marketIds":[mid], "placedDateRange":{}}, function(err, data) {
 		var currentBets = data.response.result.currentOrders;
+		sysLogger.debug('<execution> <getCurrentOrders> BETS LENGTH = ' + currentBets.length);
 		var sidBets = []; 
 		for(var i = 0; i < currentBets.length; i++ ){
 			if(currentBets[i].selectionId == sid) {
 				sidBets.push(currentBets[i]);
 			}
 		}
-		cb(currentBets);
+		cb(sidBets);
 	});
 }

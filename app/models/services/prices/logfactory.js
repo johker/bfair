@@ -133,8 +133,6 @@ exports.testQuery = function(collection) {
 	var Data = mongoose.model('Data', LogSchema, collection);
 	Data.find({}, function (err, data) {		
 		if(err) { sysLogger.error('<logfactory> <streamResults> <Data.find>');} 
-		sysLogger.notice('<logfactory> <streamResults>');	
-		//console.log(data); 
 		db.close(); 
 	});
 }
