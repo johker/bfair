@@ -61,7 +61,7 @@ function callOrders(ordersToCall, mid, sid, cb) {
 			'orderType': rtc.getConfig('api.defaultsettings.orderType'),
 			'limitOrder': lo
 		};
-		sysLogger.crit('<execution> <callOrders> betInstruction = ' + JSON.stringify(bi));
+		sysLogger.debug('<execution> <callOrders> betInstruction = ' + JSON.stringify(bi));
 		betInstructions.push(bi);
 	}
 	if(betInstructions.length == 0) {
@@ -89,7 +89,7 @@ function getOrdersToCall(book, th, cb) {
 		for(var i = avToBack.length-1; i >= 0 ; i--) {
 			if(th < avToBack[i].price) {
 			 	ordersToCall.push({'side': 'BACK', 'price': avToBack[i].price, 'size': avToBack[i].size});
-			 	sysLogger.crit('<execution> <getOrdersToCall> BACKING TH = ' + th + ', AVL. PRICE = ' + avToBack[i].price);
+			 	sysLogger.debug('<execution> <getOrdersToCall> BACKING TH = ' + th + ', AVL. PRICE = ' + avToBack[i].price);
 			 }
 		}
 	}
@@ -97,7 +97,7 @@ function getOrdersToCall(book, th, cb) {
 		for(var i = avToLay.length-1; i >= 0 ; i--) {
 			if(th > avToLay[i].price) {
 			 	ordersToCall.push({'side': 'LAY', 'price': avToLay[i].price, 'size': avToLay[i].size});
-			 	sysLogger.crit('<execution> <getOrdersToCall> LAYING TH = ' + th + ', AVL. PRICE = ' + avToLay[i].price);
+			 	sysLogger.debug('<execution> <getOrdersToCall> LAYING TH = ' + th + ', AVL. PRICE = ' + avToLay[i].price);
 			 }
 		}
 	}

@@ -17,7 +17,7 @@ var lastBetId = 10000000000;
 
 function EmulatorBet(markId, selId, type, price, size) {
     var self = this;
-	console.log('<emulator_bet> New Bet size = ' + size); 
+	sysLogger.crit('<emulator_bet> New Bet size = ' + size); 
     if (type !== 'BACK' && type !== 'LAY')
         throw new Error('Bet type should be BACK or LAY');
 
@@ -79,13 +79,14 @@ EmulatorBet.prototype.getCurrentOrderSummary = function() {
 
 EmulatorBet.prototype.averageMatchedPrice = function() {
     var self = this;
-
+	
     // weighted sum of prices of matched parts
     var matchedSize = self.matchedSize();
     var averagePrice = 0;
     self.matchedParts.forEach(function(item) {
         averagePrice += item.price * (item.size / matchedSize);
     });
+    sysLogger.crit('<emulator_bet> <averageMatchedPrice> New Bet size = ' + self.size); 
     return averagePrice;
 }
 
@@ -97,12 +98,12 @@ EmulatorBet.prototype.matchedSize = function() {
     self.matchedParts.forEach(function(item) {
         sum += 1 * item.size;
     });
+    sysLogger.crit('<emulator_bet> <matchedSize> New Bet size = ' + self.size); 
     return sum;
 }
 
 EmulatorBet.prototype.unmatchedSize = function() {
     var self = this;
-
     // just size
     return self.size;
 }
@@ -133,6 +134,7 @@ EmulatorBet.prototype.matchPortion = function(price, size) {
         price : price,
         size : size
     });
+    sysLogger.crit('<emulator_bet> <matchPortion> New Bet size = ' + self.size); 
     return true;
 }
 
@@ -161,7 +163,8 @@ EmulatorBet.prototype.cancel = function(sizereduction) {
     	};
     	self.cancelled = true;
 	}
-    return desc;
+	sysLogger.crit('<emulator_bet> <cancel> New Bet size = ' + self.size); 
+   	return desc;
 }
 
 // updateBets, reduce bet size
@@ -172,7 +175,8 @@ EmulatorBet.prototype.reduceSize = function(sizereduction) {
     	throw new Error('Invalid Bet size reduction.'); 
     }   
     self.size = self.size - sizereduction;
-    
+    sysLogger.crit('<emulator_bet> <reduceSize> New Bet size = ' + self.size); 
+   
 }
 
 // updateBets, change persistence type

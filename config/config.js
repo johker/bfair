@@ -67,10 +67,10 @@ module.exports = {
       	},
       	removeBuffer: 10,
       	eventType: '7',
-      	lockedMarketId: '1.112339768',
-      	lockedEventId:'27122953',
-      	lockedSelectionId:'8179311',
-      	applyLock: false,
+      	lockedMarketId: '1.112385242',
+      	lockedEventId:'27125557',
+      	lockedSelectionId:'7594949',
+      	applyLock: true,
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {

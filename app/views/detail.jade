@@ -45,7 +45,7 @@ block content
 						form#backform(method='post', action='/markets')
 							button.btn.btn-primary.btn-mini(type='submit') Back				
 					script
-						io = io.connect();	
+						io = io.connect();
 						if(#{locked}) {
 							showLockedView();
 						}
@@ -88,9 +88,9 @@ block content
 							}														
 						});
 						io.on('locked', function(isLocked) {	
-								if(isLocked) {
-									showLockedView();
-								} 
+							if(isLocked) {
+								showLockedView();
+							} 
 						});
 						$('#lock').click(function(e) {
 							var xhr = $.ajax({

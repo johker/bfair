@@ -173,7 +173,7 @@ app.io.route('viewprdetail', function(m) {
 });
 
 exports.pricedetail = function(req, res) {	
-	if(rtc.getConfig('api.applyLock') && selectedMarketId == rtc.getConfig('api.lockedMarketId')) {
+	if(rtc.getConfig('api.applyLock') && '1.' + selectedMarketId == rtc.getConfig('api.lockedMarketId')) {
 		res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId, locked: true});			
 	} else {
 		res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId, locked: false});			

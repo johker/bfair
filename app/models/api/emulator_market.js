@@ -28,7 +28,6 @@ EmulatorMarket.prototype.listCurrentOrders = function(req, res, cb) {
 	for (var embet in self.bets) {
 	    if (self.bets.hasOwnProperty(embet)) {
 	       	summaryReport.push(self.bets[embet].getCurrentOrderSummary());
-	       	sysLogger.crit('<emulator_market> <listCurrentOrders> = ' + self.bets[embet].getCurrentOrderSummary().priceSize.size); 
 	    }
 	}	
 	cb(null, summaryReport);

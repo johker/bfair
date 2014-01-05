@@ -25,7 +25,7 @@ var OrderObserver = function OrderObserver() {
 * @param mid - Market ID to look into
 */
 OrderObserver.prototype.updateCurrentOrderInformation = function(marketId) {
-	sysLogger.crit('<orderobserver> <updateCurrentOrderInformation> marketId = ' + JSON.stringify(marketId));
+	sysLogger.debug('<orderobserver> <updateCurrentOrderInformation> marketId = ' + JSON.stringify(marketId));
 	orderrequests.listCurrentOrders({"marketIds":[marketId],"placedDateRange":{},"orderBy":"BY_MARKET"}, function(err, data) {
 		var currentBets = data.response.result.currentOrders;
 		var sidBets = []; 

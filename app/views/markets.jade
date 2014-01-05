@@ -56,11 +56,13 @@ block content
 									+ '</tr>');		
 								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');
 								$.bootstrapSortable(true);
-								console.log(#{locked} && nounlock);		
+								// Locked Label : 
 								if(#{locked} && nounlock) {
-									var lmid = '' + #{mid} 
-									if (!$('#' + lmid + ' td.mid').find("span.label").length) {
-										$('#' + lmid + ' td.mid').append(' <span id="locklabel" class="label label-important">LOCKED</span>'); 
+									var lmid = '' + #{mid}
+									lmid = lmid.substring(2, lmid.length); 
+									if ($('#lockedlabel' + lmid).length == 0) {
+										$('#' + lmid + ' td.mpl').append(' <span id="lockedlabel' + lmid + '" class="label label-important">L</span>'); 
+										
 									}
 								}								
 							});							
@@ -80,7 +82,7 @@ block content
 							});
 							io.on('addbadge', function(data) {
 								var mid = data.marketId.substring(2,data.marketId.length);		
-								$('#' + mid + ' td.eid').append('<span class="badge"> TH</span>'); 
+								$('#' + mid + ' td.mpl').append(' <span class="label label-success">T</span>'); 
 								$('#' + mid)
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )
 									.animate( { backgroundColor: "transparent" }, 500);								
@@ -88,7 +90,7 @@ block content
 							io.on('removebadge', function(data) {
 								var mid = data.marketId.substring(2,data.marketId.length);
 								$('.badge').remove();
-								$('#' + mid + ' td.eid')
+								$('#' + mid + ' td.mpl')
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )
 									.animate( { backgroundColor: "transparent" }, 500);								
 							});
@@ -104,6 +106,9 @@ block content
 								if(!isLocked) {
 									$('#lockpanel').attr("style", "display:none;");
 									nounlock = false;
+									var lmid = '' + #{mid}
+									lmid = lmid.substring(2, lmid.length);
+									$('#lockedlabel' + lmid).remove();
 								} 
 							});
 							$("#viewdetail").click(function(e) {
