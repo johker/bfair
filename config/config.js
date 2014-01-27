@@ -67,10 +67,11 @@ module.exports = {
       	},
       	removeBuffer: 10,
       	eventType: '7',
-      	lockedMarketId: '1.112385242',
-      	lockedEventId:'27125557',
-      	lockedSelectionId:'7594949',
-      	applyLock: true,
+      	lockedMarketId: '1.112408778',
+      	lockedEventId:'27127974',
+      	lockedSelectionId:'2792426',
+      	applyLock: false,
+      	marketPassivation: true, 
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {
@@ -79,12 +80,16 @@ module.exports = {
 		    },      		
 		    afterStDateBiasHrs: 0,  
 		    afterStDateBiasMin: 10,
-		    beforeStDateBiasHrs: 2,
+		    beforeStDateBiasHrs: 0,
 		    beforeStDateBiasMin: 30,		    
 		    minMarketCt: 0,
 		    applyAfterStDate: true,
-		    applyBeforeStDate: false, 
+		    applyBeforeStDate: true, 
 		   	turnsInPlay: true
+	    }, 
+	    execution: {
+	    	lockedOrderto: 120000,
+	    	defaultOrderSize: 2
 	    }
       },
       amqp : {

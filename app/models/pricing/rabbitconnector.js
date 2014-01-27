@@ -31,7 +31,7 @@ RabbitConnector.prototype.marketDataUpdate = function(books) {
 }
 
 RabbitConnector.prototype.sendMarket = function(book) {
-	if(book.marketId == rtc.getConfig('api.lockedMarketId')){
+	if(!rtc.getConfig('api.applyLock') || book.marketId == rtc.getConfig('api.lockedMarketId')){
 		sysLogger.debug('<RabbitConnector.prototype.sendMarket> Published Market Update: ' + book.marketId);
 		marketPublisher.publish(bookutil.getDataTransferObject(book), 'bookdto')	
 	}

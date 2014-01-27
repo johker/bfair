@@ -15,9 +15,8 @@ var betfairPrice = require('./betfair_price')
 // All the bets getIds
 var lastBetId = 10000000000;
 
-function EmulatorBet(markId, selId, type, price, size) {
+function EmulatorBet(markId, selId, type, price, size, exid) {
     var self = this;
-	sysLogger.crit('<emulator_bet> New Bet size = ' + size); 
     if (type !== 'BACK' && type !== 'LAY')
         throw new Error('Bet type should be BACK or LAY');
 
@@ -32,7 +31,8 @@ function EmulatorBet(markId, selId, type, price, size) {
     self.betType = type;
     self.price = 1 * price;
     self.size = 1 * size; // unmatched size
-    self.placedDate = new Date();
+    self.placedDate = (new Date()).getTime();
+    self.executionId = exid; 
 
     // default suggestions
     self.asianLineId = "0";
@@ -55,24 +55,27 @@ EmulatorBet.prototype.isMatched = function() {
 */ 
 EmulatorBet.prototype.getCurrentOrderSummary = function() {
 	var self = this;
-	return { betId: self.betId,
-    marketId: self.marketId,
-    selectionId: self.selectionId,
-    handicap: 0,
-    priceSize: { price: self.price, size: self.size },
-    bspLiability: 0,
-    side: self.betType,
-    status: self.isMatched() ? 'EXECUTION_COMPLETE' : 'EXECUTABLE',
-    persistenceType: 'LAPSE',
-    orderType: 'LIMIT',
-    placedDate: self.placedDate,
-    averagePriceMatched: self.averageMatchedPrice(),
-    sizeMatched: self.matchedSize(),
-    sizeRemaining: self.unmatchedSize(),
-    sizeLapsed: -1,	// TODO: calculate values
-    sizeCancelled: -1,
-    sizeVoided: -1,
-    regulatorCode: 'GIBRALTAR REGULATOR' }
+	return { 
+		betId: self.betId,
+	    marketId: self.marketId,
+	    selectionId: self.selectionId,
+	    executionId: self.executionId,
+	    handicap: 0,
+	    priceSize: { price: self.price, size: self.size },
+	    bspLiability: 0,
+	    side: self.betType,
+	    status: self.isMatched() ? 'EXECUTION_COMPLETE' : 'EXECUTABLE',
+	    persistenceType: 'LAPSE',
+	    orderType: 'LIMIT',
+	    placedDate: self.placedDate,
+	    averagePriceMatched: self.averageMatchedPrice(),
+	    sizeMatched: self.matchedSize(),
+	    sizeRemaining: self.unmatchedSize(),
+	    sizeLapsed: -1,	// TODO: calculate values
+	    sizeCancelled: -1,
+	    sizeVoided: -1,
+	    regulatorCode: 'GIBRALTAR REGULATOR' 
+    }
 }
 
 
@@ -86,7 +89,6 @@ EmulatorBet.prototype.averageMatchedPrice = function() {
     self.matchedParts.forEach(function(item) {
         averagePrice += item.price * (item.size / matchedSize);
     });
-    sysLogger.crit('<emulator_bet> <averageMatchedPrice> New Bet size = ' + self.size); 
     return averagePrice;
 }
 
@@ -98,7 +100,6 @@ EmulatorBet.prototype.matchedSize = function() {
     self.matchedParts.forEach(function(item) {
         sum += 1 * item.size;
     });
-    sysLogger.crit('<emulator_bet> <matchedSize> New Bet size = ' + self.size); 
     return sum;
 }
 
@@ -134,7 +135,6 @@ EmulatorBet.prototype.matchPortion = function(price, size) {
         price : price,
         size : size
     });
-    sysLogger.crit('<emulator_bet> <matchPortion> New Bet size = ' + self.size); 
     return true;
 }
 
@@ -163,8 +163,7 @@ EmulatorBet.prototype.cancel = function(sizereduction) {
     	};
     	self.cancelled = true;
 	}
-	sysLogger.crit('<emulator_bet> <cancel> New Bet size = ' + self.size); 
-   	return desc;
+	return desc;
 }
 
 // updateBets, reduce bet size
@@ -175,7 +174,6 @@ EmulatorBet.prototype.reduceSize = function(sizereduction) {
     	throw new Error('Invalid Bet size reduction.'); 
     }   
     self.size = self.size - sizereduction;
-    sysLogger.crit('<emulator_bet> <reduceSize> New Bet size = ' + self.size); 
    
 }
 

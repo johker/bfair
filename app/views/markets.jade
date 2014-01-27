@@ -29,7 +29,7 @@ block content
 							th Market ID 
 							th Type
 							th Country Code
-							th Open Date
+							th Start Time
 							th Detail
 							th Prices
 					tbody
@@ -50,7 +50,7 @@ block content
 									+ '<td class="mid">' + mid + '</td>'									
 									+ '<td class="mn">' + data.name + '</td>'
 									+ '<td class="cc">' + data.countryCode + '</td>'
-									+ '<td class="mt">' + millisToDate(data.openDate) + '</td>'
+									+ '<td class="mt">' + millisToDate(data.startTime) + '</td>'
 									+ '<td class="md">' + data.eventName + '</td>'
 									+ '<td class="mpl"></td>'
 									+ '</tr>');		
@@ -80,8 +80,8 @@ block content
 										}							
 									}		
 							});
-							io.on('addbadge', function(data) {
-								var mid = data.marketId.substring(2,data.marketId.length);		
+							io.on('addbadge', function(marketId) {
+								var mid = marketId.substring(2,marketId.length);		
 								$('#' + mid + ' td.mpl').append(' <span class="label label-success">T</span>'); 
 								$('#' + mid)
 									.animate( { backgroundColor: "#E6E6E6" }, 500 )

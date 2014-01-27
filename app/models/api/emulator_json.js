@@ -57,13 +57,22 @@ exports.addInstructionReport = function(status, instruction, result, bet) {
     result.instructionReports.push(rep);
 }
 
+/**
+* Create bets for instructions which are not locked
+* @return betIds which have valid bets
+*/
 exports.createBets = function(em, instructions) {
 	var betIds = [];
 	for ( var i = 0; i < instructions.length; ++i) {
 		var desc = instructions[i];
+		if(instructions[i].isLocked) {
+			sysLogger.debug('<emulator_json> <createBets> Instruction with EXID ' + instructions[i].executionId + ' skipped.');
+			// Only create bet for unlocked instrcutions
+			continue; 
+		}
 		var bet = new EmulatorBet(em.marketId, desc.selectionId, 
 					desc.side, desc.limitOrder.price, 
-					desc.limitOrder.size);
+					desc.limitOrder.size, desc.executionId);
 		betIds.push(bet.betId);
 		em.bets[bet.betId] = bet;		
 	}

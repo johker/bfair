@@ -12,7 +12,7 @@ var root = '../../../../'
  , marketfactory = require(servicedir + 'marketfactory') 
  , watchedmarkets = {}
  , mid = 'marketId'
-
+ , resetPassivation = false
 
 
 
@@ -50,7 +50,7 @@ MarketObserver.prototype.getSize = function() {
 */
 MarketObserver.prototype.remove = function(id) {
 	var self = this;
-	sysLogger.crit('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate + ', EID = ' + watchedmarkets[id].eventId);	
+	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate + ', EID = ' + watchedmarkets[id].eventId);	
 	if(watchedmarkets[id].remove() || rtc.getConfig('api.applyLock')) {
 		app.io.broadcast('removemarket', watchedmarkets[id]);
  		watchedmarkets[id].setPassivationTime(Date.now());
@@ -65,8 +65,10 @@ MarketObserver.prototype.remove = function(id) {
 MarketObserver.prototype.add = function(market, id) {
 	var self = this;
 	var openDate = strutils.parseBetfairDate(market.event.openDate);
-	tz = strutils.adjustTimezone(openDate);
-	watchedmarkets[id] = new marketfactory.Market(id, market.marketName, tz, market.event.id, market.event.name, market.event.countryCode);
+	var startTime = strutils.parseBetfairDate(market.marketStartTime);
+	var adjOpenDate = strutils.adjustTimezone(openDate);
+	var adjStartTime = strutils.adjustTimezone(startTime);
+	watchedmarkets[id] = new marketfactory.Market(id, market.marketName, adjStartTime, adjOpenDate, market.event.id, market.event.name, market.event.countryCode);
 	sysLogger.debug('<marketobserver> <add> id = ' + id + ', Open date: ' + openDate); 
 	app.io.broadcast('addmarket', watchedmarkets[id]);	
 	self.emit('newMarket', watchedmarkets[id]);
@@ -80,11 +82,18 @@ MarketObserver.prototype.add = function(market, id) {
 * Synchronize and find the delta of markets by its id
 */ 
 MarketObserver.prototype.synchronize = function(incoming) {
-	var self = this;	
+	var self = this;
 	if(incoming == undefined) {
 		sysLogger.debug('<marketobserver> <synchronize> incoming == undefined'); 
 		return; 
 	}	
+	// Remove Ignore-Passivation Flag after second function call 
+	if(rtc.getConfig('marketPassivation')) {
+		resetPassivation = true;
+	}
+	if(resetPassivation) {
+		rtc.setConfig('marketPassivation');
+	}
 	sync.markets(watchedmarkets, incoming, mid, self);  
     init = false;	
 }

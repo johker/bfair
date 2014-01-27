@@ -64,7 +64,7 @@ priceping.on('ping', function(prices) {
 */
 marketObserver.on('newMarket',function(market) {
 	if(market == undefined) return; 
-	sysLogger.crit('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);	
+	sysLogger.debug('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);	
 	priceping.addMarket(market);
 });
 
@@ -74,18 +74,26 @@ marketObserver.on('newMarket',function(market) {
 */
 marketObserver.on('stopLogging', function(market) {
 	mid = market.id;
-	priceping.removeMarket(market);		
-	async.waterfall([function(cb) {cb(null, mid);}, checks.marketIdLength, checks.marketStatus, checks.marketEventType], function(err,res) {
-	    if(err) {
-	    	sysLogger.error('<marketObserver> <on: stopLogging> ' + err);	  
-	    	return; 
-	    }    
-	});		
+	priceping.removeMarket(market);	
 	priceObserver.passivate(mid);
-	// Only add to history if not removed by LOCK operation
-	if(rtc.getConfig('api.applyLock')) {
-		sysLogger.debug('<apicontroller marketObserver.on:stopLogging> Add to history, id = ' + mid);
-		history.add(market);
+	
+	// Only check market details and add to history if NOT removed by LOCK operation
+	// Otherwise asnyc.waterfall is called too frequently. This causes a Node TypeError 
+	if(rtc.getConfig('api.marketPassivation')) {
+		sysLogger.crit('<apicontroller> <on: stopLogging> Market Passivation (' + mid + ')');	 		
+		async.waterfall([function(cb) {cb(null, mid);}, 
+			checks.marketIdLength, 
+			checks.marketStatus, 
+			checks.marketEventType
+		], function(err, marketId) {
+			if(err) {
+		    	sysLogger.error('<apicontroller> <marketObserver> <on: stopLogging> ' + JSON.stringify(err));	  
+		    	return; 
+		    } else {
+			    history.add(market);
+			    reporting.addMarketToResults(orderobserver, marketId, function(err){ });		         
+		    }
+		});		
 	}	
 });
 
@@ -107,9 +115,10 @@ app.io.route('marketsready', function(req) {
 	for(var i=0; i < markets.length; i++) {
 		app.io.broadcast('addmarket', markets[i]);		
 	 }	
-	 var theoreticals = orderobserver.getList();
-	for(var i=0; i < theoreticals.length; i++) {
-		app.io.broadcast('addbadge', theoreticals[i]);		
+	var ordmarkets = orderobserver.getMarketsWithOrders();
+	for(var i=0; i < ordmarkets.length; i++) {
+		sysLogger.crit('<apicontroller> <marketsready> ' + ordmarkets.marketId);
+		app.io.broadcast('addbadge', ordmarkets[i]);		
 	} 
 })
 
@@ -132,7 +141,7 @@ app.io.route('historyready', function(req) {
 app.io.route('detailsready', function(req) {		
     var mid = '1.' +  req.data.id;
 	var filter = {"marketIds": [mid], "priceProjection":{"priceData":["EX_BEST_OFFERS"]}}
-	pricerequest.listMarketBook(filter, function(err, res) {
+	pricerequest.listMarketBook(filter, function(err, res) {  // Broadcast all current prices
 		app.io.broadcast('tick_' + req.data.id, res.response.result[0]);
 	});
 })
@@ -141,8 +150,24 @@ app.io.route('detailsready', function(req) {
 * 
 * Broadcast market detail information for initial detail page call. 
 */
-app.io.route('detailpageready', function(req) {  
-    app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});
+app.io.route('detailpageready', function(req) { 
+ 	var mid = '1.' +  req.data.id; 
+	var theoreticals = orderobserver.getTheoreticalsList();
+	for(var i=0; i < theoreticals.length; i++) { // Send all theoretical prices for this market
+		if(theoreticals[i].marketId == mid) {
+			app.io.broadcast('theoretical_'+req.data.id, theoreticals[i]);	
+		}	
+	} 
+	// Send all current orders
+	// TODO: as asnyc parallel 
+	
+	orderobserver.updateCurrentOrderInformation(mid, true, function(err, sidBets) {
+		if(err) {
+			sysLogger.error('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(err));
+			return;
+ 		}	
+	}); 	
+	app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});	
 
 })
 
@@ -152,7 +177,7 @@ exports.markets = function(req, res) {
 };    
 
 exports.orders = function(req, res) {		
-	res.render('orders',  { title: bundle.title.overview, username: req.user.username});	
+	res.render('results',  { title: bundle.title.overview, username: req.user.username});	
 };   
 	
 /**
@@ -178,7 +203,6 @@ exports.pricedetail = function(req, res) {
 	} else {
 		res.render('detail', { title: bundle.title.overview, username: req.user.username, mid: selectedMarketId, eid: selectedEventId, locked: false});			
 	}
-	
 }
 
 exports.history = function(req, res) {	

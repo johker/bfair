@@ -1,0 +1,38 @@
+extends layout
+block content
+	script(src="/socket.io/socket.io.js")
+	script(src='js/jquery-ui-1.10.2.custom.min.js')
+	script(src='js/d3.v3.min.js')
+	link(rel='stylesheet', href='css/detail.css')
+	script(src='js/utils.js')
+	include navbar
+	.container
+		.page-header
+				h2 Results
+			p.lead
+				.row
+					.span12
+						.alert.alert-info
+							.mn Name:
+								strong
+							.mid ID:
+								strong
+							.toa Total Available:
+								strong
+							.ip In Play:
+								strong							
+				.row
+					.span12
+						table#resultbook.table.table-bordered
+							thead
+								tr								
+									th Market ID
+									th Order Count
+									th Result
+									th Profit									
+							tbody								
+				script
+					io = io.connect();																
+					io.on('updateorders',function(data){
+					
+					});			

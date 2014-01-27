@@ -8,47 +8,87 @@ var env = process.env.NODE_ENV || 'development'
  , servicedir = root + 'app/models/services/'
  , listutils = require(root + 'util/listutil')    
  , theoreticals = {}
+ , markets = []
  , orderrequests = require(servicedir + 'orders/orderrequests') 
- 
- 
+ , plcalculation = require(servicedir + 'orders/plcalculation')
+ , reporting = require(servicedir +  'results/reporting') 
  
  /**
 * OrderObserver Constructor 
 */
 var OrderObserver = function OrderObserver() {
- };
+	 
+};
  
  
 /**
-* Sends socket event with current orders for every
-* SID. 
+* Broadcasts socket event with current orders for every
+* SID. If report flag is set, orders are broadcasted. 
+* Callback function is invoked with mapping of current orders by SIDs 
 * @param mid - Market ID to look into
+* @param report - if true, orders are reported to detail page
+* @param cb - callback function
 */
-OrderObserver.prototype.updateCurrentOrderInformation = function(marketId) {
-	sysLogger.debug('<orderobserver> <updateCurrentOrderInformation> marketId = ' + JSON.stringify(marketId));
+OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, report, cb) {
 	orderrequests.listCurrentOrders({"marketIds":[marketId],"placedDateRange":{},"orderBy":"BY_MARKET"}, function(err, data) {
 		var currentBets = data.response.result.currentOrders;
-		var sidBets = []; 
+		var sidBets = {}; 
 		var mid = marketId.substring(2,marketId.length);
-		for(var i = 0; i < currentBets.length; i++ ){
+		for(var i = 0; i < currentBets.length; i++ ) {
 			var sid = currentBets[i].selectionId;
-			app.io.broadcast('addorder_'+mid, currentBets[i]);				
+			if (sidBets[sid] == undefined) {
+				sidBets[sid] = [];
+			}
+			sidBets[sid].push(currentBets[i]);
+			if(report) {
+				app.io.broadcast('addorder_'+mid, currentBets[i]);		
+			}		
 		}
+		cb(err, sidBets);		
 	});
 } 
 
+
+/**
+* Creates P/L summaries for orders. If report flag is true, orders are 
+* reported to results page. 
+* @param sidMappedOrders - Mapping of current orders by SIDs
+* @param report - if true, orders are reported to results page.  
+* @param cb - callback function
+*/ 
+OrderObserver.prototype.updateProfitLoss = function(sidMappedOrders, report, cb) {	
+	plcalculation.profitLoss(sidMappedOrders, function(err, sidMappedPL) { 
+		if(err) cb(err); 
+		sysLogger.debug('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(sidMappedPL)); 
+		if(report) { 
+			 // Broadcast to results page
+			 for(var i = 0; i < sidMappedPL.length; i++) {
+				app.io.broadcast('profitloss', sidMappedPL[i]);
+			}
+		}
+		cb(null, sidMappedPL); 
+	});
+}
+
+
+
  
 /**
-* Return active markets list
+* Return list of theoretical prices
 * TODO: use undescore
 */
-OrderObserver.prototype.getList = function() {
-	sysLogger.debug('<OrderObserver> <getList> size = ' + listutils.count(theoreticals));
+OrderObserver.prototype.getTheoreticalsList = function() {	
 	var innerArray = [];
 	for (property in theoreticals) {
 	    innerArray.push(theoreticals[property]);
 	}
 	return innerArray;
+}
+
+OrderObserver.prototype.getMarketsWithOrders = function() {
+	var self = this; 
+	sysLogger.info('<orderobserver> <getMarketsWithOrders> ' + JSON.stringify(markets));
+	return markets;
 }
 
 
@@ -59,17 +99,27 @@ OrderObserver.prototype.getList = function() {
 OrderObserver.prototype.remove = function(theoretical) {
 	var self = this;
 	app.io.broadcast('removebadge', theoreticals[theoretical.marketId]);	
-	theoreticals[theoretical.marketId].remove(); 
+	theoreticals[theoretical.selectionId].remove(); 
 }
 
 /**
-* Emits event with new market and adds it to the list.
+* Emits events with id/theoretical of a market for which a 
+* theoretical is available and adds it to the list.
+* @param theoretical - DTO of theoretical
+* @param cb - callback function
 */ 
-OrderObserver.prototype.add = function(theoretical) {
+OrderObserver.prototype.updateTheoreticals = function(theoretical, cb) {
 	var self = this;
-	if(theoreticals[theoretical.marketId] == undefined) {
-		theoreticals[theoretical.marketId] = theoretical;     
-		app.io.broadcast('addbadge', theoreticals[theoretical.marketId]);
+	try {
+		if(markets.indexOf(theoretical.marketId) == -1) {
+			sysLogger.info('<OrderObserver> <update> Push Market ID : ' + theoretical.marketId);	
+			app.io.broadcast('addbadge', theoretical.marketId);
+			markets.push(theoretical.marketId);
+		}
+		theoreticals[theoretical.selectionId] = theoretical;
+		cb();
+	} catch(err) {
+		cb(err);
 	}
 }
 

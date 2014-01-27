@@ -17,13 +17,13 @@ betfair = require(root + 'app/models/api'); // Patched version
 var session = require(servicedir + 'session')
 	, instance = session.Singelton.getInstance()
 	, checks = require(servicedir + 'checks')
-	, mid = '1.107453576';
+	, mid = '1.112485762';
 	
 	
 	
 // Very weird stuff
 instance.login(function(err, res){
-	async.waterfall([function(callback) {callback(null, '1.107453576');}, checks.marketIdLength, checks.marketStatusClosed, checks.marketEventType], function (err, mid) {
+	async.waterfall([function(callback) {callback(null, mid);}, checks.marketIdLength, checks.marketStatusClosed, checks.marketEventType], function (err, mid) {
 	    if(!err) console.log(mid); 
 	  	 else console.log(err);
 	});	

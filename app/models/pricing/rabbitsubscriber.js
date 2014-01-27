@@ -19,7 +19,7 @@ var RabbitConsumer = function RabbitConsumer(queue) {
 	    ch.consume(self.q, function(msg) {
 	      if (msg !== null) {
 	        var data = JSON.parse(msg.content.toString());
-	      	self.emit('rabbitsub', data);
+	       	self.emit('rabbitsub', data);
 	        ch.ack(msg);
 	      }
 	    });

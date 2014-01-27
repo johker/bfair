@@ -6,14 +6,15 @@ var root = '../../../'
  , rtc = require(root + 'app/controllers/configcontroller')
  , servicedir = root + 'app/models/services/'	
  , marketemulation = require(servicedir + 'markets/marketemulation')
+ , stringutil = require(root + 'util/stringutil');
 
 
-
- exports.Market = function (id, name, d, eventId, eventName, countryCode) {
+ exports.Market = function (id, name, startTime, marketOpenDate, eventId, eventName, countryCode) {
  	sysLogger.debug('<marketfactory> <market> New Market generated with id = ' + id);
  	this.id = id;
  	this.name = name;  	
- 	this.openDate = d.getTime();
+ 	this.startTime = startTime.getTime();
+ 	this.openDate = marketOpenDate.getTime();
  	this.eventId = eventId; 	
  	this.eventName = eventName;
  	this.countryCode = countryCode;

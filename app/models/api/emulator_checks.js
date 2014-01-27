@@ -2,51 +2,132 @@
  * Externalized checks on emulator operations. 
  */ 
   
-var betfairPrice = require('./betfair_price');
+var betfairPrice = require('./betfair_price')
+	, root = '../../../'
+	, rtc = require(root + 'app/controllers/configcontroller')
 
 var minimumBetSize = 2.0; // GBP
 var maximumBetSize = 10000.0; //? GBP 
  
+ 
+ /**
+ * Constructor: Initialize with instructions to check against
+ */
 function EmulatorCheck(em, req, res, instructions, result) {
-	var self = this; 
 	
-	self.market = em; 
-	self.instructions = instructions; 
-	self.request = req;
-	self.response = res;
-	self.result = result;
 	
 }
+
+/**
+* Enum with possible Faults
+*/
+EmulatorCheck.prototype.EmulatorCheckErrors = Object.freeze({
+	"MarketNotInitialized":1, 
+	"DuplicateCustomerRefs":2, 
+	"InvalidNUmberOfBets":3,
+	"InvalidBackLayCombination":4
+});
  
  
  /**
- *
+ * Reply with error if market not yet initialized 	
  */
- EmulatorCheck.prototype.checkInitialization = function(cb) { 
+ EmulatorCheck.prototype.checkInitialization = function(market, cb) { 
  	var self = this; 
- 	// reply with error if market not yet initialized 	
-    if (!self.market.isInitialized) {
+ 	if (!market.isInitialized) {
     	sysLogger.info('<emulator_checks> <checkInitialization> Not initialized'); 
-        self.market.emulator.sendResponse(self.response, self.result);
-        cb(null);
-        return;
+        cb({code: self.EmulatorCheckErrors.MarketNotInitialized, message: "Emulator for this Market not initialized." });
+    } else {
+ 	   cb(null);
     }
- 
  }
  
  /**
- * Duplicate customer refs.
+ * Reply with error if customer reference already exists.
  */
- EmulatorCheck.prototype.isDuplicate = function() {
+ EmulatorCheck.prototype.checkCustomerRefs = function(market, ref, cb) {
  	var self = this; 
- 	var ref = self.request.params.customerRef;
-    if (!ref)
-        return;
-    var isDup = self.market.customerRefs[ref] ? true : false;
-    self.market.customerRefs[ref] = true;
-    return isDup;
+    if(market.customerRefs[ref]) {
+    	sysLogger.info('<emulator_checks> <checkInitialization> Not initialized'); 
+        cb({code: self.EmulatorCheckErrors.DuplicateCustomerRefs, message: "Duplicate Customer Reference for this request." });
+    } else {
+    	market.customerRefs[ref] = true;
+    	cb(null);
+    }
+ }
+ 
+ /**
+* Reply with error if number of bets are not between 1 and 60. 
+*/
+EmulatorCheck.prototype.checkNumberOfBets = function(instructions, cb) {
+	var self = this; 
+ 	// BETWEEN_1_AND_60_BETS_REQUIRED - number of bets to be placed
+    var betsCount = instructions.length;
+    if (betsCount < 1 || betsCount > 60) {
+    	sysLogger.info('<emulator_checks> <checkInitialization> Invalid number of bets.'); 
+        cb({code: self.EmulatorCheckErrors.InvalidNUmberOfBets, message: "Invalid number of bets." });
+    } else {
+ 	   cb(null);
+    }  
+ }
+ 
+  /**
+ * BACK_LAY_COMBINATION - invalid prices
+ */
+EmulatorCheck.prototype.checkBackLayCombination = function(instructions, cb) {
+	var self = this; 
+    var playerPrices = {};
+    instructions.forEach(function(item) {
+        if (!playerPrices[item.selectionId])
+            playerPrices[item.selectionId] = {};
+        var pl = playerPrices[item.selectionId];
+        // Lay
+        if (item.side === 'LAY' && (!pl.maxLayPrice || (1 * item.limitOrder.price) > (1 * pl.maxLayPrice)))
+            pl.maxLayPrice = 1 * item.limitOrder.price;
+        // Back
+        if (item.side === 'BACK' && (!pl.minBackPrice || (1 * item.limitOrder.price) < (1 * pl.minBackPrice)))
+            pl.minBackPrice = 1 * item.limitOrder.price;
+    });
+    sysLogger.debug("<emulator_checks> <checkBackLayCombination> playerPrices: " + JSON.stringify(playerPrices, null, 2));
+    for ( var sId in playerPrices) {
+        var pl = playerPrices[sId];
+        if (1 * pl.minBackPrice <= 1 * pl.maxLayPrice) {
+        	sysLogger.info('<emulator_checks> <checkInitialization> Invalid Back Lay Combination.'); 
+        	cb({code: self.EmulatorCheckErrors.InvalidBackLayCombination, message: "Invalid Back Lay Combination." });
+        }
+    }
+    cb(null); 
  
  }
+ 
+  /**
+ * Checks if there is a similar order whose lock has not expired yet.  
+ * @param currentOrders - list of currentOrders to compare with
+ * @return list of execution IDs that are locked 
+ */
+ EmulatorCheck.prototype.checkLockViolations = function(market, instructions, cb) {
+ 	var self = this;
+ 	for (var embet in market.bets) {
+	    if (market.bets.hasOwnProperty(embet)) {
+	    	if(market.bets[embet].selectionId != instructions[0].selectionId) {
+	    		continue;
+	    	}
+	    	instructions.forEach(function(item) {
+	    		sysLogger.debug('<emulator_checks> <checkLockViolations> New Bet with (cmp to: ' + market.bets[embet].betId + ', time diff: ' + (Math.abs(market.bets[embet].placedDate - (new Date()).getTime())) + ' => ' + (Math.abs(market.bets[embet].placedDate - (new Date()).getTime()) < 120000) +') = ' + item.limitOrder.price + ', ' + market.bets[embet].price + ' => ' + ( market.bets[embet].betType == item.side && (Math.abs(market.bets[embet].price - item.limitOrder.price) < 0.0001) && (Math.abs(market.bets[embet].placedDate - (new Date()).getTime()) < 120000)));
+		       	if(market.bets[embet].betType == item.side
+		       	 && (Math.abs(market.bets[embet].price - item.limitOrder.price) < 0.0001)
+		       	 && (Math.abs(market.bets[embet].placedDate - (new Date()).getTime()) < 120000)) {
+		       		sysLogger.debug('<emulator_checks> <checkLockViolations> VIOLATION - EXID = '+ item.executionId + ' Price '+ item.limitOrder.price + ' still locked by bet with ID = ' + market.bets[embet].betId); 
+		            item['isLocked'] = true;
+		       	}
+		    });
+	    }
+	} 
+	cb(null, instructions); 
+ }
+ 
+ 
+ 
  
  /** 
  * Check bet instructions
@@ -85,6 +166,7 @@ function EmulatorCheck(em, req, res, instructions, result) {
     }
  
  } 
+ 
  
  /**
 * Check a single bet item from placeBets bets list
@@ -167,57 +249,9 @@ EmulatorCheck.prototype.checkMarketStatus = function(cb) {
 	    } 
  }
  
-EmulatorCheck.prototype.checkNumberOfBets = function(cb) {
-	var self = this; 
- 	if(!self.instructions) 
- 		return;
- 	 // BETWEEN_1_AND_60_BETS_REQUIRED - number of bets to be placed
-    var betsCount = self.instructions.length;
-    if (betsCount < 1 || betsCount > 60) {
-    	sysLogger.info('<emulator_checks> <checkNumberOfBets> Invalid Number Of Bets: BETWEEN_1_AND_60_BETS_REQUIRED'); 
-        self.result.errorCode = 'BETWEEN_1_AND_60_BETS_REQUIRED';        
-        self.result.status = "FAILURE";
-        self.market.emulator.sendResponse(self.response, self.result);
-        cb(null);
-        return
-    }  
- }
+
  
- /**
- * BACK_LAY_COMBINATION - invalid prices
- */
-EmulatorCheck.prototype.checkBackLayCombination = function(cb) {
-	var self = this; 
-    var playerPrices = {};
-    self.instructions.forEach(function(item) {
-        if (!playerPrices[item.selectionId])
-            playerPrices[item.selectionId] = {};
-        var pl = playerPrices[item.selectionId];
-        //pl['maxLayPrice'] = 0;
-        //pl['minBackPrice'] = 0;  
-        // Lay
-        if (item.side === 'LAY'
-                && (!pl.maxLayPrice || (1 * item.limitOrder.price) > (1 * pl.maxLayPrice)))
-            pl.maxLayPrice = 1 * item.limitOrder.price;
-        // Back
-        if (item.side === 'BACK'
-                && (!pl.minBackPrice || (1 * item.limitOrder.price) < (1 * pl.minBackPrice)))
-            pl.minBackPrice = 1 * item.limitOrder.price;
-    });
-    sysLogger.debug("<emulator_checks> <checkBackLayCombination> playerPrices: " + JSON.stringify(playerPrices, null, 2));
-    for ( var sId in playerPrices) {
-        var pl = playerPrices[sId];
-        if (1 * pl.minBackPrice <= 1 * pl.maxLayPrice) {
-        	sysLogger.info('<emulator_checks> <checkBackLayCombination> minBackPrice > maxLayPrice: BACK_LAY_COMBINATION'); 
-            self.result.errorCode = 'BACK_LAY_COMBINATION';        
-        	self.result.status = "ERROR";
-        	self.market.emulator.sendResponse(self.response, self.result);
-        	cb(null);
-        	return;
-        }
-    }
- 
- }
+
  
  module.exports = EmulatorCheck;
    

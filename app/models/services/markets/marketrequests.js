@@ -66,7 +66,6 @@ exports.listMarketCatalogue = function(filter, cb)  {
 */
 exports.listMarketBook = function(filter, cb)  {
 	if(!cb) cb = par;  // cb is first parameter    
-	//console.log(filter);
     session.listMarketBook(filter, function(err,res) {
        	if(err) sysLogger.notice("<marketrequests> <listMarketBook> " + JSON.stringify(err));
         cb(err,res);

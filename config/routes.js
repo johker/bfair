@@ -30,7 +30,7 @@ app.get('/users/:userId', uctrl.show)
 // app.get('/data', auth.requiresLogin, dctrl.data);
 app.get('/account', auth.requiresLogin, actrl.account);
 app.get('/markets', auth.requiresLogin, apictrl.markets);
-app.get('/orders', auth.requiresLogin, apictrl.orders);
+app.get('/results', auth.requiresLogin, apictrl.orders);
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
 	function(req, res) {
@@ -48,7 +48,6 @@ app.post('/overview',function(req, res) {	});
 
 app.post('/validate', function(req, res) {
 	sysLogger.notice('<routes> <post:validate> ' )
-	console.log(req.body); 
 	dctrl.validateEntries(req,res, function(values, err) {
 		if (err) sysLogger.error('<routes> <validateEntries:callback> ' +err);
 		sysLogger.info('<routes> <validateEntries:callback> Entries not validated');
@@ -68,11 +67,13 @@ app.post('/delete', function(req, res) {
 
 app.post('/detail', function(req, res) {
 	try {	
-		if(req.body.operation == 'lock') {
+		if(req.body.operation == 'lockmid') {
 			cctrl.setConfig('api.lockedMarketId', req.body.marketId);
 			cctrl.setConfig('api.lockedEventId', req.body.eventId);
 			cctrl.setConfig('api.applyLock', true);
-			app.io.broadcast('locked', true);	
+			 // Do not try to passivate removed market
+			cctrl.setConfig('api.marketPassivation', false);
+			app.io.broadcast('lockedmid', true);	
 		} else {
 			apictrl.pricedetail(req, res);
 		}

@@ -34,6 +34,7 @@ if(env == 'development') {
 }
 
 
+
 // Bootstrap db connection
 sysLogger.notice('<server> DB config: ' + rtc.getConfig('db'));
 mongoose.connect(rtc.getConfig('db'))

@@ -14,8 +14,8 @@
 function increaseBatchCt() {
 	batchct++;
 	if(batchct > rtc.getConfig('api.batch.max')) {
-		sysLogger.debug('<batch> <increaseBatchCt> ' + batchct + ', ' + rtc.getConfig('api.batch.max'));		
-		throw new Error('Market ID imit exceeded');
+		sysLogger.error('<batch> <increaseBatchCt> ' + batchct + ' exceeds max of ' + rtc.getConfig('api.batch.max'));		
+		//throw new Error('Market ID imit exceeded');
 	}
 }
 

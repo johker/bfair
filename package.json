@@ -43,5 +43,8 @@
     , "amqplib": "0.1.0"
     , "moment" : "*"
     , "when" : "*"
+    , "node-fs" : "*"
+    , "feedparser": "*"
+    , "request": "*"
   }
 }

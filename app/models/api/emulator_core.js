@@ -125,6 +125,11 @@ Emulator.prototype.listCurrentOrders = function (req, res, cb) {
 		        return; 
 	    	}
 	    	var market = self.getMarket(marketId, res, cb);
+	    	if(!market) {
+	    		self.sendErrorResponse(res, -32602, "DSC-018");
+		        cb(null);
+		        return; 
+	    	}
 	    	market.listCurrentOrders(req, res, function (err,meorders) {
         		if(meorders) {
         			for(var idx in meorders) {
@@ -167,7 +172,7 @@ Emulator.prototype.updateOrders = function (req, res, cb) {
 Emulator.prototype.cancelOrders = function (req, res, cb) {
     var self = this;
 	var marketId = req.params.marketId;
-	sysLogger.debug("<emulator_core> <cancelOrders> MID = " +  marketId);
+	sysLogger.crit("<emulator_core> <cancelOrders> MID = " +  marketId);
     self.checkInstructions(req, marketId, res, cb); 
     var market = self.getMarket(marketId, res, cb);
         

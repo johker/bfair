@@ -10,6 +10,7 @@ var nodemailer = require("nodemailer")
 
 
 exports.marketIdLength = function(marketId, cb) {
+	sysLogger.debug('<checks> <marketIdLength> ' + marketId);
 	var err = null;
 	if(marketId.length != 11) 
 		err = new Error('Market ID Error');
@@ -17,6 +18,7 @@ exports.marketIdLength = function(marketId, cb) {
 }
 
 exports.marketStatusClosed = function(marketId, cb) {
+	sysLogger.debug('<checks> <marketStatusClosed> ' + marketId);
 	var err = null;
 	request.listMarketBook({"marketIds":[marketId]}, function(err, res) {		
 		if(res.response.result[0].status != 'OPEN') { 
@@ -27,6 +29,7 @@ exports.marketStatusClosed = function(marketId, cb) {
 }
 
 exports.marketEventType = function(marketId, cb) {
+	sysLogger.debug('<checks> <marketEventType> ' + marketId);
 	var err = null;
 	request.listMarketCatalogue( {"filter":{"marketIds":[marketId]},"maxResults":"1","marketProjection":["EVENT_TYPE"]}, function(err, res) {
 		if(res.response.result[0].eventType.id != rtc.getConfig('api.eventType')) {

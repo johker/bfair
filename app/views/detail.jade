@@ -28,12 +28,12 @@ block content
 					.span12
 						.alert.alert-error
 							.lockinfo Apply Market and Event ID Restriction: 
-								button#lock.btn.btn-mini.btn-danger(type='button') LOCK
+								button#lockmid.btn.btn-mini.btn-danger(type='button') LOCK
 				.row
 					.span12
 						table#marketbook.table.table-bordered
 							thead
-								tr								
+								tr
 									th Runners
 									th Last Price Traded
 									th Total Matched
@@ -43,11 +43,11 @@ block content
 				.row
 					.span6
 						form#backform(method='post', action='/markets')
-							button.btn.btn-primary.btn-mini(type='submit') Back				
+							button#lockmidbutton.btn.btn-primary.btn-mini(type='submit') Back				
 					script
 						io = io.connect();
 						if(#{locked}) {
-							showLockedView();
+							showLockedMidPanel();
 						}
 						io.emit('detailsready', {id: #{mid}});															
 						io.on('tick_' + #{mid},function(data){
@@ -68,39 +68,59 @@ block content
 							}
 						});
 						io.on('theoretical_'+ #{mid},function(data){
-							var sid = data.selectionId;	
+							var sid = data.selectionId;
+							if($('#r' + sid + 's #rdesc #oct').length == 0) {
+								$('#r' + sid + 's #rdesc').append(' <span id="oct" class="badge badge-info">0</span>');
+							}
 							$('#orders' + sid + ' .accordion-inner #information').text('');
 							$('#orders' + sid + ' .theoretical strong').text(data.theoretical);
+							if($('#r' + sid + 's #rdesc #oct').length == 0) {
+								$('#r' + sid + 's #rdesc').append(' <span id="oct" class="badge badge-info">0</span>');
+							}
 						});
 						io.on('addorder_'+ #{mid},function(data){
 							var sid = data.selectionId;	
-							var bid = data.betId; 
+							var bid = data.betId; 							
 							if($('#' + bid).length == 0) {
-								$('#ordertable' + sid + ' tbody').append('<tr id="'+bid+'"><td id="bid">' + data.betId + '</td><td id="pd">' + data.placedDate + '</td><td id="sm">' + data.sizeMatched + ' (' + data.averagePriceMatched + ') </td><td id="side">' + data.side + '</td><td id="ptype">' + data.persistenceType + '</td><td id="sp">' +  data.priceSize.size + '<br><strong>' +  data.priceSize.price + '</strong></td></tr>');
-							}														
+								$('#ordertable' + sid + ' tbody').append('<tr id="'+bid+'"><td id="bid">' + data.betId + '</td><td id="exid">' + data.executionId + '</td><td id="pd">' + millisToDate(data.placedDate) + '</td><td id="sm">' + data.sizeMatched + '<br><strong>' + data.averagePriceMatched + '</strong> </td><td id="side">' + data.side + '</td><td id="ptype">' + data.persistenceType + '<br><strong>' + data.status + '</strong></td><td id="sp">' +  data.priceSize.size + '<br><strong>' +  data.priceSize.price + '</strong></td></tr>');
+							}
+							var orderCount = Math.max($('#ordertable' + sid + ' tr').length - 1, 0);
+							if($('#r' + sid + 's #rdesc #oct').length == 0) {
+								$('#r' + sid + 's #rdesc').append(' <span id="oct" class="badge badge-info">0</span>');
+							}
+							$('#r' + sid + 's #rdesc #oct').text(orderCount);												
 						});
 						io.on('removeorder_'+ #{mid},function(data){
-							console.log('removeorder BID = ' + data.betId);
 							var sid = data.selectionId;	
 							var bid = data.betId; 
 							if($('#' + bid).length) {
 								$('#' + bid).remove();
-							}														
+							}
+							var orderCount = Math.max($('#ordertable' + sid + ' tr').length - 1, 0);
+							$('#r' + sid + 's #rdesc #oct').text(orderCount);														
 						});
-						io.on('locked', function(isLocked) {	
+						io.on('lockedmid', function(isLocked) {	
 							if(isLocked) {
-								showLockedView();
+								showLockedMidPanel();
 							} 
-						});
-						$('#lock').click(function(e) {
+						});	
+						io.on('profitloss', function(data) {
+							var sid = data.sid; 
+							$('#orders' + sid + ' .backBetLiability strong').text(data.liabilities.backBetLiability);
+							$('#orders' + sid + ' .layBetLiability strong').text(data.liabilities.layBetLiability);
+							$('#orders' + sid + ' .totalLiability strong').text(data.liabilities.totalLiability);
+							$('#orders' + sid + ' .potWin strong').text(data.outcomes.potWin);
+							$('#orders' + sid + ' .potLoss strong').text(data.outcomes.potLoss);
+						});					
+						$('#lockmid').click(function(e) {
 							var xhr = $.ajax({
 								type: 'POST',
 								cache: false,
-								data: {operation: 'lock', eventId: #{eid}, marketId: '1.' + #{mid}},
+								data: {operation: 'lockmid', eventId: #{eid}, marketId: '1.' + #{mid}},
 							});	
-						})
-						function showLockedView() {
-							$('#lock').attr("style", "display:none;");
+						});
+						function showLockedMidPanel() {
+							$('.lockmidbutt ').attr("style", "display:none;");
 							$('.lockinfo').text('Market locked.');
 						}
 						function createTable(data) {
@@ -108,10 +128,19 @@ block content
 								var sid = data.runners[rIdx].selectionId;
 								$('#marketbook tbody#maintable').append('<tr data-toggle="collapse" data-target="#orders' + sid + '" class="accordion-toggle" id="r' + data.runners[rIdx].selectionId + 's"><td id="rdesc"><td id="rlpt"><td id="rtm"></td><td id="b0"></td><td id="b1"></td><td id="b2"></td><td id="l0"></td><td id="l1"></td><td id="l2"></td></tr>');
 								$('#marketbook tbody#maintable').append('<td style="background-color:#FBFBFC;" colspan="9" class="hiddenRow"><div class="accordian-body collapse" id="orders' + sid + '"><div class="accordion-inner"></div></div></td>');		
-								$('#orders' + sid + ' .accordion-inner ').append('<div class="alert alert-success"><div id="information">No Price available.</div><div class="theoretical">Theoretical: <strong>-</strong></div></div>');
-								$('#orders' + sid + ' .accordion-inner ').append('<table id="ordertable' + sid + '" class="table table-bordered"><tr><th>Bet ID</th><th>Placed Date</th><th>Size Matched (Av. Price)</th><th>Order Type</th><th>Persistence Type</th><th>Size/Price</th></table>');
+								$('#orders' + sid + ' .accordion-inner ').append('<div id="inneroverview" class="alert alert-success"><div id="information">No Price available.</div>'+ createRunnerHTMLFigures() + '</div>');
+								$('#orders' + sid + ' .accordion-inner ').append('<table id="ordertable' + sid + '" class="table table-bordered"><tr><th>Bet ID</th><th>Ex. ID</th><th>Placed Date</th><th>Size Matched/Av. Price</th><th>Order Type</th><th>Persistence Type/Status</th><th>Rem. Size/Price</th></table>');
 							}							
-						}						
+						}
+						// Use this for dynamically added elements
+						$('#marketbook').on('click', '.locksid', function(e) {
+							sid = e.target.id;
+							var xhr = $.ajax({
+								type: 'POST',
+								cache: false,
+								data: {operation: 'locksid', eventId: #{eid}, marketId: '1.' + #{mid}, selectionId: sid},
+							});
+						});			
 						function assign(data) {
 							for ( var pIdx = 0; pIdx < data.runners.length; ++pIdx) {
 								var runner = data.runners[pIdx];
@@ -130,5 +159,16 @@ block content
 									}	
 								}
 							}
-						}					
+						}
+						function createRunnerHTMLFigures() {
+							var figures = ''
+							figures += '<div class="theoretical">Theoretical: <strong>-</strong></div>';
+							figures += '<div class="position">Position: <strong>-</strong></div>';
+							figures += '<div class="backBetLiability">Back Bet Liability: <strong>-</strong></div>';
+							figures += '<div class="layBetLiability">Lay Bet Liability: <strong>-</strong></div>';
+							figures += '<div class="totalLiability">Total Liability: <strong>-</strong></div>';
+							figures += '<div class="potWin">If Runner wins: <strong>-</strong></div>';
+							figures += '<div class="potLoss">If Runner loses: <strong>-</strong></div>';
+							return figures;
+						}				
 						
