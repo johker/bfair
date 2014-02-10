@@ -31,10 +31,15 @@ var OrderObserver = function OrderObserver() {
 */
 OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, report, cb) {
 	orderrequests.listCurrentOrders({"marketIds":[marketId],"placedDateRange":{},"orderBy":"BY_MARKET"}, function(err, data) {
+		if(err) {
+			sysLogger.crit('<orderobserver> <listCurrentOrders> Error: ' + err.message);
+			cb(err);
+		}
 		var currentBets = data.response.result.currentOrders;
 		var sidBets = {}; 
 		var mid = marketId.substring(2,marketId.length);
 		for(var i = 0; i < currentBets.length; i++ ) {
+			
 			var sid = currentBets[i].selectionId;
 			if (sidBets[sid] == undefined) {
 				sidBets[sid] = [];
@@ -44,7 +49,7 @@ OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, repor
 				app.io.broadcast('addorder_'+mid, currentBets[i]);		
 			}		
 		}
-		cb(err, sidBets);		
+		cb(err, sidBets, currentBets.length);		
 	});
 } 
 
@@ -62,8 +67,10 @@ OrderObserver.prototype.updateProfitLoss = function(sidMappedOrders, report, cb)
 		sysLogger.debug('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(sidMappedPL)); 
 		if(report) { 
 			 // Broadcast to results page
-			 for(var i = 0; i < sidMappedPL.length; i++) {
-				app.io.broadcast('profitloss', sidMappedPL[i]);
+			 for(var sid in sidMappedPL) {
+			 	if(sidMappedPL.hasOwnProperty(sid)) {
+			 		app.io.broadcast('profitloss', sidMappedPL[sid]);
+				}
 			}
 		}
 		cb(null, sidMappedPL); 

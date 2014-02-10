@@ -11,7 +11,7 @@ Date.prototype.addHours= function(h){
 }
 
 exports.adjustTimezone = function(date) {
-	return date.addHours(rtc.getConfig('config.timezoneShiftGMT'));
+	return date.addHours(rtc.getConfig('timezoneShiftGMT'));
 }
 
 /**
@@ -63,4 +63,10 @@ exports.getLastPathElement = function(menuPath) {
 	var elements = menuPath.split("\\");
 	return elements.slice(-1)[0];	
 	
-} 
+}
+
+
+exports.trim = function(s) {
+  return s.replace(/^(\s|\u00A0)+|(\s|\u00A0)+$/g, "");
+}
+ 

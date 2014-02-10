@@ -25,8 +25,7 @@ exports.addMarket = function(market) {
 	classes.push({id: mid, thrclass: C1}); 
 }
 
-exports.removeMarket = function(market) {
-	var mid = market.getId();
+exports.removeMarket = function(mid) {
 	sysLogger.debug('<throttle> <removeMarket> ID = ' + mid);
 	_.without(classes, _.findWhere(classes, {id: mid}));	
 }

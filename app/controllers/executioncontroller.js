@@ -17,7 +17,7 @@ var root = '../../'
  * current order information
  */
  priceSubscriber.on('rabbitsub',function(theoretical) {
- 	sysLogger.crit('<executioncontroller> <priceSubscriber> New rabbitsub Event - Theoretical Market ID = ' + theoretical.marketId);
+ 	sysLogger.debug('<executioncontroller> <priceSubscriber> New rabbitsub Event - Theoretical Market ID = ' + theoretical.marketId);
  	//How the err works is simple, when you supply anything that evaluates to true as the first argument 
  	//of the callback function waterfall will stop and call the main callback. 	
  	async.waterfall([
@@ -32,7 +32,7 @@ var root = '../../'
         // Perform execution on theoretical
         function(callback) {
             sysLogger.debug('<executioncontroller> <executeTheoretical>');
-            executionHandler.executeTheoretical(theoretical, function(err, res) {
+            executionHandler.executeTheoretical(theoretical, function(err) {
             	 if (err) return callback(err);
             	 callback(null, theoretical);
             });
@@ -48,13 +48,17 @@ var root = '../../'
         // Calculate resulting p/l and liabilities
         function(sidBets, callback) {
             sysLogger.debug('<executioncontroller> <updateProfitLoss>');
-            orderobserver.updateProfitLoss(sidBets, true, function(err, sidMappedPL) {
+            orderobserver.updateProfitLoss(sidBets, true, function(err, sidMappedPL) {e
             	if (err) return callback(err);
             	callback(null);
             });
         },
     ], function(err) { //This function gets called after the two tasks have called their "task callbacks"
         if (err) {
+        	if(err.code === CODES.DEFERED_THEORETICAL) {
+				sysLogger.debug('<executioncontroller> <pricesubscriber> Error Message: ' + err.message +  ' Detail: ' + err.code.msg);	  
+		    	return; // return because no severe error  
+			}
         	sysLogger.error('<executioncontroller> <priceSubscriber.on:rabbitsub> Error during processing theoretical');
         	throw err;
         }

@@ -27,7 +27,7 @@ var root = '../../../../'
      		   self.add(mapN[id], id);     		   
         } 
         else {
-        	// Market is updated: currently no action
+        	// Market is updated, do nothing at the moment
         }
     }
  

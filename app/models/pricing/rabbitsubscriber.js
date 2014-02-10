@@ -1,4 +1,5 @@
-var open = require('amqplib').connect('amqp://localhost')
+var amqp = require('amqplib')
+	, open = amqp.connect('amqp://localhost')
 	, root = '../../../'
 	, rtc = require(root + 'app/controllers/configcontroller')
 	, util = require('util')
@@ -10,7 +11,7 @@ var open = require('amqplib').connect('amqp://localhost')
 var RabbitConsumer = function RabbitConsumer(queue) { 	
 	var self = this;
 	self.q = queue || rtc.getConfig('amqp.queues.defaultsub')
-	
+	open = amqp.connect('amqp://localhost')
 	// Consumer
 	open.then(function(conn) {
 	  var ok = conn.createChannel();

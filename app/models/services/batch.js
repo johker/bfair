@@ -14,8 +14,7 @@
 function increaseBatchCt() {
 	batchct++;
 	if(batchct > rtc.getConfig('api.batch.max')) {
-		sysLogger.error('<batch> <increaseBatchCt> ' + batchct + ' exceeds max of ' + rtc.getConfig('api.batch.max'));		
-		//throw new Error('Market ID imit exceeded');
+		sysLogger.error('<batch> <increaseBatchCt> Exceeding batch limit of ' + rtc.getConfig('api.batch.max'));		
 	}
 }
 
@@ -27,12 +26,20 @@ exports.getBatchCt = function() {
 	return batchct;
 }
 
-function containsId(list, obj) {
+function containsMarket(list, obj) {
  	var res = _.find(list, function(val){ 
  		return _.isEqual(obj.id, val.id)
  	});
  	return (_.isObject(res))? true:false;
 }
+
+function containsId(list, id) {
+ 	var res = _.find(list, function(val){ 
+ 		return _.isEqual(id, val.id)
+ 	});
+ 	return (_.isObject(res))? true:false;
+}
+
 
 exports.notEmpty = function() {
 	return currbatch.length > 0 || mbatches.length > 0;
@@ -74,17 +81,16 @@ exports.addMarket = function(market) {
 
 
 
-exports.removeMarket = function(market) {
-	var mid = market.getId();
+exports.removeMarket = function(mid) {
 	sysLogger.debug('<batch> <removeMarketId> ' + mid);
 	
-	if(containsId(currbatch,market)) {
+	if(containsId(currbatch, mid)) {
 		sysLogger.debug('<batch> <removeMarketId> Remove mid ' +  mid + ' from currentBatch');
 		currbatch = _.without(currbatch, _.findWhere(currbatch, {id: mid}));
 		return; 
 	}
 	for(var i = mbatches.length -1; i >= 0; i--) {
-		if(containsId(mbatches[i], market)) {
+		if(containsId(mbatches[i], mid)) {
 			sysLogger.debug('<batch> <removeMarketId> Remove mid ' + mid + 'from batch nr ' + (i+1)  );
 			var tempbatch = _.without(mbatches[i], _.findWhere(mbatches[i], {id: mid}));
 			// fill hole with last entry of current batch

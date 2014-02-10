@@ -14,8 +14,9 @@ var root = '../../../../'
  , async = require('async')
  , lastLogged = {}     // used to check for changes 
  , executiondir = root + 'app/models/execution/'
- , bookutil = require(servicedir + 'book');
- 
+ , bookutil = require(servicedir + 'book')
+ , marketStatuses = {}
+ , suspendedMarkets = []
 
  /**
 * PriceObserver Constructor 
@@ -32,22 +33,99 @@ util.inherits(PriceObserver, EventEmitter);
 * price information for multiple markets. 
 */
 PriceObserver.prototype.synchronize = function(books) {
-	async.forEach(books, investigate, function(err) {	
-		if (err) return next(err);		
-       	sysLogger.debug('<PriceObserver.prototype.synchronize> Synchronized book of length = ' + books.length );
+	var self = this;
+	async.forEach(books, self.investigate, function(err) {	
+		if (err) {
+			sysLogger.error('<priceobserver> <synchronize> ' + JSON.stringify(err));
+		}
+		if(suspendedMarkets.length) 
+       		sysLogger.crit('<PriceObserver.prototype.synchronize> ' + suspendedMarkets.length + ' suspended Markets');
+       	for(var i = 0; i<suspendedMarkets.length; i++) {
+       		self.emit('marketSuspension', suspendedMarkets[i]);	
+       	}
+       	suspendedMarkets = []; 
     });
 } 
 
+/**
+* Send status for all markets
+*/
+PriceObserver.prototype.broadcastStatuses = function() {
+	for (var mid in marketStatuses) {
+	    if (marketStatuses.hasOwnProperty(mid)) {
+	   		app.io.broadcast('status', marketStatuses[mid]);	
+	    }
+	}
+}
 
-function investigate(book, callback) {
-	log(book, callback);
+/**
+* Logs book and checks market status.
+*/
+PriceObserver.prototype.investigate = function(book, callback) {
+	var self = this;
+	async.waterfall([
+			function(cb) {cb(null, book);}, 
+			logPrices, 
+			broadcastPrices,
+			updateStatus
+		], function(err, book) {
+			if(err) {
+				console.log(err);
+		    	//sysLogger.error('<priceobserver> <investigate> Error: ' + err);	  
+		    	return; 
+		    } 	
+		    callback(null); 	    	    
+		});				
 } 
 
+/**
+* Updates Market Status and triggers 
+* event if status changes from 'OPEN' 
+* to 'SUSPENDED'
+*/
+function updateStatus(book, callback) {
+	var mid = book.marketId;
+	var status = {id: mid, status: book.status};
+	if(marketStatuses[mid]) {
+		if(marketStatuses[mid].status != book.status) {
+			// Status has changed: braodcast
+			app.io.broadcast('status', status);
+			if(marketStatuses[mid].status == 'OPEN' && book.status == 'SUSPENDED') {
+				sysLogger.crit('<priceobserver> <updateStatus> marketstatuses[mid].status = ' + marketStatuses[mid].status + ', book.status = ' +book.status ); 
+				passivate(mid);
+				// IDs of suspended markets have to be buffered 
+				// as no event emission is possible from here	
+				suspendedMarkets.push(mid);	
+			}
+		}		
+	} else {
+		// No status set yet
+		app.io.broadcast('status', status);
+	}	
+	marketStatuses[mid] = status;
+	callback(null, book);
+}
+
+
+
+
+
+/**
+* Logs prices if logging is enabled in configs 
+*/
+function logPrices(book, callback) {
+	if(!rtc.getConfig('api.showHistory')) {
+		callback(null, book);
+		return;
+	} else {
+		doLogging(book, callback);
+	}
+}
 
 /**
 * Log price information with a winston logger.
 */
-function log(book, callback) {
+function doLogging(book, callback) {
 	var logobj = bookutil.getPriceInformation(book);
 	logfac.getLogInstance(book.marketId, function(logger) {
 		if(logger == null) callback(new Error('Could not initialize logger')); 
@@ -56,27 +134,30 @@ function log(book, callback) {
 		var s2 = JSON.stringify(logobj);
 		s2 = s2 != undefined ? s2.substring(s2.indexOf("message"), s2.length) : 'undefined';
 		if(s1 != s2) { 
-			sysLogger.notice('Price update for id = ' + book.marketId); 
+			sysLogger.notice('<priceobserver> <doLogging> Price update for id = ' + book.marketId); 
 			lastLogged[book.marketId] = logobj; 
 			logger.info('' , logobj);
 		} 
-		var mid = book.marketId.substring(2,book.marketId.length);	
-		if(book.marketId == rtc.getConfig('api.lockedMarketId')) {
-			sysLogger.debug('<priceobserver> <log> tick_' + book.marketId);	
-		}
-		app.io.broadcast('tick_' + mid, book);
-		callback();
+		callback(null, book);
 	});
 }
 
-
 /**
-* Remove winston logger from factory
+* Broadcasts market book
 */
-PriceObserver.prototype.passivate = function(marketId) {
-	logfac.removeLogInstance(marketId);		
+function broadcastPrices(book, callback) {
+	var mid = book.marketId.substring(2,book.marketId.length);		
+	app.io.broadcast('tick_' + mid, book);
+	callback(null, book);
 }
 
-
+/**
+* Remove winston logger from factory - if logging is enabled
+*/
+function passivate(marketId) {
+	if(!rtc.getConfig('api.showHistory')) {
+		logfac.removeLogInstance(marketId);		
+	}
+}
 
 module.exports = PriceObserver;

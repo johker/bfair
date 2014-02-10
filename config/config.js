@@ -26,7 +26,9 @@ module.exports = {
       },
       db: 'mongodb://localhost:27017/be-fair-authentication',
       logs: {
-      	syslogfile: '/syslog/debug.log',
+      	dir: require('path').normalize(__dirname + '/../logs/'),
+      	sysfile: 'bfair_',
+      	ending: '.log',
       	host: 'localhost',
       	port: '27017',
       	db: 'be-fair-logs',
@@ -36,6 +38,9 @@ module.exports = {
       	 },
       	level: 'warning'		 // debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
+      results: {
+      	baseurl: 'http://rss.betfair.com/RSS.aspx?format=rss&sportID=7'
+      },
       api: {
       	marketName: 'Wettquoten',
       	emulated: true,
@@ -46,7 +51,8 @@ module.exports = {
       	},
       	baseto: {
       		market: 10000, 	// Timeout for market requests
-      		price: 300    // Basic Timeout price requests
+      		price: 300,    // Basic Timeout price requests
+      		results: 30000 // Basic Timeout resutl requests
       	},
       	throttle: {
       		fac1: 10,
@@ -65,13 +71,14 @@ module.exports = {
       	trigger: {
       		tmThreshold: 1000
       	},
-      	removeBuffer: 10,
+      	removeBuffer: 0,
+      	showHistory: false, 
+      	logPrices: false,
       	eventType: '7',
       	lockedMarketId: '1.112408778',
       	lockedEventId:'27127974',
       	lockedSelectionId:'2792426',
       	applyLock: false,
-      	marketPassivation: true, 
       	maxResults: '100',    
       	filter: {
 		    maxEvIdx: {
@@ -79,11 +86,11 @@ module.exports = {
 			   	soccer: 10
 		    },      		
 		    afterStDateBiasHrs: 0,  
-		    afterStDateBiasMin: 10,
-		    beforeStDateBiasHrs: 0,
-		    beforeStDateBiasMin: 30,		    
+		    afterStDateBiasMin: 0,
+		    beforeStDateBiasHrs: 1,
+		    beforeStDateBiasMin: 45,		    
 		    minMarketCt: 0,
-		    applyAfterStDate: true,
+		    applyAfterStDate: false,
 		    applyBeforeStDate: true, 
 		   	turnsInPlay: true
 	    }, 

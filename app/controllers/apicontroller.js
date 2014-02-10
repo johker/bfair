@@ -36,6 +36,9 @@ var root = '../../'
  	, rc = new RabbitConnector()
  	, OrderObserver = require(servicedir + 'orders/orderobserver')
 	, orderobserver = new OrderObserver()
+	, reporting = require(servicedir + 'results/reporting')
+	, ResultPing = require(servicedir + 'results/pingresults')
+	, resultping = new ResultPing()
 
 session.Singelton.getInstance().login(function(err, res){
  	sysLogger.info('<apicontroller> Logged in to Betfair');
@@ -59,6 +62,11 @@ priceping.on('ping', function(prices) {
 	rc.marketDataUpdate(prices);
 });
 
+resultping.on('ping', function(results) {
+	sysLogger.crit('<apicontroller> <resultsping.on:ping> ' + JSON.stringify(results));
+	reporting.assignWinners(results);
+});
+
 /**
 * Trigger logging for incomming market by adding it to ping list
 */
@@ -69,36 +77,30 @@ marketObserver.on('newMarket',function(market) {
 });
 
 /**
-* Remove market from price ping list of markets. Add market to history
-*  if logging is enabled. 
+* Remove market from price ping list of markets. Add market to history. 
 */
-marketObserver.on('stopLogging', function(market) {
-	mid = market.id;
-	priceping.removeMarket(market);	
-	priceObserver.passivate(mid);
+priceObserver.on('marketSuspension', function(mid) {
+	sysLogger.crit('<apicontroller> <on: marketSuspension> Market Passivation (' + mid + ')');	 		
 	
-	// Only check market details and add to history if NOT removed by LOCK operation
-	// Otherwise asnyc.waterfall is called too frequently. This causes a Node TypeError 
-	if(rtc.getConfig('api.marketPassivation')) {
-		sysLogger.crit('<apicontroller> <on: stopLogging> Market Passivation (' + mid + ')');	 		
-		async.waterfall([function(cb) {cb(null, mid);}, 
+	priceping.removeMarket(mid);	
+	// Additional Checks to verify 
+	async.waterfall([function(cb) {cb(null, mid);}, 
 			checks.marketIdLength, 
-			checks.marketStatus, 
+			checks.marketStatusClosed, 
 			checks.marketEventType
-		], function(err, marketId) {
-			if(err) {
-		    	sysLogger.error('<apicontroller> <marketObserver> <on: stopLogging> ' + JSON.stringify(err));	  
-		    	return; 
-		    } else {
-			    history.add(market);
-			    reporting.addMarketToResults(orderobserver, marketId, function(err){ });		         
-		    }
-		});		
-	}	
+	], function(err, marketId) {
+		if(err) {
+		    sysLogger.error('<apicontroller> <marketObserver> <on: stopLogging> ' + JSON.stringify(err));	  
+		    return; 
+		} else {			    
+			reporting.addMarketToResults(orderobserver, marketId, function(err){ });		         
+		  }
+	});		
 });
 
 marketping.start();
 priceping.start();
+resultping.start();
  
 
 /**
@@ -113,13 +115,14 @@ app.io.route('marketsready', function(req) {
 	}
 	var markets = marketObserver.getList();	
 	for(var i=0; i < markets.length; i++) {
-		app.io.broadcast('addmarket', markets[i]);		
+		app.io.broadcast('addmarket', markets[i]);	
 	 }	
 	var ordmarkets = orderobserver.getMarketsWithOrders();
 	for(var i=0; i < ordmarkets.length; i++) {
-		sysLogger.crit('<apicontroller> <marketsready> ' + ordmarkets.marketId);
+		sysLogger.debug('<apicontroller> <marketsready> ' + ordmarkets[i].marketId);
 		app.io.broadcast('addbadge', ordmarkets[i]);		
 	} 
+	priceObserver.broadcastStatuses();
 })
 
 /**
@@ -133,6 +136,18 @@ app.io.route('historyready', function(req) {
 		}
 	});	
 })
+
+/**
+* 
+* Get results 
+*/
+app.io.route('resultsready', function(req) {		
+    var results = reporting.getResultList();  
+	for(var i = 0; i<results.length; i++) {
+		app.io.broadcast('updateresults', results[i]);
+	}
+})
+
 
 /**
 * 
@@ -160,7 +175,7 @@ app.io.route('detailpageready', function(req) {
 	} 
 	// Send all current orders
 	// TODO: as asnyc parallel 
-	
+	// CHECK BUG: intial liabilities
 	orderobserver.updateCurrentOrderInformation(mid, true, function(err, sidBets) {
 		if(err) {
 			sysLogger.error('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(err));

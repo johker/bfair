@@ -20,7 +20,7 @@
 	      	var book = JSON.parse(msg.content.toString());
 	        console.log(new Date());
 	        console.log(book);
-	      	setData(book);
+	      	//setData(book);
 	    	 ch.ack( msg );
 	      }
 	    });

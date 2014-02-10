@@ -71,8 +71,6 @@ app.post('/detail', function(req, res) {
 			cctrl.setConfig('api.lockedMarketId', req.body.marketId);
 			cctrl.setConfig('api.lockedEventId', req.body.eventId);
 			cctrl.setConfig('api.applyLock', true);
-			 // Do not try to passivate removed market
-			cctrl.setConfig('api.marketPassivation', false);
 			app.io.broadcast('lockedmid', true);	
 		} else {
 			apictrl.pricedetail(req, res);

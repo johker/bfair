@@ -14,7 +14,7 @@ var env = process.env.NODE_ENV || 'development'
 */
 exports.profitLoss = function(sidBets, cb) {
 	var idx = 0;
-	var sidMappedRes = [];
+	var sidMappedRes = {};
 	for(var sid in sidBets) {
 	  if (sidBets.hasOwnProperty(sid)) {
          	split(sidBets[sid], function(backbets, laybets) {
@@ -24,7 +24,7 @@ exports.profitLoss = function(sidBets, cb) {
          		result['sid'] = sid; 
          		result['liabilities'] = runnerLiability(backPriceSize['size'], layPriceSize['size'], layPriceSize['price']);
          		result['outcomes'] = potOutcome(backPriceSize['size'], backPriceSize['price'], layPriceSize['size'], layPriceSize['price']);
-         		sidMappedRes.push(result);
+         		sidMappedRes[sid] = result;
          	});
       }
       idx++;

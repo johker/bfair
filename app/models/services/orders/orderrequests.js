@@ -14,8 +14,7 @@ var env = process.env.NODE_ENV || 'development'
 exports.placeOrders = function(params, cb){
 	if(!cb) cb = params;  // cb is first parameter   
     session.placeOrders(params, function(err,res) {    
-    	if(err) sysLogger.error('<orderrequests> <placeOrders> code = ' + err.code + ', message = ' + err.message);
-        cb(err,res);
+    	cb(err,res);
     });
 }
 
@@ -25,8 +24,7 @@ exports.placeOrders = function(params, cb){
 exports.cancelOrders = function(params, cb){
 	if(!cb) cb = params;  // cb is first parameter   
     session.cancelOrders(params, function(err,res) {    
-    	if(err) sysLogger.error('<orderrequests> <cancelOrders> code = ' + err.code + ', message = ' + err.message);
-        cb(err,res);
+    	cb(err,res);
     });
 }
 
@@ -37,8 +35,7 @@ exports.cancelOrders = function(params, cb){
 exports.listCurrentOrders = function(params, cb){
 	if(!cb) cb = params;  // cb is first parameter   
     session.listCurrentOrders(params, function(err,res) {    
-    	if(err) sysLogger.error('<orderrequests> <placeOrders> code = ' + err.code + ', message = ' + err.message);
-        cb(err,res);
+    	cb(err,res);
     });
 }
 

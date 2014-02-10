@@ -27,12 +27,37 @@ block content
 							thead
 								tr								
 									th Market ID
+									th Name
+									th Type
 									th Order Count
 									th Result
 									th Profit									
 							tbody								
 				script
-					io = io.connect();																
-					io.on('updateorders',function(data){
-					
+					io = io.connect();				
+					io.emit('resultsready');													
+					io.on('updateresults',function(result){
+						console.log('updatereusults ' +  result.marketId);
+						var mid = result.marketId.substring(2,result.marketId.length);							
+							$('#resultbook tbody').append('<tr id="'+ mid +'" class="trmarket">'
+								+ '<td class="mid">' + mid + '</td>'
+								+ '<td class="n">' + result.marketName + '</td>'	
+								+ '<td class="t">' + result.marketType + '</td>'	
+								+ '<td class="oct">' + result.orderct + '</td>'									
+								+ '<td class="res"></td>'
+								+ '<td class="prft"></td>'								
+								+ '</tr>');
+					});	
+					io.on('totalProfit',function(data){
+						console.log('totalProfit = ' + data.totalProfit);
+						var mid = data.marketId.substring(2,data.marketId.length);							
+							$('#' + mid + ' td.prft').text(data.totalProfit);
+							var winners = '';
+							for(var i = 0; i < data.winners.length; i++) {
+								winners += data.winners[i];
+								if(i < data.winners.length -1) {
+									winners += ', ';
+								}
+							}
+							$('#' + mid + ' td.prft').text(winners);
 					});			

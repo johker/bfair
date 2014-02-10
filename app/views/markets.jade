@@ -29,11 +29,11 @@ block content
 							th Market ID 
 							th Type
 							th Country Code
-							th Start Time
+							th Before Start
+							th Status
 							th Detail
 							th Prices
-					tbody
-					
+					tbody					
 					script				
 						io = io.connect();
 						if(#{locked}) {
@@ -42,6 +42,28 @@ block content
 						}
 						var nounlock = true;
 						io.emit('marketsready');
+						// Countdown
+						var startTimes = {}
+						var days, hours, minutes, seconds, ms_step=1000;
+						setInterval(function() {
+							var current_date = new Date().getTime();
+							for(var mid in startTimes) {
+								if (startTimes.hasOwnProperty(mid)) {
+									var target_date = startTimes[mid];
+									var seconds_left = (target_date - current_date) / 1000;
+									days = parseInt(seconds_left / 86400);
+									seconds_left = seconds_left % 86400;
+									hours = parseInt(seconds_left / 3600);
+									seconds_left = seconds_left % 3600;
+									min = parseInt(seconds_left / 60);
+									sec = parseInt(seconds_left % 60);
+									$('tr#' + mid + ' td.mt').text(min + ' min');
+									if(min < 5) {
+										$('tr#' + mid + ' td.mt').css('color', 'red');	
+									}
+								}
+							}							
+						}, ms_step);
 						io.on('addmarket',function(data){
 							var activationTime = typeof data.activationTime === 'undefined' ? 'Undefined' : '' + millisToDate(data.activationTime);
 							var mid = data.id.substring(2,data.id.length);							
@@ -50,11 +72,14 @@ block content
 									+ '<td class="mid">' + mid + '</td>'									
 									+ '<td class="mn">' + data.name + '</td>'
 									+ '<td class="cc">' + data.countryCode + '</td>'
-									+ '<td class="mt">' + millisToDate(data.startTime) + '</td>'
+									+ '<td class="mt"></td>'
+									+ '<td class="st"></td>'
 									+ '<td class="md">' + data.eventName + '</td>'
 									+ '<td class="mpl"></td>'
-									+ '</tr>');		
+									+ '</tr>');
 								$('#' + mid + ' td.mpl').append('<button class="btn btn-primary btn-mini" id="' + mid + '" onClick="reply_click(this.id)" type="submit">Detail</button>');
+								// Add time for countdown
+								startTimes[mid] = data.startTime;
 								$.bootstrapSortable(true);
 								// Locked Label : 
 								if(#{locked} && nounlock) {
@@ -65,7 +90,11 @@ block content
 										
 									}
 								}								
-							});							
+							});	
+							io.on('status',function(data){
+								var mid = data.id.substring(2,data.id.length);
+								$('tr#' + mid + ' td.st').text(data.status);						
+							});						
 							io.on('updateclass',function(data){									
 									var mid = data.mid.substring(2,data.mid.length);
 									if(data.status != 'OPEN') {
@@ -101,6 +130,8 @@ block content
 									.animate( { backgroundColor: "transparent" }, 500);
 								setTimeout(function(){
 									$('#' + mid).remove()}, 750);
+								// Remove from countdown list
+								delete startTimes[mid];
 							});
 							io.on('unlocked', function(isLocked) {	
 								if(!isLocked) {

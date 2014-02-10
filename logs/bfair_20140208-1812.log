@@ -1,0 +1,50 @@
+2014-02-08T17:12:26.817Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140208-1812.log
+2014-02-08T17:12:32.371Z - crit: <pingresults> <start> Time: 2014-02-08 17:12:32
+2014-02-08T17:12:29.470Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-08T17:12:32.465Z - crit: <server> Express app started on port 3000
+2014-02-08T17:12:32.684Z - error: <marketrequests> <listEvents> {"code":-32099,"message":"ANGX-0003","data":{"exceptionname":"APINGException","APINGException":{"errorDetails":"The session token passed is invalid","errorCode":"INVALID_SESSION_INFORMATION","requestUUID":"prdang003-02031231-000f514c8c"}}}
+2014-02-08T17:12:32.684Z - error: <eventfilter> <getFilteredMarketIds> No Events left after applied filter. 
+2014-02-08T17:12:32.826Z - crit: <betfair_auth> <interactiveLogin> sessionKey = CzOEecNeIx/resL7r5gkGIWhlk4lIObjRYT9uhwP0wo=
+2014-02-08T17:12:42.667Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-08T17:14:32.629Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:14:32.629Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:14:32.629Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-08T17:14:32.629Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768961)
+2014-02-08T17:14:32.630Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768962)
+2014-02-08T17:14:32.786Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:14:32.786Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:14:32.839Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768961","suspensiontime":"2014-02-08T17:14:32.786Z","runners":{}}
+2014-02-08T17:14:32.917Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768962","suspensiontime":"2014-02-08T17:14:32.786Z","runners":{}}
+2014-02-08T17:16:51.544Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:16:51.545Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:16:51.545Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-08T17:16:51.545Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768974)
+2014-02-08T17:16:51.545Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768975)
+2014-02-08T17:16:51.691Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:16:51.692Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:16:51.740Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768975","suspensiontime":"2014-02-08T17:16:51.692Z","runners":{}}
+2014-02-08T17:16:51.748Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768974","suspensiontime":"2014-02-08T17:16:51.691Z","runners":{}}
+2014-02-08T17:26:07.846Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:26:07.847Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:26:07.847Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-08T17:26:07.847Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768671)
+2014-02-08T17:26:07.847Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768672)
+2014-02-08T17:26:08.005Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:26:08.007Z - crit: <reporting> <addMarketToResults> sidMappedPL = {"8222183":{"sid":"8222183","liabilities":{"backBetLiability":"42.00","layBetLiability":"88.40","totalLiability":"46.40"},"outcomes":{"potWin":"353.00","potLoss":"-32.00"}},"8283713":{"sid":"8283713","liabilities":{"backBetLiability":"34.00","layBetLiability":"87.00","totalLiability":"53.00"},"outcomes":{"potWin":"412.00","potLoss":"-28.00"}},"8283714":{"sid":"8283714","liabilities":{"backBetLiability":"36.00","layBetLiability":"158.00","totalLiability":"122.00"},"outcomes":{"potWin":"453.00","potLoss":"-24.00"}},"8283716":{"sid":"8283716","liabilities":{"backBetLiability":"12.00","layBetLiability":"138.60","totalLiability":"126.60"},"outcomes":{"potWin":"-84.80","potLoss":"20.00"}},"8283717":{"sid":"8283717","liabilities":{"backBetLiability":"16.00","layBetLiability":"620.00","totalLiability":"604.00"},"outcomes":{"potWin":"1394.00","potLoss":"-6.00"}}}
+2014-02-08T17:26:08.054Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768671","suspensiontime":"2014-02-08T17:26:08.005Z","runners":{}}
+2014-02-08T17:26:08.073Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":109,"marketId":"1.112768672","suspensiontime":"2014-02-08T17:26:08.007Z","runners":{"8222183":{"outcomes":{"potWin":"353.00","potLoss":"-32.00"},"name":"2. Brown Mellisa"},"8283713":{"outcomes":{"potWin":"412.00","potLoss":"-28.00"},"name":"1. Exclusive Dani"},"8283714":{"outcomes":{"potWin":"453.00","potLoss":"-24.00"},"name":"3. See The Music"},"8283716":{"outcomes":{"potWin":"-84.80","potLoss":"20.00"},"name":"5. Past As Prelude"},"8283717":{"outcomes":{"potWin":"1394.00","potLoss":"-6.00"},"name":"6. Lucky Seven"}}}
+2014-02-08T17:30:52.451Z - crit: <reporting> <getResultList> Number of results: 6
+2014-02-08T17:31:42.493Z - crit: <marketfactory> <remove> MID = 1.112768671 (1/0)
+2014-02-08T17:31:52.523Z - crit: <marketfactory> <remove> MID = 1.112768672 (1/0)
+2014-02-08T17:32:12.386Z - crit: <marketfactory> <remove> MID = 1.112779127 (1/0)
+2014-02-08T17:32:32.607Z - crit: <marketfactory> <remove> MID = 1.112768672 (1/0)
+2014-02-08T17:32:47.585Z - crit: <reporting> <getResultList> Number of results: 6
+2014-02-08T17:33:59.109Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:33:59.109Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-08T17:33:59.109Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-08T17:33:59.109Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768795)
+2014-02-08T17:33:59.110Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112768796)
+2014-02-08T17:33:59.252Z - crit: <reporting> <addMarketToResults> sidMappedPL = {"6133095":{"sid":"6133095","liabilities":{"backBetLiability":"6.00","layBetLiability":"26.52","totalLiability":"20.52"},"outcomes":{"potWin":"-14.60","potLoss":"14.00"}},"6156462":{"sid":"6156462","liabilities":{"backBetLiability":"20.00","layBetLiability":"10.00","totalLiability":"10.00"},"outcomes":{"potWin":"134.40","potLoss":"-18.00"}},"7332374":{"sid":"7332374","liabilities":{"backBetLiability":"8.00","layBetLiability":"3.96","totalLiability":"4.04"},"outcomes":{"potWin":"3.62","potLoss":"-2.00"}},"7660196":{"sid":"7660196","liabilities":{"backBetLiability":"16.00","layBetLiability":"51.60","totalLiability":"35.60"},"outcomes":{"potWin":"48.80","potLoss":"2.00"}},"8284333":{"sid":"8284333","liabilities":{"backBetLiability":"12.00","layBetLiability":"95.60","totalLiability":"83.60"},"outcomes":{"potWin":"146.40","potLoss":"2.00"}},"8284334":{"sid":"8284334","liabilities":{"backBetLiability":"6.00","layBetLiability":"7.34","totalLiability":"1.34"},"outcomes":{"potWin":"-2.70","potLoss":"8.00"}}}
+2014-02-08T17:33:59.253Z - crit: <reporting> <addMarketToResults> sidMappedPL = {}
+2014-02-08T17:33:59.302Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":74,"marketId":"1.112768795","suspensiontime":"2014-02-08T17:33:59.252Z","runners":{"6133095":{"outcomes":{"potWin":"-14.60","potLoss":"14.00"},"name":"4. Starship Melody"},"6156462":{"outcomes":{"potWin":"134.40","potLoss":"-18.00"},"name":"5. Star Of Isis"},"7332374":{"outcomes":{"potWin":"3.62","potLoss":"-2.00"},"name":"1. Sunshine Jenny"},"7660196":{"outcomes":{"potWin":"48.80","potLoss":"2.00"},"name":"2. J Rose Gal"},"8284333":{"outcomes":{"potWin":"146.40","potLoss":"2.00"},"name":"3. Sunday Dawn"},"8284334":{"outcomes":{"potWin":"-2.70","potLoss":"8.00"},"name":"6. With Prejudice"}}}
+2014-02-08T17:33:59.396Z - crit: <reporting> <addMarketToResults> Braodcasting result: {"orderct":0,"marketId":"1.112768796","suspensiontime":"2014-02-08T17:33:59.253Z","runners":{}}

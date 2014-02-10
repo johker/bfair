@@ -23,6 +23,8 @@ process.env['TZ'] = 'Europe/Amsterdam';
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 betfair = require('./app/models/api'); // Patched version 
+sysLogger.crit('<server> System logging to ' + winston.getFile());
+
 
 
 if(env == 'development') {
@@ -47,6 +49,11 @@ fs.readdirSync(models_path).forEach(function (file) {
 
 // bootstrap passport config	
 require('./config/passport')(passport, config);
+// bootstrap error codes / Errors
+require(root + 'errors/codes');
+
+
+
 
 // Making app GLOBALLY accessible
 app = express();

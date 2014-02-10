@@ -139,7 +139,7 @@ EmulatorCheck.prototype.checkBackLayCombination = function(instructions, cb) {
         // check order
         if (!inst.orderType || inst.orderType !== 'LIMIT') {
         	sysLogger.info('<emulator_checks> <checkInstructions> Invalid Order Type'); 
-            self.market.emulator.sendErrorResponse(self.response, -32602, "DSC-018");
+            self.market.emulator.sendErrorResponse(self.response, -32602, "Only Orders of type LIMIT are allowed.");
             cb(null);
             return;
         }

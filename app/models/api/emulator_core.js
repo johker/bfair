@@ -41,9 +41,9 @@ Emulator.prototype.getMarket = function(marketId, res, cb) {
 Emulator.prototype.checkInstructions = function(req, marketId, res, cb) {
 	var self = this;
     var instructions = req.params.instructions;
-    sysLogger.debug("<emulator_core> <checkInstructions> INST = " +  JSON.stringify(instructions));
     if (!marketId || !instructions || instructions.length < 1) {
-        self.sendErrorResponse(res, -32602, "DSC-018");
+        sysLogger.crit('emulator_core> <checkInstructions> INST Length = ' +  instructions.length + ', MID = ' +  marketId);
+   		self.sendErrorResponse(res, -32602, "Invalid Instructions");
         cb(null);
         return; 
     }
@@ -93,7 +93,12 @@ Emulator.prototype.onListMarketBook = function (result) {
     }
 }
 
-// Process placeOrders API call
+/**
+* Process placeOrders API call
+* @param req - request object
+* @param res - response object
+* @param cb - callback function: takes error as arg1 and res as arg2
+*/
 Emulator.prototype.placeOrders = function (req, res, cb) {
     var self = this;
 	var marketId = req.params.marketId;
@@ -110,7 +115,12 @@ Emulator.prototype.placeOrders = function (req, res, cb) {
    
 }
 
-// Process listCurrentOrders API call
+/**
+* Process listCurrentOrders API call
+* @param req - request object
+* @param res - response object
+* @param cb - callback function: takes error as arg1 and res as arg2
+*/
 Emulator.prototype.listCurrentOrders = function (req, res, cb) {
     var self = this; 
     var res = {};
@@ -120,13 +130,13 @@ Emulator.prototype.listCurrentOrders = function (req, res, cb) {
 	    	var marketId = req.params.marketIds[i];
 	    	sysLogger.debug('<emulator_core> <listCurrentOrders> MID = ' + marketId );
 	    	if (!marketId) {
-		        self.sendErrorResponse(res, -32602, "DSC-018");
+		        self.sendErrorResponse(res, -32602, "No such MID.");
 		        cb(null);
 		        return; 
 	    	}
 	    	var market = self.getMarket(marketId, res, cb);
 	    	if(!market) {
-	    		self.sendErrorResponse(res, -32602, "DSC-018");
+	    		self.sendErrorResponse(res, -32602, "No Market defined for given ID " + marketId);
 		        cb(null);
 		        return; 
 	    	}
@@ -145,7 +155,9 @@ Emulator.prototype.listCurrentOrders = function (req, res, cb) {
 }
 
 
-// Process updateOrders API call
+/**
+* Process updateOrders API call
+*/
 Emulator.prototype.updateOrders = function (req, res, cb) {
     var self = this;
 	var marketId = req.params.marketId;
@@ -168,18 +180,22 @@ Emulator.prototype.updateOrders = function (req, res, cb) {
     	}, self.bettingDelay);
 }
 
-// Process cancelOrders API call
+/**
+* Process cancelOrders API call
+* @param req - request object
+* @param res - response object
+* @param cb - callback function: takes error as arg1 and res as arg2
+*/
 Emulator.prototype.cancelOrders = function (req, res, cb) {
     var self = this;
 	var marketId = req.params.marketId;
-	sysLogger.crit("<emulator_core> <cancelOrders> MID = " +  marketId);
+	sysLogger.debug("<emulator_core> <cancelOrders> MID = " +  marketId);
     self.checkInstructions(req, marketId, res, cb); 
     var market = self.getMarket(marketId, res, cb);
-        
+       
 	setTimeout(function () {
-    	sysLogger.debug("<emulator_core> <cancelOrders> Delay = " +  self.bettingDelay);
-    	market.cancelOrders(req, res, function () {
-        		cb(null);
+    	market.cancelOrders(req, res, function (err,marketres) {
+        		cb(err,marketres);
     		}); 
     	}, self.bettingDelay);
 }

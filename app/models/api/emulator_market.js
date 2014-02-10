@@ -40,6 +40,7 @@ EmulatorMarket.prototype.listCurrentOrders = function(req, res, cb) {
 
 /**
 * Update of book record? 
+* @param rec - current market book 
 */
 EmulatorMarket.prototype.onListMarketBook = function (rec) {
     var self = this;
@@ -60,6 +61,9 @@ EmulatorMarket.prototype.onListMarketBook = function (rec) {
 
 /**
 * Process placeOrders API call
+* @param req - request object
+* @param res - response object
+* @param cb - callback function: takes error as arg1 and res as arg2
 */
 EmulatorMarket.prototype.placeOrders = function (req, res, cb) {
     var self = this;
@@ -143,10 +147,14 @@ EmulatorMarket.prototype.updateOrders = function (req, res, cb) {
 
 /**
 * Process cancelOrders API call
+* @param req - request object
+* @param res - response object
+* @param cb - callback function: takes error as arg1 and res as arg2
 */
 EmulatorMarket.prototype.cancelOrders = function (req, res, cb) {
     var self = this;
 	var instructions = req.params.instructions;
+	var result = ejson.prepareResult(ejson.SUCCESS, req, self.marketId);	
 	var betIds = [];
 	for(var i = 0; i < instructions.length; i++) {
 		var embet = self.bets[instructions[i].betId];
@@ -157,7 +165,10 @@ EmulatorMarket.prototype.cancelOrders = function (req, res, cb) {
 	var bets = betIds.map(function(id) {
 		return self.bets[id];
 	});		
-    cb(null);
+	// Send valid response - otherwise emulator.js throws error
+    var res = {}; 
+	res.response = ejson.prepareResponse(result);
+	cb(null, res); 
 }
 
 

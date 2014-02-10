@@ -10,6 +10,7 @@ var root = '../../../../'
  , listutils = require(root + 'util/listutil')
  , servicedir = root + 'app/models/services/'	
  , marketfactory = require(servicedir + 'marketfactory') 
+ , history = require(root + 'app/models/db/history')
  , watchedmarkets = {}
  , mid = 'marketId'
  , resetPassivation = false
@@ -45,22 +46,27 @@ MarketObserver.prototype.getSize = function() {
 }
 
 /**
-* Emits event with stale market and remove it from the list -
-* if not-retrieved limit exceeded OR a market has been locked. 
+* Markets are remove based on a LOCK operation 
+* (as a result of synchronization operation)
+* @param id - marketId
 */
 MarketObserver.prototype.remove = function(id) {
 	var self = this;
 	sysLogger.debug('<marketobserver> <remove> id = ' + id + ', date: ' + watchedmarkets[id].openDate + ', EID = ' + watchedmarkets[id].eventId);	
 	if(watchedmarkets[id].remove() || rtc.getConfig('api.applyLock')) {
 		app.io.broadcast('removemarket', watchedmarkets[id]);
- 		watchedmarkets[id].setPassivationTime(Date.now());
- 		self.emit('stopLogging', watchedmarkets[id]);	
+ 		watchedmarkets[id].setPassivationTime(Date.now()); 	
+ 		if(rtc.getConfig('api.showHistory')) {
+ 			history.add(market);	
+ 		}
 		delete watchedmarkets[id];
 	}	 	
 }
 
 /**
 * Emits event with new market and adds it to the list.
+* @param market - object
+* @param id - marketId
 */ 
 MarketObserver.prototype.add = function(market, id) {
 	var self = this;
@@ -72,10 +78,7 @@ MarketObserver.prototype.add = function(market, id) {
 	sysLogger.debug('<marketobserver> <add> id = ' + id + ', Open date: ' + openDate); 
 	app.io.broadcast('addmarket', watchedmarkets[id]);	
 	self.emit('newMarket', watchedmarkets[id]);
-             
-	                              
 }
-
 
 
 /**

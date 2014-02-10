@@ -98,7 +98,7 @@ function byMarketCount(events) {
 	}
 	
 	if(resf.length == 0) {
-		throw new Error("<eventfilter> <getFilteredMarketIds> No Events left after applied filter. ");
+		sysLogger.error("<eventfilter> <getFilteredMarketIds> No Events left after applied filter. ");
 	}
 	
 	for(var i in resf) {

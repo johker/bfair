@@ -191,7 +191,7 @@ EmulatorResponse.prototype.sendResponse = function () {
         self.error.data.isEmulator = "true";
         response.error = self.error;
     } else {
-        response.error = {code: -32602, message: "DSC-018", data: {isEmulator: "true"} };
+        response.error = {code: -32602, message: "No valid result found.", data: {isEmulator: "true"} };
     }
 
     self.jsonRpcResponseBody = JSON.stringify(response);

@@ -48,9 +48,9 @@ Ping.prototype.addMarket = function(market) {
 	throttle.addMarket(market);
 }
 
-Ping.prototype.removeMarket = function(market) {
-	batch.removeMarket(market);
-	throttle.removeMarket(market);
+Ping.prototype.removeMarket = function(mid) {
+	batch.removeMarket(mid);
+	throttle.removeMarket(mid);
 }
 
 Ping.prototype.ping = function() {

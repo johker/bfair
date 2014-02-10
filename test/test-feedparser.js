@@ -1,5 +1,7 @@
 var FeedParser = require('feedparser')
-  , request = require('request');
+  , request = require('request')
+	, glct = 0
+
 
 request('http://rss.betfair.com/RSS.aspx?format=rss&sportID=7&countryID=9999')
   .pipe(new FeedParser({}))
@@ -14,12 +16,12 @@ request('http://rss.betfair.com/RSS.aspx?format=rss&sportID=7&countryID=9999')
   .on('readable', function () {
   	 var stream = this, item;
                 while (item = stream.read()){
-                    var ep = {
+                    var result = {
                         'title': item.title,
-                        'mediaUrl': item.link,
-                        
+                        'summary': item.summary                        
                     };
-
-                   console.log(item);
+                    glct++;
+                    
                 }
+               console.log(result); 
   })
