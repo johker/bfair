@@ -1,0 +1,8 @@
+2014-02-18T12:48:08.317Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1348.log
+2014-02-18T12:48:09.200Z - crit: <pingresults> <start> Time: 2014-02-18 12:48:09
+2014-02-18T12:48:09.265Z - crit: <server> Express app started on port 3000
+2014-02-18T12:48:08.719Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-18T12:48:10.350Z - crit: <betfair_auth> <interactiveLogin> sessionKey = llPfOiPovmjgpuKqnAY8PCa5VOExTz6iM4jwoOxd/4w=
+2014-02-18T12:48:17.380Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-18T12:48:55.022Z - error: <server> <uncaught exception> {"code":"ENETUNREACH","errno":"ENETUNREACH","syscall":"connect"}
+2014-02-18T12:49:26.504Z - error: <server> <uncaught exception> {}

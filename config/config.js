@@ -34,8 +34,10 @@ module.exports = {
       	db: 'be-fair-logs',
       	collection: {      	  
       	 	prices: 'prices',    // Logged prices of selected market IDs, DEPRECATED
-      	 	prefix: 'mid'
+      	 	prefix: 'mid',
+      	 	results: 'results'
       	 },
+      	 
       	level: 'warning'		 // debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
       }, 
       results: {
@@ -52,7 +54,7 @@ module.exports = {
       	baseto: {
       		market: 10000, 	// Timeout for market requests
       		price: 300,    // Basic Timeout price requests
-      		results: 30000 // Basic Timeout resutl requests
+      		results: 300000 // Basic Timeout resutl requests
       	},
       	throttle: {
       		fac1: 10,

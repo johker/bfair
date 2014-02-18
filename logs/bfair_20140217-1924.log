@@ -1,0 +1,127 @@
+2014-02-17T18:24:34.905Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140217-1924.log
+2014-02-17T18:24:41.113Z - crit: <pingresults> <start> Time: 2014-02-17 18:24:41
+2014-02-17T18:24:36.797Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-17T18:24:41.228Z - crit: <server> Express app started on port 3000
+2014-02-17T18:24:41.919Z - crit: <betfair_auth> <interactiveLogin> sessionKey = l31VKSqPtOSropUERuTEKksvNQJECWQy4bJvyMAl2L4=
+2014-02-17T18:24:42.068Z - error: <marketrequests> <listEvents> {"code":-32099,"message":"ANGX-0003","data":{"exceptionname":"APINGException","APINGException":{"errorDetails":"The session token passed is invalid","errorCode":"INVALID_SESSION_INFORMATION","requestUUID":"prdang003-02111014-0013d93bb2"}}}
+2014-02-17T18:24:42.068Z - error: <eventfilter> <getFilteredMarketIds> No Events left after applied filter. 
+2014-02-17T18:24:42.439Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-17T18:24:51.869Z - error: <server> <uncaught exception> {}
+2014-02-17T18:24:52.147Z - crit: <marketfactory> <remove> MID = 1.101193124 (1/0)
+2014-02-17T18:24:52.147Z - crit: <marketfactory> <remove> MID = 1.101277945 (1/0)
+2014-02-17T18:24:52.147Z - crit: <marketfactory> <remove> MID = 1.103946886 (1/0)
+2014-02-17T18:24:52.147Z - crit: <marketfactory> <remove> MID = 1.105756340 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.109943535 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.112793332 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.109943517 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.101857950 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.109332629 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.111184931 (1/0)
+2014-02-17T18:24:52.148Z - crit: <marketfactory> <remove> MID = 1.106763352 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.112605413 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110939510 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.109685978 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.109943435 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110026240 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110017678 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110077524 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110026273 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.109808411 (1/0)
+2014-02-17T18:24:52.149Z - crit: <marketfactory> <remove> MID = 1.110026154 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110017416 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110017410 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110019963 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110108409 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110020661 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.109799628 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.110026270 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.109910833 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.109910835 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.109562743 (1/0)
+2014-02-17T18:24:52.150Z - crit: <marketfactory> <remove> MID = 1.109562742 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109562741 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109562745 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109562744 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109605932 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109562722 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109563142 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109563328 (1/0)
+2014-02-17T18:24:52.152Z - crit: <marketfactory> <remove> MID = 1.109562729 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562727 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562732 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562737 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562752 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562751 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562750 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562749 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562748 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.109562753 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.110295979 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.108016077 (1/0)
+2014-02-17T18:24:52.153Z - crit: <marketfactory> <remove> MID = 1.110385812 (1/0)
+2014-02-17T18:24:52.154Z - crit: <marketfactory> <remove> MID = 1.109682619 (1/0)
+2014-02-17T18:24:52.154Z - crit: <marketfactory> <remove> MID = 1.109799751 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682512 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682514 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682517 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682520 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682519 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109682521 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.105837344 (1/0)
+2014-02-17T18:24:52.155Z - crit: <marketfactory> <remove> MID = 1.109910992 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.109910994 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110127073 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.109910945 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.109562754 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110531484 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110488533 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.112036824 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110389182 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110079729 (1/0)
+2014-02-17T18:24:52.156Z - crit: <marketfactory> <remove> MID = 1.110066926 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.109449472 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.109449474 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.109449473 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.109954375 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.111180483 (1/0)
+2014-02-17T18:24:52.157Z - crit: <marketfactory> <remove> MID = 1.109449481 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449480 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109943385 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449483 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449482 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449476 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449475 (1/0)
+2014-02-17T18:24:52.158Z - crit: <marketfactory> <remove> MID = 1.109449479 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109943386 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.112537321 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109449478 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952874 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952875 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952872 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952870 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952871 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952867 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952722 (1/0)
+2014-02-17T18:24:52.159Z - crit: <marketfactory> <remove> MID = 1.109952866 (1/0)
+2014-02-17T18:24:52.160Z - crit: <marketfactory> <remove> MID = 1.109952869 (1/0)
+2014-02-17T18:24:52.160Z - crit: <marketfactory> <remove> MID = 1.109952868 (1/0)
+2014-02-17T18:24:52.160Z - crit: <marketfactory> <remove> MID = 1.109943476 (1/0)
+2014-02-17T18:24:52.160Z - crit: <marketfactory> <remove> MID = 1.109943478 (1/0)
+2014-02-17T18:24:52.160Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.161Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.163Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.165Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.167Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.169Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.170Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.171Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.172Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.173Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T18:24:52.201Z - crit: <pingprices> <ping> Minimum interval changed to 15ms
+2014-02-17T18:25:01.903Z - error: <server> <uncaught exception> {}
+2014-02-17T18:25:11.875Z - error: <server> <uncaught exception> {}
+2014-02-17T18:25:23.085Z - error: <server> <uncaught exception> {}
+2014-02-17T18:25:33.508Z - error: <server> <uncaught exception> {}
+2014-02-17T18:25:42.169Z - error: <server> <uncaught exception> {}
+2014-02-17T18:25:53.889Z - error: <server> <uncaught exception> {}
+2014-02-17T18:26:01.894Z - error: <server> <uncaught exception> {}

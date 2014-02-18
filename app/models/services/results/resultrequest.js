@@ -24,7 +24,7 @@ exports.listLatestResults = function(cb){
 	  .on('readable', function() {
 			var stream = this, item;
 			while (item = stream.read()) {
-				var result = {string: item.title, description: exports.parseTitle(item.title), winners: exports.parseWinners(item.summary)};
+				var result = {string: item.title, marketId: exports.parseId(item.link) , description: exports.parseTitle(item.title), winners: exports.parseWinners(item.summary)};
 	        	results.push(result);
 	        }
 	  });
@@ -64,4 +64,14 @@ exports.parseWinners = function(summary) {
 		} 
 	}
 	return winners; 
+}
+
+/**
+* Adds winners to array
+* @param link -  string of type: http://rss.betfair.com/Index.aspx?format=html&sportID=7&marketID=112793671'
+* @return marketId
+*/
+exports.parseId = function(link) {
+	var marketId = su.trim(link.substr(link.indexOf('marketID')+9, link.length));  
+	return marketId; 
 }

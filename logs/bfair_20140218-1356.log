@@ -1,0 +1,17 @@
+2014-02-18T12:56:02.047Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1356.log
+2014-02-18T12:56:03.148Z - crit: <pingresults> <start> Time: 2014-02-18 12:56:03
+2014-02-18T12:56:02.527Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-18T12:56:03.226Z - crit: <server> Express app started on port 3000
+2014-02-18T12:56:03.930Z - crit: <betfair_auth> <interactiveLogin> sessionKey = WQUnF3AibjEZ9w3UIVahdKxRVrXZBH1paGv0qU/fK1o=
+2014-02-18T12:56:11.031Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-18T12:56:31.321Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T12:56:31.322Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T12:56:31.322Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-18T12:56:31.322Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888866)
+2014-02-18T12:56:31.323Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888867)
+2014-02-18T12:56:31.485Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T12:56:31.486Z - crit: <reporting> <addMarketToResults> orderct = 4
+2014-02-18T12:56:31.487Z - crit: <orderobserver> <updateProfitLoss> {"7137826":{"sid":"7137826","liabilities":{"backBetLiability":"0.00","layBetLiability":"11.20","totalLiability":"11.20"},"outcomes":{"potWin":"-11.20","potLoss":"8.00"}}}
+2014-02-18T12:56:31.531Z - crit: <db_results> <add> MID = 1.112888867
+2014-02-18T12:56:36.136Z - crit: <orderobserver> <updateProfitLoss> {}
+2014-02-18T12:56:36.136Z - error: <server> <uncaught exception> {}

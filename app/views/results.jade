@@ -29,6 +29,7 @@ block content
 									th Market ID
 									th Name
 									th Type
+									th Supended at
 									th Order Count
 									th Result
 									th Profit									
@@ -37,19 +38,19 @@ block content
 					io = io.connect();				
 					io.emit('resultsready');													
 					io.on('updateresults',function(result){
-						console.log('updatereusults ' +  result.marketId);
 						var mid = result.marketId.substring(2,result.marketId.length);							
 							$('#resultbook tbody').append('<tr id="'+ mid +'" class="trmarket">'
 								+ '<td class="mid">' + mid + '</td>'
-								+ '<td class="n">' + result.marketName + '</td>'	
-								+ '<td class="t">' + result.marketType + '</td>'	
-								+ '<td class="oct">' + result.orderct + '</td>'									
+								+ '<td class="n">' + result.name + '</td>'	
+								+ '<td class="mt">' + result.type + '</td>'
+								+ '<td class="st">' + result.suspensionTime + '</td>'	
+								+ '<td class="oct">' + result.orderCount + '</td>'									
 								+ '<td class="res"></td>'
 								+ '<td class="prft"></td>'								
 								+ '</tr>');
 					});	
 					io.on('totalProfit',function(data){
-						console.log('totalProfit = ' + data.totalProfit);
+						console.log(data);
 						var mid = data.marketId.substring(2,data.marketId.length);							
 							$('#' + mid + ' td.prft').text(data.totalProfit);
 							var winners = '';
@@ -59,5 +60,5 @@ block content
 									winners += ', ';
 								}
 							}
-							$('#' + mid + ' td.prft').text(winners);
+							$('#' + mid + ' td.res').text(winners);
 					});			

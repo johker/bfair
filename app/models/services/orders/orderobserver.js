@@ -39,7 +39,6 @@ OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, repor
 		var sidBets = {}; 
 		var mid = marketId.substring(2,marketId.length);
 		for(var i = 0; i < currentBets.length; i++ ) {
-			
 			var sid = currentBets[i].selectionId;
 			if (sidBets[sid] == undefined) {
 				sidBets[sid] = [];
@@ -55,16 +54,16 @@ OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, repor
 
 
 /**
-* Creates P/L summaries for orders. If report flag is true, orders are 
+* Creates P/L summaries for orders. If report flag is true, PL are 
 * reported to results page. 
 * @param sidMappedOrders - Mapping of current orders by SIDs
-* @param report - if true, orders are reported to results page.  
+* @param report - if true, PL are reported to results page.  
 * @param cb - callback function
 */ 
 OrderObserver.prototype.updateProfitLoss = function(sidMappedOrders, report, cb) {	
 	plcalculation.profitLoss(sidMappedOrders, function(err, sidMappedPL) { 
 		if(err) cb(err); 
-		sysLogger.debug('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(sidMappedPL)); 
+		sysLogger.debug('<orderobserver> <updateProfitLoss> ' + JSON.stringify(sidMappedPL)); 
 		if(report) { 
 			 // Broadcast to results page
 			 for(var sid in sidMappedPL) {

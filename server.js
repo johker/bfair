@@ -43,9 +43,13 @@ mongoose.connect(rtc.getConfig('db'))
 
 // Bootstrap models
 var models_path = rtc.getConfig('root') + '/app/models/db'
-fs.readdirSync(models_path).forEach(function (file) {
-  require(models_path+'/'+file)
-})
+//fs.readdirSync(models_path).forEach(function (file) {
+//  require(models_path+'/'+file)
+//})
+require(models_path+'/accounts');
+require(models_path+'/user');
+
+
 
 // bootstrap passport config	
 require('./config/passport')(passport, config);

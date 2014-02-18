@@ -1,0 +1,18 @@
+2014-02-17T17:50:54.150Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140217-1850.log
+2014-02-17T17:50:55.049Z - crit: <pingresults> <start> Time: 2014-02-17 17:50:55
+2014-02-17T17:50:54.555Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-17T17:50:55.115Z - crit: <server> Express app started on port 3000
+2014-02-17T17:50:55.787Z - crit: <betfair_auth> <interactiveLogin> sessionKey = GDNK6T8OT+F8NfWNUA6Ojw0aUmjFDN3SCKunU5+Qu4I=
+2014-02-17T17:51:03.232Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-17T17:51:13.021Z - crit: <marketfactory> <remove> MID = 1.112883157 (1/0)
+2014-02-17T17:51:13.021Z - crit: <marketfactory> <remove> MID = 1.112883081 (1/0)
+2014-02-17T17:51:13.022Z - error: <batch> <increaseBatchCt> Exceeding batch limit of 10
+2014-02-17T17:51:13.049Z - crit: <pingprices> <ping> Minimum interval changed to 27ms
+2014-02-17T17:51:23.150Z - crit: <marketfactory> <remove> MID = 1.112888876 (1/0)
+2014-02-17T17:51:23.150Z - crit: <marketfactory> <remove> MID = 1.112888562 (1/0)
+2014-02-17T17:52:02.989Z - crit: <marketfactory> <remove> MID = 1.112881786 (1/0)
+2014-02-17T17:52:02.990Z - crit: <marketfactory> <remove> MID = 1.112881785 (1/0)
+2014-02-17T17:52:12.984Z - crit: <marketfactory> <remove> MID = 1.112883082 (1/0)
+2014-02-17T17:52:12.984Z - crit: <marketfactory> <remove> MID = 1.112883050 (1/0)
+2014-02-17T17:52:22.963Z - crit: <marketfactory> <remove> MID = 1.112881786 (1/0)
+2014-02-17T17:52:22.964Z - crit: <marketfactory> <remove> MID = 1.112881785 (1/0)

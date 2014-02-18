@@ -17,9 +17,15 @@ var tc3 = 'Winner(s): Gems A Plenty, Blazing Al, Global Talk, Dravidian';
 var tc4 = 'Winner(s): Blazing Al';
 
 
-console.log(resultrequest.parseTitle(tc1));
-console.log(resultrequest.parseTitle(tc2));
+//console.log(resultrequest.parseTitle(tc1));
+//console.log(resultrequest.parseTitle(tc2));
 
-console.log(resultrequest.parseWinners(tc3));
-console.log(resultrequest.parseWinners(tc4));
+//console.log(resultrequest.parseWinners(tc3));
+//console.log(resultrequest.parseWinners(tc4));
+
+
+resultrequest.listLatestResults(function(results) {
+	console.log(results);
+});
+
 

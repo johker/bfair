@@ -63,7 +63,6 @@ priceping.on('ping', function(prices) {
 });
 
 resultping.on('ping', function(results) {
-	sysLogger.crit('<apicontroller> <resultsping.on:ping> ' + JSON.stringify(results));
 	reporting.assignWinners(results);
 });
 
@@ -138,14 +137,17 @@ app.io.route('historyready', function(req) {
 })
 
 /**
-* 
-* Get results 
+* Get results and send to frontend 
 */
-app.io.route('resultsready', function(req) {		
-    var results = reporting.getResultList();  
-	for(var i = 0; i<results.length; i++) {
-		app.io.broadcast('updateresults', results[i]);
-	}
+app.io.route('resultsready', function(req) {	
+	reporting.getResults(function(results) {
+		//sysLogger.crit('<apicontroller> <resultsready> Results = ' + JSON.stringify(results));
+	    if(!results) return;
+		for(var i = 0; i<results.length; i++) {
+			app.io.broadcast('updateresults', results[i]);
+		}
+	});      
+	
 })
 
 
@@ -166,24 +168,49 @@ app.io.route('detailsready', function(req) {
 * Broadcast market detail information for initial detail page call. 
 */
 app.io.route('detailpageready', function(req) { 
- 	var mid = '1.' +  req.data.id; 
-	var theoreticals = orderobserver.getTheoreticalsList();
-	for(var i=0; i < theoreticals.length; i++) { // Send all theoretical prices for this market
-		if(theoreticals[i].marketId == mid) {
-			app.io.broadcast('theoretical_'+req.data.id, theoreticals[i]);	
-		}	
-	} 
-	// Send all current orders
-	// TODO: as asnyc parallel 
-	// CHECK BUG: intial liabilities
-	orderobserver.updateCurrentOrderInformation(mid, true, function(err, sidBets) {
-		if(err) {
-			sysLogger.error('<orderobserver> <updateCurrentOrderInformation> ' + JSON.stringify(err));
-			return;
- 		}	
-	}); 	
-	app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});	
-
+ 	async.waterfall([
+ 		 // runnerDescription, marketName are defined as apicontroller vars
+		 // and assigned during 'viewprdetail' routing
+		 // Has to be called before broadcasting theoreticals 
+		 // otherwise detail page not rendered correctly
+		 function(callback) {
+		 	app.io.broadcast('runnerdesc', {runnerDescription: runnerDescription, marketName: marketName});	
+		 	callback(null);
+		 },
+		//Set variables
+		function(callback) {
+			var mid = '1.' +  req.data.id; 
+			var theoreticals = orderobserver.getTheoreticalsList();	
+			callback(null, mid, theoreticals);
+		},
+		// Broadcast all theoretical prices for this market
+		function(mid, theoreticals, callback) {
+		 	for(var i=0; i < theoreticals.length; i++) { 
+				if(theoreticals[i].marketId == mid) {
+					app.io.broadcast('theoretical_'+req.data.id, theoreticals[i]);	
+				}	
+			}
+			callback(null, mid); 
+		 }, 
+		 // Braodcast all current orders
+		 function(mid, callback) {
+		 	orderobserver.updateCurrentOrderInformation(mid, true, function(err, sidBets) {
+				if (err) return callback(err);
+            	callback(null, sidBets);
+			});
+		 },	
+		 // Broadcast intial liabilities
+		 function(sidBets, callback) {
+		 	orderobserver.updateProfitLoss(sidBets, true, function(err, sidMappedPL) {
+            	if (err) return callback(err);
+            	callback(null);
+            });
+		 }
+	], function(err) { //This function gets called after the two tasks have called their "task callbacks"
+        if (err) {
+        	sysLogger.error('<apicontroller> <detailpageready> ' + JSON.stringify(err));
+        }
+    }); 
 })
 
 

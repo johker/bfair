@@ -1,0 +1,218 @@
+2014-02-18T11:02:15.761Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1202.log
+2014-02-18T11:02:16.639Z - crit: <pingresults> <start> Time: 2014-02-18 11:02:16
+2014-02-18T11:02:16.164Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-18T11:02:16.697Z - crit: <server> Express app started on port 3000
+2014-02-18T11:02:17.196Z - crit: <betfair_auth> <interactiveLogin> sessionKey = uglkzqWS6G6btkHPBT4sb7DvfKqupgI3BE+EfuaYOhA=
+2014-02-18T11:02:17.700Z - error: <server> <uncaught exception> {}
+2014-02-18T11:02:45.539Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1202.log
+2014-02-18T11:02:46.403Z - crit: <pingresults> <start> Time: 2014-02-18 11:02:46
+2014-02-18T11:02:45.934Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-18T11:02:46.465Z - crit: <server> Express app started on port 3000
+2014-02-18T11:02:47.147Z - crit: <betfair_auth> <interactiveLogin> sessionKey = LX0TVXDTDfbwLjcLQlk9RW7b97p46QcfA9H952yzWu0=
+2014-02-18T11:02:55.168Z - crit: <pingprices> <ping> Minimum interval changed to 60ms
+2014-02-18T11:08:15.725Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:08:15.725Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:08:15.725Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888967)
+2014-02-18T11:08:15.798Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:08:15.799Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:08:15.799Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888968)
+2014-02-18T11:08:15.869Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:08:15.977Z - crit: <reporting> <addMarketToResults> orderct = 10
+2014-02-18T11:08:16.028Z - crit: <db_results> <add> MID = 1.112888968
+2014-02-18T11:09:34.358Z - crit: <marketfactory> <remove> MID = 1.112894551 (1/0)
+2014-02-18T11:09:34.359Z - crit: <marketfactory> <remove> MID = 1.112894550 (1/0)
+2014-02-18T11:09:34.359Z - crit: <marketfactory> <remove> MID = 1.112894549 (1/0)
+2014-02-18T11:10:04.373Z - crit: <pingprices> <ping> Minimum interval changed to 38ms
+2014-02-18T11:10:18.211Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:10:18.212Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:10:18.212Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888977)
+2014-02-18T11:10:18.364Z - crit: <reporting> <addMarketToResults> orderct = 11
+2014-02-18T11:10:18.433Z - crit: <db_results> <add> MID = 1.112888977
+2014-02-18T11:10:18.815Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:10:18.815Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:10:18.815Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888978)
+2014-02-18T11:10:18.953Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:12:44.333Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:12:44.352Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:12:44.370Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:12:44.390Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:12:44.407Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:12:44.426Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:12:44.441Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:15:19.853Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:15:19.854Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:15:19.854Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-18T11:15:19.854Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888860)
+2014-02-18T11:15:19.854Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888861)
+2014-02-18T11:15:19.864Z - crit: <pingprices> <ping> Minimum interval changed to 43ms
+2014-02-18T11:15:19.994Z - crit: <reporting> <addMarketToResults> orderct = 171
+2014-02-18T11:15:19.996Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:15:20.043Z - crit: <db_results> <add> MID = 1.112888860
+2014-02-18T11:17:44.345Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:17:44.396Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:17:44.414Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:17:44.432Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:17:44.453Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:17:44.471Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:17:44.485Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:17:51.183Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:17:51.183Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:17:51.183Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112894448)
+2014-02-18T11:17:51.352Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:17:53.712Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:17:53.713Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:17:53.713Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888892)
+2014-02-18T11:17:53.858Z - crit: <reporting> <addMarketToResults> orderct = 15
+2014-02-18T11:17:53.906Z - crit: <db_results> <add> MID = 1.112888892
+2014-02-18T11:17:54.504Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:17:54.504Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:17:54.504Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888891)
+2014-02-18T11:17:54.648Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:18:14.618Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:18:14.618Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:18:14.619Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112894451)
+2014-02-18T11:18:14.756Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:19:14.371Z - crit: <marketfactory> <remove> MID = 1.112894451 (1/0)
+2014-02-18T11:19:44.392Z - crit: <marketfactory> <remove> MID = 1.112894451 (1/0)
+2014-02-18T11:20:04.412Z - crit: <pingprices> <ping> Minimum interval changed to 33ms
+2014-02-18T11:22:44.356Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:22:44.376Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:22:44.396Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:22:44.417Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:22:44.436Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:22:44.501Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:22:44.522Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:24:44.354Z - crit: <marketfactory> <remove> MID = 1.112895309 (1/0)
+2014-02-18T11:25:34.377Z - crit: <marketfactory> <remove> MID = 1.112888861 (1/0)
+2014-02-18T11:26:24.366Z - crit: <marketfactory> <remove> MID = 1.112888860 (1/0)
+2014-02-18T11:26:24.367Z - crit: <marketfactory> <remove> MID = 1.112888861 (1/0)
+2014-02-18T11:27:44.534Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:27:44.574Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:27:44.715Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:27:44.735Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:27:44.755Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:27:44.776Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:27:44.792Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:32:44.376Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:32:44.403Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:32:44.427Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:32:44.751Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:32:44.795Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:32:44.820Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:32:44.843Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:32:44.870Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:37:44.343Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:37:44.364Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:37:44.384Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:37:44.403Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:37:44.423Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:37:44.445Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:37:44.468Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:37:44.551Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:42:44.337Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:42:44.357Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:42:44.381Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:42:44.423Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:42:44.444Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:42:44.464Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:42:44.505Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:42:44.566Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:47:44.348Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:47:44.457Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:47:44.486Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:47:44.548Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:47:44.576Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:47:44.597Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:47:44.651Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:47:44.671Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:48:32.130Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:48:32.130Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:48:32.130Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888862)
+2014-02-18T11:48:32.262Z - crit: <reporting> <addMarketToResults> orderct = 11
+2014-02-18T11:48:32.311Z - crit: <db_results> <add> MID = 1.112888862
+2014-02-18T11:48:35.454Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:48:35.454Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:48:35.454Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888863)
+2014-02-18T11:48:35.607Z - crit: <reporting> <addMarketToResults> orderct = 129
+2014-02-18T11:48:35.655Z - crit: <db_results> <add> MID = 1.112888863
+2014-02-18T11:48:35.697Z - warning: <db_results> <add> MongoError: E11000 duplicate key error index: be-fair-logs.results.$runners.sid_1  dup key: { : "5470233" }
+2014-02-18T11:50:03.683Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:50:03.684Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:50:03.684Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888890)
+2014-02-18T11:50:03.819Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:50:04.380Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
+2014-02-18T11:50:05.940Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:50:05.940Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:50:05.940Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888889)
+2014-02-18T11:50:06.090Z - crit: <reporting> <addMarketToResults> orderct = 129
+2014-02-18T11:50:06.150Z - crit: <db_results> <add> MID = 1.112888889
+2014-02-18T11:50:12.552Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:50:12.552Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:50:12.552Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112894447)
+2014-02-18T11:50:12.570Z - crit: <pingprices> <ping> Minimum interval changed to 33ms
+2014-02-18T11:50:12.697Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:52:36.467Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:52:36.467Z - crit: <PriceObserver.prototype.synchronize> 1 suspended Markets
+2014-02-18T11:52:36.467Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112894438)
+2014-02-18T11:52:36.609Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:52:44.370Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:52:44.392Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:52:44.417Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:52:44.439Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:52:44.459Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:52:44.479Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:52:44.499Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:52:44.515Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T11:52:56.597Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:52:56.598Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T11:52:56.598Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-18T11:52:56.598Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888879)
+2014-02-18T11:52:56.598Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888880)
+2014-02-18T11:52:56.730Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T11:52:56.733Z - crit: <reporting> <addMarketToResults> orderct = 120
+2014-02-18T11:52:56.783Z - crit: <db_results> <add> MID = 1.112888880
+2014-02-18T11:57:44.335Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T11:57:44.356Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T11:57:44.376Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T11:57:44.416Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T11:57:44.441Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T11:57:44.462Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T11:57:44.481Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T11:57:44.499Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T12:02:44.330Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T12:02:44.351Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T12:02:44.370Z - crit: <marketfactory> <remove> MID = 1.112888863 (1/0)
+2014-02-18T12:02:44.376Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T12:02:44.396Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T12:02:44.416Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T12:02:44.436Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T12:02:44.481Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T12:02:44.497Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T12:03:14.366Z - crit: <marketfactory> <remove> MID = 1.112888862 (1/0)
+2014-02-18T12:03:19.415Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T12:03:19.415Z - crit: <priceobserver> <updateStatus> marketstatuses[mid].status = OPEN, book.status = SUSPENDED
+2014-02-18T12:03:19.415Z - crit: <PriceObserver.prototype.synchronize> 2 suspended Markets
+2014-02-18T12:03:19.415Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888885)
+2014-02-18T12:03:19.416Z - crit: <apicontroller> <on: marketSuspension> Market Passivation (1.112888886)
+2014-02-18T12:03:19.552Z - crit: <reporting> <addMarketToResults> orderct = 0
+2014-02-18T12:03:19.553Z - crit: <reporting> <addMarketToResults> orderct = 51
+2014-02-18T12:03:19.641Z - crit: <db_results> <add> MID = 1.112888886
+2014-02-18T12:07:44.337Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T12:07:44.356Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T12:07:44.376Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T12:07:44.397Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T12:07:44.417Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T12:07:44.439Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T12:07:44.461Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T12:07:44.479Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T12:12:44.337Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":165.60000000000002,"marketId":"1.112888862","winners":["Mainstream"]}
+2014-02-18T12:12:44.359Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-675.6000000000004,"marketId":"1.112888860","winners":["Whatalady"]}
+2014-02-18T12:12:44.378Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":-2.6000000000000014,"marketId":"1.112883060","winners":["Dos Oro"]}
+2014-02-18T12:12:44.398Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":820.2000000000002,"marketId":"1.112883027","winners":["Alondra Sky"]}
+2014-02-18T12:12:44.419Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":503.4,"marketId":"1.112883103","winners":["Ausable River"]}
+2014-02-18T12:12:44.439Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":825.7,"marketId":"1.112883001","winners":["Natalie Victoria","  Belle Gallantey"]}
+2014-02-18T12:12:44.459Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":181.20000000000002,"marketId":"1.112883055","winners":["Darn That Trip"]}
+2014-02-18T12:12:44.479Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":976,"marketId":"1.112881784","winners":["River Goddess"," Trust The Wind"," Arabian Music"]}
+2014-02-18T12:12:44.496Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":11672.52,"marketId":"1.112888319","winners":["3 - 7 / 7 - 3"]}
+2014-02-18T12:14:18.695Z - error: <server> <uncaught exception> {"code":"ECONNRESET"}
+2014-02-18T12:14:19.055Z - error: <server> <uncaught exception> {"code":"ECONNRESET"}

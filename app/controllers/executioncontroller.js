@@ -23,15 +23,13 @@ var root = '../../'
  	async.waterfall([
         // Updates list of available theoreticals
         function(callback) {
-        	sysLogger.debug('<executioncontroller> <updateTheoreticals>');
- 	        orderobserver.updateTheoreticals(theoretical, function(err) {
+        	orderobserver.updateTheoreticals(theoretical, function(err) {
             	if (err) return callback(err);
             	callback(null);
             });
         },
         // Perform execution on theoretical
         function(callback) {
-            sysLogger.debug('<executioncontroller> <executeTheoretical>');
             executionHandler.executeTheoretical(theoretical, function(err) {
             	 if (err) return callback(err);
             	 callback(null, theoretical);
@@ -39,20 +37,18 @@ var root = '../../'
         },
         // Update listings of current orders
         function(theoretical, callback) {
-        	sysLogger.debug('<executioncontroller> <updateCurrentOrderInformation>');
-            orderobserver.updateCurrentOrderInformation(theoretical.marketId, true, function(err, sidBets) {
+        	orderobserver.updateCurrentOrderInformation(theoretical.marketId, true, function(err, sidBets) {
 				if (err) return callback(err);
             	callback(null, sidBets);
 			});
         },
         // Calculate resulting p/l and liabilities
         function(sidBets, callback) {
-            sysLogger.debug('<executioncontroller> <updateProfitLoss>');
             orderobserver.updateProfitLoss(sidBets, true, function(err, sidMappedPL) {e
             	if (err) return callback(err);
             	callback(null);
             });
-        },
+        }
     ], function(err) { //This function gets called after the two tasks have called their "task callbacks"
         if (err) {
         	if(err.code === CODES.DEFERED_THEORETICAL) {

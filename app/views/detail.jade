@@ -69,9 +69,6 @@ block content
 						});
 						io.on('theoretical_'+ #{mid},function(data){
 							var sid = data.selectionId;
-							if($('#r' + sid + 's #rdesc #oct').length == 0) {
-								$('#r' + sid + 's #rdesc').append(' <span id="oct" class="badge badge-info">0</span>');
-							}
 							$('#orders' + sid + ' .accordion-inner #information').text('');
 							$('#orders' + sid + ' .theoretical strong').text(data.theoretical);
 							if($('#r' + sid + 's #rdesc #oct').length == 0) {

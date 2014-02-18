@@ -5,7 +5,10 @@ var root = '../../../../'
  , servicedir = root + 'app/models/services/'
  , rtc = require(root + 'app/controllers/configcontroller')
  , marketrequests = require(servicedir + 'markets/marketrequests')
- , results = []
+ , _ = require('underscore') 
+ , su = require(root + 'util/stringutil')
+ , dbresults = require(root + 'app/models/db/db_results');
+
  
   /**
  * Adds aggregated P/L report for market to results page.
@@ -27,7 +30,7 @@ var root = '../../../../'
 		} 
 		result['orderct'] = orderct;
 		result['marketId'] = marketId;
-		result['suspensiontime'] = new Date();
+		result['suspensiontime'] = new Date().getTime();
 		// Calculate Profit/Loss for runners
 		orderobserver.updateProfitLoss(sidBets, false, function(err, sidMappedPL) {
 			// Get relevant information for market: name, country, date
@@ -48,9 +51,7 @@ var root = '../../../../'
   				mapOutcomesOnRunners(sidMappedPL, marketdescription, function(err, mappedOutcomes) {
 					if (err) return cb(err);
 					result['runners'] = mappedOutcomes;
-					results.push(result);  
-					sysLogger.crit('<reporting> <addMarketToResults> Braodcasting result: ' + JSON.stringify(result));
-					app.io.broadcast('updateresults', result);
+					addResult(result);  					
 	       			cb(null);
 				});
 			}); 
@@ -60,21 +61,77 @@ var root = '../../../../'
  }
  
  /**
+ * Adds suspended market to DB results and emit event.
+ * collection
+ */
+ function addResult(result) {
+ 	dbresults.add(result, function() {
+ 		app.io.broadcast('updateresults', result); 	
+ 		sysLogger.crit('<reporting> <addResult> Entry ' + JSON.stringify(result));
+ 	}) 
+ }
+ 
+ 
+  /**
+ * Returns list of results from database
+ * @param cb - callback function
+ */
+ exports.getResults = function(cb) {
+ 	dbresults.getList(function(results) {
+ 		cb(results);
+ 	}) 
+ } 
+ 
+ /**
+ * Adds winner / profit information to 
+ * suspended market: Event Emission / DB Update
+ * @param resultinfromation {'totalProfit': Number, marketId: String, winners: Array}
+ */ 
+ function updateResult(resultInformation) {
+ 	dbresults.update(resultInformation.marketId, resultInformation.totalProfit, resultInformation.winners, function(updateddoc) {
+ 		sysLogger.crit('<reporting> <updateResult> resultInformation ' + JSON.stringify(resultInformation));
+ 		app.io.broadcast('totalProfit', resultInformation);
+ 	}); 
+ } 
+ 
+ /**
  * Compares Results from RSS with suspended markets
  * to calculate profit/loss
  * @param results - Market description and winner
- */ 
+ */  
  exports.assignWinners = function(winners) {
- 	for(var i = 0; i < winners.length; i++) {
- 		var idinfo = findIdByDescription(winners[i].string); 
-		 if(idinfo != null) {
-		 	var idx = idinfo.idx;
-		 	var result = results[idx];
-		 		var totalProfit = calculateProfit(winners[i], result);
-		 		app.io.broadcast('totalProfit', {'totalProfit': totalProfit, marketId: idx, winners: winners[i].winners});
-		 }
- 	} 
+ 	exports.getResults(function(results) {
+ 		for(var i = 0; i < winners.length; i++) {	
+	 		var result = exports.checkForMatchingResults(results, winners[i].marketId); 
+			 if(result != null && result.profit == null) {
+			 	var totalProfit = calculateProfit(winners[i], result);
+			 	var resultinformation = {'totalProfit': totalProfit, 'marketId': result.marketId, 'winners': winners[i].winners}
+			 	updateResult(resultinformation);
+			 }
+ 		} 
+ 	});
+ 	
  }
+ 
+
+  /**
+ * Compares winner obj with list of reuslts  - returns 
+ * result with matching marketId if exists  
+ * @param winnerMid - Market Id of RSS Winner
+ * @param results - results list
+ * @return result with matching id - null if no matching result exists  
+ */ 
+ exports.checkForMatchingResults = function(results, winnerMid) {
+ 	var match = _.filter(results, function(obj) {
+	    return ~('' + obj.marketId).indexOf(winnerMid);
+	});
+	if(match.length != 1) {
+		return null; 
+	} else {
+		return match[0];
+	}
+ }
+ 
  
  /**
  * 
@@ -82,42 +139,32 @@ var root = '../../../../'
  * @param - result of market - containing sid mapped profit/losses
  */
  function calculateProfit(winners, result) {
+ 	//sysLogger.crit('<reporting> <calculateProfit> result = ' + JSON.stringify(result) + ' winners = ' + JSON.stringify(winners));
  	var plrunners = result.runners;
+ 	//sysLogger.crit('<reporting> <calculateProfit> plrunners = ' + JSON.stringify(plrunners));
+ 				
  	var totalProfit = 0;
- 	for(var sid in plrunners) {
- 		if(plrunners.hasOwnPropety(sid)) {
- 			// Check if runner has won
- 			// TODO: check multiple winners
- 			sysLogger.crit('<reporting> <calculateProfit> winners.winners = ' + winners.winners + ' plrunners[sid].name = ' + plrunners[sid].name);
- 			if(winners.winners.indexOf(plrunners[sid].name)) { 
- 				totalProfit += plrunners[sid].outcomes.potWin;
- 			} else {
- 				totalProfit += plrunners[sid].outcomes.potWin;
- 			}
+ 	if(!plrunners) return;
+ 	for(var i = 0; i < plrunners.length; i++) {
+ 		// Check if runner has won
+ 		// TODO: check multiple winners
+ 		if(winners.winners.indexOf(plrunners[i].name)) { 
+ 			totalProfit += plrunners[i].potWin;
+ 		} else {
+ 			// potLoss < 0:
+ 			totalProfit += plrunners[i].potLoss;
  		}
+ 		
  	} return totalProfit;
  }
  
-  /**
- * Looks for description in results to return the 
- * market ID
- * @param description - contains country, type and place 
- * @return marketId and index of matched market - null if no market in results for market description found
- */ 
- function findIdByDescription(description) {
- sysLogger.crit('<reporting> <findIdByDescription> description = ' + description);
- 	for(var i in results) {
- 	if (description.indexOf(results[i].countryCode)
- 		&& description.indexOf(results[i].marketName)
- 		&& description.indexOf(results[i].marketType)) {
- 			sysLogger.crit('<reporting> <findIdByDescription> '
- 			+ 'Contains ' + results[i].countryCode + ' = ' + description.indexOf(results[i].countryCode)
- 			+ ' Contains ' + results[i].marketType + ' = ' + description.indexOf(results[i].marketType)
- 			+ ' Contains ' + results[i].marketName + ' = ' + description.indexOf(results[i].marketName));
- 			return {mid: marketId, idx: i};
- 		}
- 	}
- 	return null; 
+ /**
+ * Remove positioning from runner name:
+ * '5. Dos Oro' -> 'Dos Oro'
+ *
+ */
+ function cleanRunnerName(name) {
+ 	return su.trim(name.substr(arr[1].indexOf('.') + 1, name.length-1));
  }
  
  
@@ -136,7 +183,7 @@ function mapOutcomesOnRunners(sidMappedPL, marketdescription, cb) {
 			if(!sidMappedPL[sid]) {
 				sysLogger.info('<reporting> <mapOutcomesOnRunners> No PL found for SID ' + sid + '!');
 			} else {
-				var result = {outcomes: sidMappedPL[sid].outcomes, name: marketdescription.runners[i].runnerName}; 
+				var result = {potWin: sidMappedPL[sid].outcomes.potWin, potLoss: sidMappedPL[sid].outcomes.potLoss, name: marketdescription.runners[i].runnerName, sid: sid}; 
 				mappedOutcomes[sid] = result;	
 				sysLogger.debug('<reporting> <mapOutcomesOnRunners> ' + sid + ':' + JSON.stringify(result));
 			}			
@@ -149,12 +196,4 @@ function mapOutcomesOnRunners(sidMappedPL, marketdescription, cb) {
 }
 
 
-
-/**
-* Returns 
-*/
-exports.getResultList = function() {
-	sysLogger.crit('<reporting> <getResultList> Number of results: ' + results.length);
-	return results; 
-}
 
