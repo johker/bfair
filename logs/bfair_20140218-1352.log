@@ -1,7 +1,0 @@
-2014-02-18T12:52:32.716Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1352.log
-2014-02-18T12:52:33.591Z - crit: <pingresults> <start> Time: 2014-02-18 12:52:33
-2014-02-18T12:52:33.119Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
-2014-02-18T12:52:33.656Z - crit: <server> Express app started on port 3000
-2014-02-18T12:52:34.382Z - crit: <betfair_auth> <interactiveLogin> sessionKey = THcwS+pnJWqh16nZfSoHiiVyaLeuW94I+z42DvImG/U=
-2014-02-18T12:52:41.774Z - crit: <pingprices> <ping> Minimum interval changed to 30ms
-2014-02-18T12:53:18.846Z - error: <server> <uncaught exception> {}

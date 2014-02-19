@@ -1,6 +1,0 @@
-2014-02-18T09:02:09.395Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140218-1002.log
-2014-02-18T09:02:10.269Z - crit: <pingresults> <start> Time: 2014-02-18 09:02:10
-2014-02-18T09:02:09.791Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
-2014-02-18T09:02:10.334Z - crit: <server> Express app started on port 3000
-2014-02-18T09:02:11.011Z - crit: <betfair_auth> <interactiveLogin> sessionKey = wlCO6+aUjMp2o04vWHCt7QHI/+ILl+FiylcymoWXPbo=
-2014-02-18T09:02:18.745Z - crit: <pingprices> <ping> Minimum interval changed to 100ms
