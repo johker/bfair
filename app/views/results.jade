@@ -5,6 +5,8 @@ block content
 	script(src='js/d3.v3.min.js')
 	link(rel='stylesheet', href='css/detail.css')
 	script(src='js/utils.js')
+	script(src='js/bootstrap-sortable.js')
+	script(src='js/moment.min.js')
 	include navbar
 	.container
 		.page-header
@@ -45,9 +47,10 @@ block content
 								+ '<td class="mt">' + result.type + '</td>'
 								+ '<td class="st">' + result.suspensionTime + '</td>'	
 								+ '<td class="oct">' + result.orderCount + '</td>'									
-								+ '<td class="res"></td>'
-								+ '<td class="prft"></td>'								
+								+ '<td class="res">' + (result.winners ? result.winners : '') + '</td>'
+								+ '<td class="prft">' + (result.profit ? result.profit : '') + '</td>'								
 								+ '</tr>');
+						$.bootstrapSortable(true);
 					});	
 					io.on('totalProfit',function(data){
 						console.log(data);

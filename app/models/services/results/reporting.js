@@ -78,6 +78,7 @@ var root = '../../../../'
  */
  exports.getResults = function(cb) {
  	dbresults.getList(function(results) {
+ 		sysLogger.crit('<reporting> <getReults> ' +  JSON.stringify(results));
  		cb(results);
  	}) 
  } 
@@ -141,17 +142,19 @@ var root = '../../../../'
  function calculateProfit(winners, result) {
  	//sysLogger.crit('<reporting> <calculateProfit> result = ' + JSON.stringify(result) + ' winners = ' + JSON.stringify(winners));
  	var plrunners = result.runners;
- 	//sysLogger.crit('<reporting> <calculateProfit> plrunners = ' + JSON.stringify(plrunners));
+ 	sysLogger.crit('<reporting> <calculateProfit> plrunners = ' + JSON.stringify(plrunners));
  				
  	var totalProfit = 0;
  	if(!plrunners) return;
+ 	sysLogger.crit('<reporting> <calculateProfit> WINNERS = ' + winners.winners);
  	for(var i = 0; i < plrunners.length; i++) {
- 		// Check if runner has won
- 		// TODO: check multiple winners
- 		if(winners.winners.indexOf(plrunners[i].name)) { 
+ 		// Check if runner is one of the winners
+ 		if(winners.winners.indexOf(plrunners[i].name) != -1) { 
+ 			sysLogger.crit('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' WON: += ' + plrunners[i].potWin);
  			totalProfit += plrunners[i].potWin;
  		} else {
  			// potLoss < 0:
+ 			sysLogger.crit('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' LOST: += ' + plrunners[i].potLoss);
  			totalProfit += plrunners[i].potLoss;
  		}
  		

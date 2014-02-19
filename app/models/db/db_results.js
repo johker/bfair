@@ -12,7 +12,8 @@ var root = '../../../'
     , Server = require('mongodb').Server
     , uniqueValidator = require('mongoose-unique-validator')
     , ResultsModel
-    
+    , winston = require(root + 'config/winston')
+
     , Runners = new Schema({ 
     		sid: { type: String, required: true, unique: true},
 			name: String,
@@ -26,11 +27,13 @@ var root = '../../../'
 		runners: [Runners],
 		suspensionTime: { type: Date, required: true },
 		orderCount: {type: Number, required: true},
-		winners: {type: String, required: false},  
+		winners: [{type: String, required: false}],  
 		profit: {type: Number, required: false}		
 	});
 
 
+// GLOBAL variables
+sysLogger = winston.getSysLogger()
 
 function connect(cb) {
 	sysLogger.debug('<db_results> <connect> to mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
@@ -61,8 +64,8 @@ exports.add = function(result) {
 				suspensionTime: result.suspensiontime,
 				orderCount: result.orderct, 
 				runners: transformRunnersToArray(result.runners),
-				winners: '',  
-				profit: ''				
+				winners: null,  
+				profit: null				
 		};
 		var ritem = new Model(resultdto);
 		ritem.save(function (err) {
@@ -97,11 +100,14 @@ function transformRunnersToArray(runners) {
 * @param cb  
 */
 exports.update = function(mid, totalProfit, winners, cb) {
+	sysLogger.crit('<db_results> <update> total Profit = ' + totalProfit + ', winners = ' + winners);
 	connect(function(Model) {
 		var query = { marketId: mid };
-		Model.findOneAndUpdate(query, { totalProfit: totalProfit, winners: winners }, cb);
+		Model.findOneAndUpdate(query, { profit: totalProfit, winners: winners }, cb);
 	});
 }
+
+
 
 
 

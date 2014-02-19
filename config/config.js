@@ -54,7 +54,7 @@ module.exports = {
       	baseto: {
       		market: 10000, 	// Timeout for market requests
       		price: 300,    // Basic Timeout price requests
-      		results: 300000 // Basic Timeout resutl requests
+      		results: 10000 // Basic Timeout resutl requests
       	},
       	throttle: {
       		fac1: 10,

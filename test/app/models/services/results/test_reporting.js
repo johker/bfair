@@ -15,13 +15,20 @@ var results = [
 {"__v":0,"_id":"53024aa19a3590b027000002","marketId":"1.112883027","name":"Gulf (US) 17th Feb","orderCount":16,"profit":null,"suspensionTime":"2014-02-17T17:45:05.652Z","type":"R1 1m Mdn Claim","winners":"Alondra Sky","runners":[{"potWin":534,"potLoss":-6,"name":"6. Boston Garden","sid":"7011476","_id":"53024aa19a3590b027000009"},{"potWin":16.2,"potLoss":-4,"name":"5. Sofialeonor","sid":"8210698","_id":"53024aa19a3590b027000008"},{"potWin":-10.4,"potLoss":4,"name":"1. Nice To Regal","sid":"8307615","_id":"53024aa19a3590b027000007"},{"potWin":266,"potLoss":-6,"name":"2. Foxy Exchange","sid":"8307616","_id":"53024aa19a3590b027000006"},{"potWin":6.2,"potLoss":-2,"name":"3. Alondra Sky","sid":"8307617","_id":"53024aa19a3590b027000005"},{"potWin":-12.8,"potLoss":2,"name":"4. Guigues Miracle","sid":"8307618","_id":"53024aa19a3590b027000004"},{"potWin":21,"potLoss":0,"name":"7. Nobodys A Saint","sid":"8307619","_id":"53024aa19a3590b027000003"}]}];
 var winndermid = '112883055';
 
+var WINNERS = ['xy', 'Iris Nobile']
+
+var RUNNER_ONE = 'Iris Nobile';
+var RUNNER_TWO = 'Winner Des Places';
+
+console.log(WINNERS.indexOf(RUNNER_ONE));
+console.log(WINNERS.indexOf(RUNNER_TWO));
 
 
 
-var response = checkForMatchingResults(results, winndermid);
+//var response = checkForMatchingResults(results, winndermid);
+//console.log(response);
 
-
- function checkForMatchingResults(results, winnerMid) {
+function checkForMatchingResults(results, winnerMid) {
  	var match = _.filter(results, function(obj) {
 	    return ~('' + obj.marketId).indexOf(winnerMid);
 	});
@@ -30,7 +37,6 @@ var response = checkForMatchingResults(results, winndermid);
 	} else {
 		return match;
 	}
- }
+}
 
-
-console.log(response); 
+ 

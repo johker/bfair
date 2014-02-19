@@ -1,0 +1,20 @@
+2014-02-19T09:03:50.453Z - crit: <server> System logging to F:\repos\github\bfair\logs\bfair_20140219-1003.log
+2014-02-19T09:03:55.185Z - crit: <pingresults> <start> Time: 2014-02-19 09:03:55
+2014-02-19T09:03:52.106Z - crit: <session> <getSession> New Session Instance, Active App Key = 2ku5TzXl34zUU1Qz
+2014-02-19T09:03:55.295Z - crit: <server> Express app started on port 3000
+2014-02-19T09:03:57.335Z - crit: <betfair_auth> <interactiveLogin> sessionKey = WReWRdkt/61hf4htQ624ySdlNmgR0hyofllcwBzhg9E=
+2014-02-19T09:03:58.614Z - crit: <pingprices> <ping> Minimum interval changed to 100ms
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> plrunners = [{"potWin":-10,"potLoss":2,"name":"Onenightinvienna","sid":"8112872","_id":"530388852eeb1dfc1400002e"},{"potWin":2154,"potLoss":-26,"name":"Thymeandthymeagain","sid":"8148258","_id":"530388852eeb1dfc1400002d"},{"potWin":2364,"potLoss":-16,"name":"Are We There","sid":"8248400","_id":"530388852eeb1dfc1400002c"},{"potWin":264,"potLoss":-12,"name":"Millanisi Boy","sid":"8248405","_id":"530388852eeb1dfc1400002b"}]
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> WINNERS = Onenightinvienna
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> 0. RUNNER Onenightinvienna LOST: += 2
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> 1. RUNNER Thymeandthymeagain WON: += 2154
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> 2. RUNNER Are We There WON: += 2364
+2014-02-19T09:04:07.956Z - crit: <reporting> <calculateProfit> 3. RUNNER Millanisi Boy WON: += 264
+2014-02-19T09:04:07.956Z - crit: <db_results> <update> total Profit = 4784, winners = Onenightinvienna
+2014-02-19T09:04:07.960Z - crit: <reporting> <calculateProfit> plrunners = [{"potWin":2.2,"potLoss":-2,"name":"Hassadin","sid":"3133082","_id":"530387282eeb1dfc1400001b"},{"potWin":2.96,"potLoss":-2,"name":"Torgamah Lad","sid":"6886110","_id":"530387282eeb1dfc1400001a"}]
+2014-02-19T09:04:07.960Z - crit: <reporting> <calculateProfit> WINNERS = Torgamah Lad
+2014-02-19T09:04:07.960Z - crit: <reporting> <calculateProfit> 0. RUNNER Hassadin WON: += 2.2
+2014-02-19T09:04:07.960Z - crit: <reporting> <calculateProfit> 1. RUNNER Torgamah Lad LOST: += -2
+2014-02-19T09:04:07.960Z - crit: <db_results> <update> total Profit = 0.20000000000000018, winners = Torgamah Lad
+2014-02-19T09:04:07.980Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":4784,"marketId":"1.112888963","winners":["Onenightinvienna"]}
+2014-02-19T09:04:07.991Z - crit: <reporting> <updateResult> resultInformation {"totalProfit":0.20000000000000018,"marketId":"1.112894469","winners":["Torgamah Lad"]}

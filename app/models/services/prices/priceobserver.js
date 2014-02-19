@@ -91,7 +91,7 @@ function updateStatus(book, callback) {
 			// Status has changed: braodcast
 			app.io.broadcast('status', status);
 			if(marketStatuses[mid].status == 'OPEN' && book.status == 'SUSPENDED') {
-				sysLogger.crit('<priceobserver> <updateStatus> marketstatuses[mid].status = ' + marketStatuses[mid].status + ', book.status = ' +book.status ); 
+				sysLogger.debug('<priceobserver> <updateStatus> marketstatuses[mid].status = ' + marketStatuses[mid].status + ', book.status = ' +book.status ); 
 				passivate(mid);
 				// IDs of suspended markets have to be buffered 
 				// as no event emission is possible from here	
