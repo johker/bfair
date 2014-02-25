@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    SES = require('../app/models/db/ses');
+    SES = require('../app/models/db/db_ses');
 
 // Load configurations
 var rtc = require(root + 'app/controllers/configcontroller')

@@ -2,7 +2,7 @@
 * DEPRECATED
 */
 var root = '../../'
-	, datamodel = require(root + 'app/models/db/datalogs')
+	, datamodel = require(root + 'app/models/db/db_prices')
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, async = require('async')
 	, su = require(root + 'util/stringutil')

@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    User = require('../app/models/db/user');
+    User = require('../app/models/db/sb_users');
 
 // Load configurations
 var rtc = require(root + 'app/controllers/configcontroller')

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
 	, root = '../../'
-	, Account = require('../app/models/db/accounts');
+	, Account = require('../app/models/db/db_accounts');
 
 // Load configurations
 var rtc = require(root + 'app/controllers/configcontroller')

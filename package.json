@@ -46,5 +46,6 @@
     , "node-fs" : "*"
     , "feedparser": "*"
     , "request": "*"
+    , "node-schedule": "*"
   }
 }

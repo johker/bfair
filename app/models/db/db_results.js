@@ -168,5 +168,10 @@ function closeConnection() {
 	});
 }
 
+/*
 // Test 
-// exports.getList(function(data) {console.log(data);});
+exports.removeAll(function(err, nrremoved) {
+	if(err) console.log(err);
+	else console.log(nrremoved);
+});
+*/

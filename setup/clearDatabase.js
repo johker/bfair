@@ -7,7 +7,7 @@
 	, async = require('async')
 	, assert = require('assert')
 	, sysLogger = require(root + 'config/winston').getSysLogger()
-	, history = require(root + 'app/models/db/history')
+	, history = require(root + 'app/models/db/db_markets')
 
 
 /**

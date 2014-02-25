@@ -46,8 +46,8 @@ var models_path = rtc.getConfig('root') + '/app/models/db'
 //fs.readdirSync(models_path).forEach(function (file) {
 //  require(models_path+'/'+file)
 //})
-require(models_path+'/accounts');
-require(models_path+'/user');
+require(models_path+'/db_accounts');
+require(models_path+'/db_users');
 
 
 

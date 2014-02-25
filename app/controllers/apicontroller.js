@@ -20,7 +20,7 @@ var root = '../../'
 	, PricePing = require(servicedir + 'prices/pingprices')
 	, priceping = new PricePing ({session: session})
 	, marketping = new MarketPing ({session: session})
-	, history = require(root + 'app/models/db/history')
+	, history = require(root + 'app/models/db/db_markets')
 	, logs = require(servicedir + 'prices/logfactory')
 	, cleandb = require(root + 'setup/clean')
 	, session = require(servicedir + 'session')
@@ -28,6 +28,7 @@ var root = '../../'
 	, bundle = require(root + 'config/resourcebundle')['en']
 	, validationutil = require(root + 'util/validation')  
 	, notifier = require(root + 'app/models/services/notifier')	
+	, cleanup = require(servicedir + 'cleanup')
 	// Detail Information
 	, selectedMarketId, selectedEventId
 	, marketName 
@@ -39,6 +40,7 @@ var root = '../../'
 	, reporting = require(servicedir + 'results/reporting')
 	, ResultPing = require(servicedir + 'results/pingresults')
 	, resultping = new ResultPing()
+	
 
 session.Singelton.getInstance().login(function(err, res){
  	sysLogger.info('<apicontroller> Logged in to Betfair');
@@ -100,7 +102,7 @@ priceObserver.on('marketSuspension', function(mid) {
 marketping.start();
 priceping.start();
 resultping.start();
- 
+cleanup.startCleanupScheduler();
 
 /**
 * 
