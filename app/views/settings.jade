@@ -1,0 +1,27 @@
+extends layout
+
+block content
+	include navbar
+	.container
+		.page-header
+				h3 Account
+			p.lead 
+			form.form-horizontal(method='post')
+				.control-group
+					label.control-label(for="account-select") User
+					.controls
+						select#account-select(name="accountId")
+				.control-group
+					.controls
+						button#submit-button.btn(type="submit") Submit				
+				script
+					var accs=!{accounts};
+					for(var i = 0; i< accs.length; i++){						
+						$('#account-select').append(new Option(accs[i].bfUsername,accs[i].id));
+						if(accs[i].active) $('#account-select').val(accs[i].id);							
+					}				
+					$(".form-horizontal").click(function(e) {
+						e.preventDefault();
+						$.post('/account', $(this).serialize(), function(data){							
+						});
+					});

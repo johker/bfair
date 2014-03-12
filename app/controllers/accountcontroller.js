@@ -9,12 +9,12 @@ var mongoose = require('mongoose')
 /**
 * Bf Accounts Handler
 */
-exports.account = function(req, res) {
+exports.settings = function(req, res) {
 	Account.find({},'bfUsername id active', function (err, bf_accounts) {
     if(err) {
     	res.render('500');
     }
-    res.render('account', {
+    res.render('settings', {
        title: bundle.title.account,
        username: req.user.username,
        accounts: JSON.stringify(bf_accounts)

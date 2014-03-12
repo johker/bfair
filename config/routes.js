@@ -28,7 +28,7 @@ app.get('/users/:userId', uctrl.show)
 // Content routes
 // app.get('/overview', auth.requiresLogin, uctrl.overview);
 // app.get('/data', auth.requiresLogin, dctrl.data);
-app.get('/account', auth.requiresLogin, actrl.account);
+app.get('/settings', auth.requiresLogin, actrl.settings);
 app.get('/markets', auth.requiresLogin, apictrl.markets);
 app.get('/results', auth.requiresLogin, apictrl.orders);
 app.post('/', 

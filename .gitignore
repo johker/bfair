@@ -4,3 +4,4 @@
 initaccounts.js
 inituser.js
 logs/
+node_modules/
