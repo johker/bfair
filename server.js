@@ -23,7 +23,7 @@ process.env['TZ'] = 'Europe/Amsterdam';
 apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 betfair = require('./app/models/api'); // Patched version 
-sysLogger.crit('<server> System logging to ' + winston.getFile());
+sysLogger.critical('<server> System logging to ' + winston.getFile());
 
 
 
@@ -70,9 +70,10 @@ require('./config/express')(app, config, passport)
 require('./config/routes')(app, passport, auth)
 	
 // Start the app by listening on <port>
-var port = process.env.PORT || 3000
-app.listen(port)
-sysLogger.crit('<server> Express app started on port '+ port)
+var port = rtc.getConfig('port')
+var server = app.listen(port, function() {
+	sysLogger.critical('<server> Express app started on port '+ port)
+});
 
 
 

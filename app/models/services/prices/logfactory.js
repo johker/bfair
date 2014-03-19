@@ -81,7 +81,7 @@ function closeConnection() {
 * a customized query formatter.
 */ 
 function streamResults(collection, res, callback) {
-	sysLogger.crit('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
+	sysLogger.critical('<logfactory> <streamResults> Accessing logs at ' + 'mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db'));
 	var db = mongoose.connect('mongodb://' + rtc.getConfig('logs.host') + ':' + rtc.getConfig('logs.port') + '/' + rtc.getConfig('logs.db')).connection; 
 	sysLogger.notice('<logfactory> <streamResults> collection: ' + collection);
 	var Data = db.model('Data', generateSchema(), collection);	

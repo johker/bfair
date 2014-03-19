@@ -71,7 +71,7 @@ function interactiveLogin(login, password, cb) {
             var parsed = cookie.parse(item);
             if (parsed.ssoid) {
                 var sessionKey = parsed.ssoid;
-                sysLogger.crit('<betfair_auth> <interactiveLogin> sessionKey = ' +sessionKey);
+                sysLogger.critical('<betfair_auth> <interactiveLogin> sessionKey = ' +sessionKey);
                 break;
             }
         }

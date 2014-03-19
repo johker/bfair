@@ -42,7 +42,7 @@ Emulator.prototype.checkInstructions = function(req, marketId, res, cb) {
 	var self = this;
     var instructions = req.params.instructions;
     if (!marketId || !instructions || instructions.length < 1) {
-        sysLogger.crit('emulator_core> <checkInstructions> INST Length = ' +  instructions.length + ', MID = ' +  marketId);
+        sysLogger.critical('emulator_core> <checkInstructions> INST Length = ' +  instructions.length + ', MID = ' +  marketId);
    		self.sendErrorResponse(res, -32602, "Invalid Instructions");
         cb(null);
         return; 

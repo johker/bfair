@@ -28,6 +28,6 @@ exports.getConfig = function(key) {
 */ 
 exports.setConfig = function(key, value) {
 	dynconfig.set(key, value); 
-	sysLogger.crit('<configcontroller> <setConfig> key = ' + key + ', value = ' + value); 
+	sysLogger.critical('<configcontroller> <setConfig> key = ' + key + ', value = ' + value); 
 }
 

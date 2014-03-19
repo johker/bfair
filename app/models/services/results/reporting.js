@@ -23,7 +23,7 @@ var root = '../../../../'
  	
 	// Report for passivated market
 	orderobserver.updateCurrentOrderInformation(marketId, false, function(err, sidBets, orderct) {
-		sysLogger.crit('<reporting> <addMarketToResults> orderct = ' + orderct);
+		sysLogger.critical('<reporting> <addMarketToResults> orderct = ' + orderct);
 		if(orderct == 0) {
 			cb(null); 
 			return;
@@ -67,7 +67,7 @@ var root = '../../../../'
  function addResult(result) {
  	dbresults.add(result, function() {
  		app.io.broadcast('updateresults', result); 	
- 		sysLogger.crit('<reporting> <addResult> Entry ' + JSON.stringify(result));
+ 		sysLogger.critical('<reporting> <addResult> Entry ' + JSON.stringify(result));
  	}) 
  }
  
@@ -78,7 +78,7 @@ var root = '../../../../'
  */
  exports.getResults = function(cb) {
  	dbresults.getList(function(results) {
- 		sysLogger.crit('<reporting> <getReults> ' +  JSON.stringify(results));
+ 		sysLogger.critical('<reporting> <getReults> ' +  JSON.stringify(results));
  		cb(results);
  	}) 
  } 
@@ -90,7 +90,7 @@ var root = '../../../../'
  */ 
  function updateResult(resultInformation) {
  	dbresults.update(resultInformation.marketId, resultInformation.totalProfit, resultInformation.winners, function(updateddoc) {
- 		sysLogger.crit('<reporting> <updateResult> resultInformation ' + JSON.stringify(resultInformation));
+ 		sysLogger.critical('<reporting> <updateResult> resultInformation ' + JSON.stringify(resultInformation));
  		app.io.broadcast('totalProfit', resultInformation);
  	}); 
  } 
@@ -140,21 +140,21 @@ var root = '../../../../'
  * @param - result of market - containing sid mapped profit/losses
  */
  function calculateProfit(winners, result) {
- 	//sysLogger.crit('<reporting> <calculateProfit> result = ' + JSON.stringify(result) + ' winners = ' + JSON.stringify(winners));
+ 	//sysLogger.critical('<reporting> <calculateProfit> result = ' + JSON.stringify(result) + ' winners = ' + JSON.stringify(winners));
  	var plrunners = result.runners;
- 	sysLogger.crit('<reporting> <calculateProfit> plrunners = ' + JSON.stringify(plrunners));
+ 	sysLogger.critical('<reporting> <calculateProfit> plrunners = ' + JSON.stringify(plrunners));
  				
  	var totalProfit = 0;
  	if(!plrunners) return;
- 	sysLogger.crit('<reporting> <calculateProfit> WINNERS = ' + winners.winners);
+ 	sysLogger.critical('<reporting> <calculateProfit> WINNERS = ' + winners.winners);
  	for(var i = 0; i < plrunners.length; i++) {
  		// Check if runner is one of the winners
  		if(winners.winners.indexOf(plrunners[i].name) != -1) { 
- 			sysLogger.crit('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' WON: += ' + plrunners[i].potWin);
+ 			sysLogger.critical('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' WON: += ' + plrunners[i].potWin);
  			totalProfit += plrunners[i].potWin;
  		} else {
  			// potLoss < 0:
- 			sysLogger.crit('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' LOST: += ' + plrunners[i].potLoss);
+ 			sysLogger.critical('<reporting> <calculateProfit> ' + i + '. RUNNER ' + plrunners[i].name + ' LOST: += ' + plrunners[i].potLoss);
  			totalProfit += plrunners[i].potLoss;
  		}
  		

@@ -39,7 +39,7 @@ PriceObserver.prototype.synchronize = function(books) {
 			sysLogger.error('<priceobserver> <synchronize> ' + JSON.stringify(err));
 		}
 		if(suspendedMarkets.length) 
-       		sysLogger.crit('<PriceObserver.prototype.synchronize> ' + suspendedMarkets.length + ' suspended Markets');
+       		sysLogger.critical('<PriceObserver.prototype.synchronize> ' + suspendedMarkets.length + ' suspended Markets');
        	for(var i = 0; i<suspendedMarkets.length; i++) {
        		self.emit('marketSuspension', suspendedMarkets[i]);	
        	}

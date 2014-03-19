@@ -55,7 +55,7 @@ function connect(cb) {
 * @param result - suspended market
 */
 exports.add = function(result) {	
-	sysLogger.crit('<db_results> <add> MID = ' + result.marketId);
+	sysLogger.critical('<db_results> <add> MID = ' + result.marketId);
 	connect(function(Model) {
 		var resultdto = {
 				name: result.marketName,
@@ -100,7 +100,7 @@ function transformRunnersToArray(runners) {
 * @param cb  
 */
 exports.update = function(mid, totalProfit, winners, cb) {
-	sysLogger.crit('<db_results> <update> total Profit = ' + totalProfit + ', winners = ' + winners);
+	sysLogger.critical('<db_results> <update> total Profit = ' + totalProfit + ', winners = ' + winners);
 	connect(function(Model) {
 		var query = { marketId: mid };
 		Model.findOneAndUpdate(query, { profit: totalProfit, winners: winners }, cb);

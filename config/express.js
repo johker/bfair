@@ -6,7 +6,12 @@ var express = require('express')
 
  
 module.exports = function (app, config, passport) {
+	  
+	// Use connect-flash middleware.  This will add a `req.flash()` function to
+	// all requests, matching the functionality offered in Express 2.x.	  
+	app.use(flash());
 
+	
   app.set('showStackError', true)
   // should be placed before express.static
   app.use(express.compress({
@@ -18,28 +23,27 @@ module.exports = function (app, config, passport) {
   app.use(express.static(config.root + '/public'))
   app.use(express.logger('dev'))  
 
+  
   // set views path, template engine and default layout
   app.set('views', config.root + '/app/views')
   app.set('view engine', 'jade')
   app.use(require('stylus').middleware({ src: config.root + '/public' }));
+
   
   
- 
   app.configure(function () {
-    // dynamic helpers
-    // app.use(viewHelpers(config))
 
 	app.locals.pretty = true;
-	
-    // cookieParser should be above session
+//	
+//    // cookieParser should be above session
     app.use(express.cookieParser())
-
-    // bodyParser should be above methodOverride
+//
+//    // bodyParser should be above methodOverride
     app.use(express.bodyParser())
     app.use(express.methodOverride())
-    app.use(expressValidator)
-
-    // express/mongo session storage
+//    app.use(expressValidator)
+//
+//    // express/mongo session storage
     app.use(express.session({
       secret: 'noobjs',
       store: new mongoStore({
@@ -47,11 +51,8 @@ module.exports = function (app, config, passport) {
         collection : 'sessions'
       })
     }))
-
-    // connect flash for flash messages
-    app.use(flash())
-
-    // use passport session
+//
+//    // use passport session
     app.use(passport.initialize())
     app.use(passport.session())
 

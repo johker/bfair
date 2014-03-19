@@ -9,13 +9,22 @@ require('winston-mongodb').MongoDB;
 
 exports.getSysLogger = function() {
 	var sysLogger = new (winston.Logger)({
-	  transports: [
-	    new winston.transports.Console({level: rtc.getConfig('logs.level') , json: false, timestamp: true }),
-	    new winston.transports.File({level: rtc.getConfig('logs.level'), filename: exports.getFile(), json: false, timestamp: true })
-	  ],
-	  exitOnError: false
+		levels: {
+			'emergency': 7, // system is unusable
+		    'alert': 6,		// action must be taken immediately
+		    'critical': 5,  // the system is in critical condition
+		    'error': 4,		// error condition
+		    'warning': 3,	// warning condition
+		    'notice': 2,	// a normal but significant condition
+		    'info' : 1,		// a purely informational message
+		    'debug' : 0		// messages to debug an application
+		  },
+		  transports: [
+		    new winston.transports.Console({level: rtc.getConfig('logs.level'), json: false, timestamp: true }),
+		    new winston.transports.File({level: rtc.getConfig('logs.level'), filename: exports.getFile(), json: false, timestamp: true })
+		  ],
+		  exitOnError: false
 	});
-	sysLogger.setLevels(winston.config.syslog.levels);
 	return sysLogger;
 };
 
@@ -50,5 +59,5 @@ function getTimeAttachment() {
 	time += ('0' + now.getMinutes()).slice(-2); 
 	return time; 
 }
- 
-  
+
+

@@ -32,7 +32,7 @@ var OrderObserver = function OrderObserver() {
 OrderObserver.prototype.updateCurrentOrderInformation = function(marketId, report, cb) {
 	orderrequests.listCurrentOrders({"marketIds":[marketId],"placedDateRange":{},"orderBy":"BY_MARKET"}, function(err, data) {
 		if(err) {
-			sysLogger.crit('<orderobserver> <listCurrentOrders> Error: ' + err.message);
+			sysLogger.critical('<orderobserver> <listCurrentOrders> Error: ' + err.message);
 			cb(err);
 		}
 		var currentBets = data.response.result.currentOrders;

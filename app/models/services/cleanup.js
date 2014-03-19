@@ -15,7 +15,7 @@ exports.startCleanupScheduler = function() {
 			if(err) {
 				sysLogger.error('<cleanup> ' + JSON.stringify(err));
 			} else {
-				sysLogger.crit('<cleanup> ' + nrremoved + ' results removed from db.');
+				sysLogger.critical('<cleanup> ' + nrremoved + ' results removed from db.');
 			}
 		});
 	});

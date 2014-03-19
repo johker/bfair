@@ -17,7 +17,6 @@ var root = '../../'
  * current order information
  */
  priceSubscriber.on('rabbitsub',function(theoretical) {
- 	sysLogger.debug('<executioncontroller> <priceSubscriber> New rabbitsub Event - Theoretical Market ID = ' + theoretical.marketId);
  	//How the err works is simple, when you supply anything that evaluates to true as the first argument 
  	//of the callback function waterfall will stop and call the main callback. 	
  	async.waterfall([
@@ -52,7 +51,7 @@ var root = '../../'
     ], function(err) { //This function gets called after the two tasks have called their "task callbacks"
         if (err) {
         	if(err.code === CODES.DEFERED_THEORETICAL) {
-				sysLogger.debug('<executioncontroller> <pricesubscriber> Error Message: ' + err.message +  ' Detail: ' + err.code.msg);	  
+				sysLogger.warning('<executioncontroller> <pricesubscriber> Error Message: ' + err.message +  ' Detail: ' + err.code.msg);	  
 		    	return; // return because no severe error  
 			}
         	sysLogger.error('<executioncontroller> <priceSubscriber.on:rabbitsub> Error during processing theoretical');

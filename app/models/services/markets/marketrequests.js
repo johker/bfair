@@ -28,7 +28,6 @@ exports.listEvents = function(filter, cb)  {
 * name filter.
 */
 exports.listMarkets = function(filter, cb) {
-	sysLogger.debug('<marketrequests> <listMarkets> filter: ' + JSON.stringify(filter));
 	exports.listEvents(filter, function(err, res) {
 		var events = res.response.result; 		
 		var eids = [];

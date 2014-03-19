@@ -44,7 +44,7 @@ var root = '../../../'
  	}
  	
  	this.remove = function() {
- 		sysLogger.crit('<marketfactory> <remove> MID = ' + this.id + ' (' + (this.nrct+1) + '/' + rtc.getConfig('api.removeBuffer') +')');
+ 		sysLogger.critical('<marketfactory> <remove> MID = ' + this.id + ' (' + (this.nrct+1) + '/' + rtc.getConfig('api.removeBuffer') +')');
  		return ++(this.nrct) > rtc.getConfig('api.removeBuffer'); 
  	} 	
  	

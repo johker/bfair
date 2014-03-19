@@ -121,7 +121,7 @@ app.post('/history', function(req, res) {
 			// 'Regular' POST rquests
 			// AJAX rquest doesnt work with streaming
 			if(doexport) { // distingiush between export and navigation to history page
-				sysLogger.crit('<routes> <post:history> Exporting History for selected ID : ' +  '1.' + selectedId);			
+				sysLogger.critical('<routes> <post:history> Exporting History for selected ID : ' +  '1.' + selectedId);			
 				apictrl.exporthistory( '1.' + selectedId, res);	
 				doexport = false;
 			} else {
@@ -145,6 +145,25 @@ app.post('/validateorder', function(req, res) {
 	
 });
 
+//
+//
+//app.get('/', function(req, res){
+//	  res.render('index', { message: req.flash('info') });
+//	});
+
+app.get('/flash', function(req, res){
+	  req.flash('info', 'Hi there!')
+	  res.redirect('/');
+	});
+
+	app.get('/no-flash', function(req, res){
+	  res.redirect('/');
+	});
+
+	app.get('/multiple-flash', function(req, res){
+	    req.flash('info', ['Welcome', 'Please Enjoy']);
+	    res.redirect('/');
+	});
 
 
 

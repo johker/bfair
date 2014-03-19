@@ -55,7 +55,7 @@ Ping.prototype.removeMarket = function(mid) {
 
 Ping.prototype.ping = function() {
 	var self = this;
-	sysLogger.debug('<pingprices> <ping> timeout = ' + self.timeout);
+
 	try {
 		if(rtc.getConfig('mock.useprices')) {		
 			pricemock.getPrices(batch.getNextBatch(), function(res, err) {
@@ -92,7 +92,7 @@ Ping.prototype.updateInterval = function() {
 			self.batchCt = batch.getBatchCt();
 			clearInterval(self.handle);
 			var newinterval = Math.round(rtc.getConfig('api.baseto.price') / self.batchCt);
-			sysLogger.crit('<pingprices> <ping> Minimum interval changed to ' + newinterval + 'ms');
+			sysLogger.critical('<pingprices> <ping> Minimum interval changed to ' + newinterval + 'ms');
 		    self.handle = setInterval(function () {
 		       		self.ping();
 		    	}, newinterval); 		

@@ -22,7 +22,7 @@ util.inherits(Ping, EventEmitter);
 Ping.prototype.start = function() {
 	var self = this,
     time = Date.now(); 
-    sysLogger.crit("<pingresults> <start> Time: " + utils.getFormatedDate(time));
+    sysLogger.critical("<pingresults> <start> Time: " + utils.getFormatedDate(time));
  	// create an interval for pings
     self.handle = setInterval(function () {
        self.ping();
@@ -56,5 +56,5 @@ module.exports = Ping;
 rping = new Ping();
 
 rping.on('ping', function(results) {
-	sysLogger.crit('<apicontroller> <resultsping.on:ping>' + JSON.stringify(results));
+	sysLogger.critical('<apicontroller> <resultsping.on:ping>' + JSON.stringify(results));
 });

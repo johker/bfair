@@ -16,7 +16,7 @@ exports.marketIdLength = function(marketId, cb) {
 	var err = null;
 	if(marketId.length != 11) {
 		err = new Error('Market ID Error');
-		sysLogger.crit('<checks> <marketIdLength> ID LENGTH = ' + marketId.length);
+		sysLogger.critical('<checks> <marketIdLength> ID LENGTH = ' + marketId.length);
 	}
 	cb(err, marketId);
 }
@@ -31,7 +31,7 @@ exports.marketStatusClosed = function(marketId, cb) {
 	/*
 	request.listMarketBook({"marketIds":[marketId]}, function(err, res) {		
 		if(res.response.result[0].status != 'CLOSED') {
-			sysLogger.crit('<checks> <marketStatusClosed> STATUS = ' + res.response.result[0].status + ' (MID = ' + marketId + ')'); 
+			sysLogger.critical('<checks> <marketStatusClosed> STATUS = ' + res.response.result[0].status + ' (MID = ' + marketId + ')'); 
 			err = new Error('Market Status Error');
 		}	
 		cb(err, marketId);
@@ -48,9 +48,9 @@ exports.marketEventType = function(marketId, cb) {
 	cb(err, marketId);
 	/*
 	request.listMarketCatalogue( {"filter":{"marketIds":[marketId]},"maxResults":"1","marketProjection":["EVENT_TYPE"]}, function(err, res) {
-		sysLogger.crit('<checks> <marketEventType> EVENT TYPE = ' + JSON.stringify(res.response));	
+		sysLogger.critical('<checks> <marketEventType> EVENT TYPE = ' + JSON.stringify(res.response));	
 		if(res.response[0].result[0].eventType.id != rtc.getConfig('api.eventType')) {
-			sysLogger.crit('<checks> <marketEventType> EVENT TYPE = ' + JSON.Stringify(res.response[0].result[0].eventType.id));	
+			sysLogger.critical('<checks> <marketEventType> EVENT TYPE = ' + JSON.Stringify(res.response[0].result[0].eventType.id));	
 			err = new Error('Market Event Type Error');	
 		}
 		cb(err, marketId); 

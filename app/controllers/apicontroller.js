@@ -52,7 +52,6 @@ session.Singelton.getInstance().login(function(err, res){
 * Update active markets list
 */
 marketping.on('ping', function(markets){
-	sysLogger.debug('<apicontroller> <marketping.on:ping>');
 	marketObserver.synchronize(markets);			
 });	  
 
@@ -73,7 +72,6 @@ resultping.on('ping', function(results) {
 */
 marketObserver.on('newMarket',function(market) {
 	if(market == undefined) return; 
-	sysLogger.debug('<apicontroller> <marketObserver.on:newMarket>  market ID = ' + market.id);	
 	priceping.addMarket(market);
 });
 
@@ -81,7 +79,7 @@ marketObserver.on('newMarket',function(market) {
 * Remove market from price ping list of markets. Add market to history. 
 */
 priceObserver.on('marketSuspension', function(mid) {
-	sysLogger.crit('<apicontroller> <on: marketSuspension> Market Passivation (' + mid + ')');	 		
+	sysLogger.critical('<apicontroller> <on: marketSuspension> Market Passivation (' + mid + ')');	 		
 	
 	priceping.removeMarket(mid);	
 	// Additional Checks to verify 
@@ -111,7 +109,7 @@ cleanup.startCleanupScheduler();
 */
 app.io.route('marketsready', function(req) {
 	if(marketObserver.getList().length == 0 || rtc.getConfig('api.applyLock')) {
-		sysLogger.crit('<apicontroller> event: marketsready - Fetching List...');
+		sysLogger.critical('<apicontroller> event: marketsready - Fetching List...');
 		marketping.intitialRequest();
 	}
 	var markets = marketObserver.getList();	
@@ -120,7 +118,6 @@ app.io.route('marketsready', function(req) {
 	 }	
 	var ordmarkets = orderobserver.getMarketsWithOrders();
 	for(var i=0; i < ordmarkets.length; i++) {
-		sysLogger.debug('<apicontroller> <marketsready> ' + ordmarkets[i].marketId);
 		app.io.broadcast('addbadge', ordmarkets[i]);		
 	} 
 	priceObserver.broadcastStatuses();
@@ -143,7 +140,7 @@ app.io.route('historyready', function(req) {
 */
 app.io.route('resultsready', function(req) {	
 	reporting.getResults(function(results) {
-		//sysLogger.crit('<apicontroller> <resultsready> Results = ' + JSON.stringify(results));
+		//sysLogger.critical('<apicontroller> <resultsready> Results = ' + JSON.stringify(results));
 	    if(!results) return;
 		for(var i = 0; i<results.length; i++) {
 			app.io.broadcast('updateresults', results[i]);
@@ -236,7 +233,7 @@ app.io.route('viewprdetail', function(m) {
 			marketName = res.response.result[0].marketName;
 		}); 
 	} catch (err) {
-		sysLogger.crit('<apicontroller> <app.io.route:viewprdetail> Parsing parameters failed, error: ' + err);
+		sysLogger.critical('<apicontroller> <app.io.route:viewprdetail> Parsing parameters failed, error: ' + err);
 	}
 	
 });
@@ -254,7 +251,6 @@ exports.history = function(req, res) {
 }
 
 exports.exporthistory = function(mid, res) {
-	sysLogger.debug('<apicontroller> <exportHistory> mid = ' +  mid);
 	logs.exportLogInstance(mid, res, function(err) {
 		if (err) return err; 
 	});
@@ -267,7 +263,7 @@ exports.removehistory = function(mid) {
 }
 
 exports.removecompletehistory = function() {
-	sysLogger.debug('<apicontroller> <removecompletehistory>');
+	sysLogger.notice('<apicontroller> <removecompletehistory>');
 	cleandb.removePrices(); 
 	app.io.broadcast('reset');
 }
@@ -290,12 +286,12 @@ exports.validateorder = function(req, res, callback) {
 	callback(values);
 }
 
-expressValidator.Validator.prototype.isNumber = function() {
-	if(!validationutil.isNumber(this.str)) {
-		this.error(this.msg || 'Invalid number');
-	}
-	return this;		
-} 
+//expressValidator.Validator.prototype.isNumber = function() {
+//	if(!validationutil.isNumber(this.str)) {
+//		this.error(this.msg || 'Invalid number');
+//	}
+//	return this;		
+//} 
 
 function execute(req) {
 	sysLogger.info('<apicontroller> <execute> order confirmation');

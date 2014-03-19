@@ -66,7 +66,7 @@ exports.createBets = function(em, instructions) {
 	for ( var i = 0; i < instructions.length; ++i) {
 		var desc = instructions[i];
 		if(instructions[i].isLocked) {
-			sysLogger.debug('<emulator_json> <createBets> Instruction with EXID ' + instructions[i].executionId + ' skipped.');
+			sysLogger.debug('<emulator_json> <createBets> Instruction with EXID ' + instructions[i].executionId + ' is locked.');
 			// Only create bet for unlocked instrcutions
 			continue; 
 		}

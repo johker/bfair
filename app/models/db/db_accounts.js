@@ -13,4 +13,4 @@ var AccountsSchema = new Schema({
     
 });
 
-module.exports = mongoose.model('Account', AccountsSchema);
+module.exports = mongoose.model('Account', AccountsSchema, 'accounts');

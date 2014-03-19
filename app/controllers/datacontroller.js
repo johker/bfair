@@ -13,7 +13,8 @@ var root = '../../'
 	, values = {};
 
 
-expressValidator.Validator.prototype.timeRange = function(startStr, endStr) {
+
+expressValidator.Validator.timeRange = function(startStr, endStr) {
 	if(startStr == '' || endStr == '') return this;
 	startDate = su.parseDate(startStr);
 	endDate = su.parseDate(endStr);
@@ -119,7 +120,7 @@ exports.executeOperation = function(req,res) {
 * Calls the model to stream documents matching the conditions
 */
 exports.exportLogs = function(req, res) {
-	sysLogger.debug('<datacontroller> <exportLogs>')
+	sysLogger.notice('<datacontroller> <exportLogs>')
 	datamodel.exportLogs(req.body.eventId, req.body.startDate, req.body.endDate, res, function(err) {
        if (err) return err; 
     });

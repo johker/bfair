@@ -1,6 +1,7 @@
 module.exports = {
     development: {
       root: require('path').normalize(__dirname + '/..'),
+      port: 3000,
       filetype: '.csv',
       timezoneShiftGMT: 1,
       mock: {
@@ -38,7 +39,7 @@ module.exports = {
       	 	results: 'results'
       	 },
       	 
-      	level: 'warning'		 // debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  crit: 5,  alert: 6,  emerg: 7
+      	level: 'notice'		 // debug: 0,  info: 1,  notice: 2,  warning: 3,  error: 4,  critical: 5,  alert: 6,  emergency: 7
       }, 
       results: {
       	baseurl: 'http://rss.betfair.com/RSS.aspx?format=rss&sportID=7'

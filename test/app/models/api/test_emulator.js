@@ -59,11 +59,11 @@ session.login(rtc.getConfig('betfair.user'), rtc.getConfig('betfair.password'), 
 		orders.placeOrders(params, function(err, res) {
 			sysLogger.debug('<test_emulator> <placeOrders> res = ' + JSON.stringify(res,null,2));
 			request.listMarketBook(filter, function(err, res) {
-				sysLogger.crit('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2));	
+				sysLogger.critical('<test_emulator> <listMarketBook> ' + JSON.stringify(res.response,null,2));	
 				});
 			/*
 			orders.cancelOrders(cancelparams, function(err, res) {
-				sysLogger.crit('<test_emulator> <cancelOrders> res = ' + JSON.stringify(res,null,2));
+				sysLogger.critical('<test_emulator> <cancelOrders> res = ' + JSON.stringify(res,null,2));
 			});
 			*/
 		});

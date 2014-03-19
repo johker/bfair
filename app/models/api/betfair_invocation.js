@@ -204,14 +204,12 @@ BetfairInvocation.prototype.end = function () {
     }
     self.finishDate = new Date;
 
-	//sysLogger.info('<betfair_invocation> <end> self.response = ' + JSON.stringify(self.response, null, 2));
 	
 
     self.isSuccess = ((self.response && self.response.result) ? true : false);
     self.duration = self.finishDate - self.startDate;
 
-	sysLogger.info('<betfair_invocation> <end> self.isSuccess: ' + self.isSuccess);
-
+	
     // listMarketBook post-processing
     // orderProjection and matchedProjection are filled by emulator
     // for all the markets in bet emulation mode

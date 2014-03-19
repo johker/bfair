@@ -40,7 +40,7 @@ module.exports.Singelton = (function () {
 			return self.session; 
 		}
 		else {
-			sysLogger.crit('<session> <getSession> New Session Instance, Active App Key = ' + rtc.getConfig('betfair.applicationkey'));
+			sysLogger.critical('<session> <getSession> New Session Instance, Active App Key = ' + rtc.getConfig('betfair.applicationkey'));
 			self.session = betfair.newSession();
 			self.session.setApplicationKeys({active: rtc.getConfig('betfair.applicationkey'), delayed: rtc.getConfig('betfair.delayedapplicationkey')})
 			return self.session;
