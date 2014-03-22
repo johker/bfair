@@ -17,19 +17,19 @@ exports.login = function(req, res) {
 };
 
 
-exports.overview = function(req, res) {
-    res.render('overview', { title: bundle.title.overview, username: req.user.username});
-};
+//exports.overview = function(req, res) {
+//    res.render('overview', { title: bundle.title.overview, username: req.user.username});
+//};
  
 /**
  * Show login form
  */
-exports.login = function (req, res) {
-    res.render('login', {
-    title: 'Login',
-    message: req.flash('error')
-  })
-}
+//exports.login = function (req, res) {
+//    res.render('login', {
+//    title: 'Login',
+//    message: req.flash('error')
+//  })
+//}
 
 /**
  * Logout
@@ -44,32 +44,32 @@ exports.logout = function (req, res) {
  * Session - deprecated
  */
 
-exports.session = function (req, res) {
-  res.redirect('/')
-}
+//exports.session = function (req, res) {
+//  res.redirect('/')
+//}
 
 
 /**
  *  Show profile - deprecated
  */
-exports.show = function (req, res) {
-  var user = req.profile
-  res.render('usercontroller/show', {
-    title: user.name,
-    user: user
-  })
-}
+//exports.show = function (req, res) {
+//  var user = req.profile
+//  res.render('usercontroller/show', {
+//    title: user.name,
+//    user: user
+//  })
+//}
 
 /**
  * Find user by id - deprecated
  */
-exports.user = function (req, res, next, id) {
-  User
-    .findOne({ _id : id })
-    .exec(function (err, user) {
-      if (err) return next(err)
-      if (!user) return next(new BfError('Failed to load User ' + id))
-      req.profile = user
-      next()
-    })
-}
+//exports.user = function (req, res, next, id) {
+//  User
+//    .findOne({ _id : id })
+//    .exec(function (err, user) {
+//      if (err) return next(err)
+//      if (!user) return next(new BfError('Failed to load User ' + id))
+//      req.profile = user
+//      next()
+//    })
+//}

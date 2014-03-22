@@ -52,7 +52,7 @@ require(models_path+'/db_users');
 
 
 // bootstrap passport config	
-require('./config/passport')(passport, config);
+require('./config/passport')(passport);
 // bootstrap error codes / Errors
 require(root + 'errors/codes');
 

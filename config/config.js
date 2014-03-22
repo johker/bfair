@@ -26,6 +26,8 @@ module.exports = {
         name: 'Nodejs Express Mongoose Demo'
       },
       db: 'mongodb://localhost:27017/be-fair-authentication',
+      cookiesecret: 'noobjs',
+      sessions: 'sessions',
       logs: {
       	dir: require('path').normalize(__dirname + '/../logs/'),
       	sysfile: 'bfair_',

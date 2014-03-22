@@ -1,9 +1,10 @@
 // var express = require('express.io');
 var express = require('express')
+  , root = '../'
   , mongoStore = require('connect-mongo')(express)
   , flash = require('connect-flash')
   , expressValidator = require("express-validator")
-
+  , rtc = require(root + 'app/controllers/configcontroller')
  
 module.exports = function (app, config, passport) {
 	  
@@ -33,26 +34,29 @@ module.exports = function (app, config, passport) {
   
   app.configure(function () {
 
-	app.locals.pretty = true;
-//	
-//    // cookieParser should be above session
+	app.locals.pretty = true;	
+	// cookieParser should be above session
     app.use(express.cookieParser())
-//
-//    // bodyParser should be above methodOverride
+    // bodyParser should be above methodOverride
     app.use(express.bodyParser())
     app.use(express.methodOverride())
-//    app.use(expressValidator)
-//
-//    // express/mongo session storage
+    
+    //app.use(expressValidator)
+    
+    // express/mongo session storage
     app.use(express.session({
-      secret: 'noobjs',
+      secret: rtc.getConfig('cookiesecret'),
+      cookie: { maxAge: 24 * 60 * 60 * 1000 },
       store: new mongoStore({
-        url: config.db,
-        collection : 'sessions'
+        url: rtc.getConfig('db'),
+        collection : rtc.getConfig('sessions')
       })
     }))
-//
-//    // use passport session
+    
+    
+    
+
+    // use passport session
     app.use(passport.initialize())
     app.use(passport.session())
 

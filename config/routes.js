@@ -19,22 +19,20 @@ var apictrl = require(cns + 'apicontroller');
 var dctrl = require(cns + 'datacontroller');
 var cctrl = require(cns + 'configcontroller'); 
 
-// user routes
+// User routes
 app.get('/', uctrl.login);
 app.get('/logout', uctrl.logout)
-app.post('/users/session', passport.authenticate('local', {failureRedirect: '/', failureFlash: 'Invalid email or password.'}), uctrl.session)
-app.get('/users/:userId', uctrl.show)
+//app.post('/users/session', passport.authenticate('local', {failureRedirect: '/', failureFlash: 'Invalid email or password.'}), uctrl.session)
+//app.get('/users/:userId', uctrl.show)
 
 // Content routes
-// app.get('/overview', auth.requiresLogin, uctrl.overview);
-// app.get('/data', auth.requiresLogin, dctrl.data);
 app.get('/settings', auth.requiresLogin, actrl.settings);
 app.get('/markets', auth.requiresLogin, apictrl.markets);
 app.get('/results', auth.requiresLogin, apictrl.orders);
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
 	function(req, res) {
-		sysLogger.info('<routes> <passport> <authenticate> Authenticated');
+		sysLogger.critical('<routes> <passport> <authenticate> Authenticated');
 		res.redirect('/markets');
 });
 
@@ -145,25 +143,7 @@ app.post('/validateorder', function(req, res) {
 	
 });
 
-//
-//
-//app.get('/', function(req, res){
-//	  res.render('index', { message: req.flash('info') });
-//	});
 
-app.get('/flash', function(req, res){
-	  req.flash('info', 'Hi there!')
-	  res.redirect('/');
-	});
-
-	app.get('/no-flash', function(req, res){
-	  res.redirect('/');
-	});
-
-	app.get('/multiple-flash', function(req, res){
-	    req.flash('info', ['Welcome', 'Please Enjoy']);
-	    res.redirect('/');
-	});
 
 
 

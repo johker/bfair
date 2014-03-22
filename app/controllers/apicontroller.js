@@ -286,12 +286,12 @@ exports.validateorder = function(req, res, callback) {
 	callback(values);
 }
 
-//expressValidator.Validator.prototype.isNumber = function() {
-//	if(!validationutil.isNumber(this.str)) {
-//		this.error(this.msg || 'Invalid number');
-//	}
-//	return this;		
-//} 
+expressValidator.Validator.prototype.isNumber = function() {
+	if(!validationutil.isNumber(this.str)) {
+		this.error(this.msg || 'Invalid number');
+	}
+	return this;		
+} 
 
 function execute(req) {
 	sysLogger.info('<apicontroller> <execute> order confirmation');
