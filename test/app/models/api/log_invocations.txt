@@ -1,3 +1,0 @@
-{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"listMarketBook","duration":0.266,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-12-14T17:03:42.717Z","v":0}
-{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"placeOrders","duration":0.14,"isSuccess":true,"isEmulated":true,"msg":"placeOrders","time":"2013-12-14T17:03:42.875Z","v":0}
-{"name":"invocations","hostname":"imitator","pid":3976,"level":30,"method":"listMarketBook","duration":0.06,"isSuccess":true,"isEmulated":true,"msg":"listMarketBook","time":"2013-12-14T17:03:42.936Z","v":0}

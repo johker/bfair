@@ -6,7 +6,7 @@ var express = require('express')
   , expressValidator = require("express-validator")
   , rtc = require(root + 'app/controllers/configcontroller')
  
-module.exports = function (app, config, passport) {
+module.exports = function (app, passport) {
 	  
 	// Use connect-flash middleware.  This will add a `req.flash()` function to
 	// all requests, matching the functionality offered in Express 2.x.	  
@@ -21,14 +21,14 @@ module.exports = function (app, config, passport) {
     },
     level: 9
   }))
-  app.use(express.static(config.root + '/public'))
+  app.use(express.static(rtc.getConfig('root') + 'public'))
   app.use(express.logger('dev'))  
 
   
   // set views path, template engine and default layout
-  app.set('views', config.root + '/app/views')
+  app.set('views', rtc.getConfig('root') + 'app/views')
   app.set('view engine', 'jade')
-  app.use(require('stylus').middleware({ src: config.root + '/public' }));
+  app.use(require('stylus').middleware({ src: rtc.getConfig('root') + 'public' }));
 
   
   

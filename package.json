@@ -36,5 +36,6 @@
     , "feedparser": "0.16.5"
     , "request": "2.31.0"
     , "node-schedule": "0.1.13"
+    , "settings": "0.1.1"
   }
 }

@@ -10,12 +10,11 @@ var express = require('express.io')
 // Load configurations
 var root = './' 
 	, env = process.env.NODE_ENV || 'development'
-	, config = require('./config/config')[env]
 	, rtc = require(root + 'app/controllers/configcontroller')
 	, auth = require('./config/authorization')
 	, mongoose = require('mongoose')
 
-process.env['NODE_ENV'] = 'development';
+
 process.env['TZ'] = 'Europe/Amsterdam';
 
 
@@ -24,7 +23,6 @@ apiLogger = winston.getApiLogger();
 sysLogger = winston.getSysLogger();
 betfair = require('./app/models/api'); // Patched version 
 sysLogger.critical('<server> System logging to ' + winston.getFile());
-
 
 
 if(env == 'development') {
@@ -42,10 +40,12 @@ sysLogger.notice('<server> DB config: ' + rtc.getConfig('db'));
 mongoose.connect(rtc.getConfig('db'))
 
 // Bootstrap models
-var models_path = rtc.getConfig('root') + '/app/models/db'
+var models_path = rtc.getConfig('root') + 'app/models/db'
 //fs.readdirSync(models_path).forEach(function (file) {
 //  require(models_path+'/'+file)
 //})
+
+
 require(models_path+'/db_accounts');
 require(models_path+'/db_users');
 
@@ -64,7 +64,7 @@ app = express();
 app.http().io();
 
 // express settings
-require('./config/express')(app, config, passport)
+require('./config/express')(app, passport)
 
 // Bootstrap routes
 require('./config/routes')(app, passport, auth)

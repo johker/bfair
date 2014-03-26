@@ -4,8 +4,9 @@
 var root = '../../'
 	, env = process.env.NODE_ENV || 'development'
 	, bundle = require(root + 'config/resourcebundle')['en']
-	, servicedir = root + 'app/models/services/'	
-	, config = require(root + 'config/config')[env] 
+	, servicedir = root + 'app/models/services/'
+	, Settings = require('settings')
+	, config = new Settings(require(root + 'config/config'))
 	, dynconfig = require(servicedir + 'dynconfig')
 	, dynobs = require(root + 'util/dynobjects')
 	
