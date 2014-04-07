@@ -9,7 +9,7 @@ var mongoose = require('mongoose')
 	    password: 'node1'
 	});
 	
-mongoose.connect('mongodb://127.0.0.1:27018/be-fair-authentication', function(err) {
+mongoose.connect(rtc.getConfig('db'), function(err) {
     if (err) throw err;
     console.log('Successfully connected to MongoDB');
     
