@@ -3,6 +3,9 @@ var mongoose = require('mongoose')
     , User = require('../app/models/db/db_users')
     , async = require('async')
 	, rtc = require(root + 'app/controllers/configcontroller')
+	, winston = require(root + 'config/winston')
+	, sysLogger = winston.getSysLogger()
+	
 	
 	, testUser = new User({
 	    username: 'node',
@@ -11,14 +14,14 @@ var mongoose = require('mongoose')
 	
 mongoose.connect(rtc.getConfig('db'), function(err) {
     if (err) throw err;
-    console.log('Successfully connected to ' + rtc.getConfig('db'));
+    sysLogger.critical('Successfully connected to ' + rtc.getConfig('db'));
     
     async.waterfall([
 	  function(callback) {
 		  // clear collection
 		  User.remove({}, function (err) {
 			 if (err) return callback(err);
-		    console.log('User collection cleared.');
+			 sysLogger.critical('User collection cleared.');
 		    callback()
 		  });
       }, 
@@ -26,7 +29,7 @@ mongoose.connect(rtc.getConfig('db'), function(err) {
   	  function(callback) { 
     	testUser.save(function(err) {	
     		if (err) return callback(err);
-    		console.log('Saving test user ... Success!');
+    		sysLogger.critical('Saving test user ... Success!');
     		callback();
     	});
      },
@@ -38,7 +41,7 @@ mongoose.connect(rtc.getConfig('db'), function(err) {
     	   // test a matching password
            user.comparePassword('node1', function(err, isMatch) {
         	   if (err) return callback(err);
-               console.log('node1:', isMatch); // -> node1: true
+        	   sysLogger.info('node1:', isMatch); // -> node1: true
                callback();
            });
     	});     	
@@ -51,7 +54,7 @@ mongoose.connect(rtc.getConfig('db'), function(err) {
     	    // test a failing password
             user.comparePassword('1node', function(err, isMatch) {
             	if (err) return callback(err);
-                console.log('1node:', isMatch); // -> 1node: false
+            	sysLogger.info('1node:', isMatch); // -> 1node: false
                 callback();
             });
     	});
@@ -61,8 +64,8 @@ mongoose.connect(rtc.getConfig('db'), function(err) {
     	if(err) {
     		code = 1;
     	} 
-    	console.log('Status = ' + code);
-    	console.log('User collection: complete');
+    	sysLogger.critical('Status = ' + code);
+    	sysLogger.critical('User collection: complete');
     	process.exit(code);
    });
 });
