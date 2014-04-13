@@ -56,8 +56,14 @@ mongoose.connect(rtc.getConfig('db'), function(err) {
             });
     	});
      }
-	], function(err) { 
+	], function(err) {
+    	var code = 0; 
+    	if(err) {
+    		code = 1;
+    	} 
+    	console.log('Status = ' + code);
     	console.log('User collection: complete');
+    	process.exit(code);
    });
 });
 
