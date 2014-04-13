@@ -11,7 +11,7 @@ var mongoose = require('mongoose')
 	
 mongoose.connect(rtc.getConfig('db'), function(err) {
     if (err) throw err;
-    console.log('Successfully connected to MongoDB');
+    console.log('Successfully connected to ' + rtc.getConfig('db'));
     
     async.waterfall([
 	  function(callback) {
