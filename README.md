@@ -1,6 +1,3 @@
-bfair
-===========
------------
+## bfair
 
------------
-Created by johker
+Nodejs based algorithmic trading platform for bets
