@@ -1,3 +1,3 @@
-## bfair_node
+## bfair
 
-Nodejs based algorithmic trading platform for bets
+Algorithmic trading platform for sport bets
